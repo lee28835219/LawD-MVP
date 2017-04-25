@@ -80,17 +80,25 @@
 				394553EB1E925442001080BF /* selections.csv */,
 				394553ED1E9886AA001080BF /* questionss.csv */,
 				395BF6D21E82BA36004BE198 /* main.swift */,
-				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
 				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
-				39E1DE181E82C091006F3DB9 /* Question.swift */,
-				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
-				39E1DE121E82BE54006F3DB9 /* TestSelection.swift */,
+				39DF734E1EAFB820005AD7D7 /* TestDataClass */,
 				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
 				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
 				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
 				39DF734C1EAF4036005AD7D7 /* Note.swift */,
 			);
 			path = TestGenerator;
+			sourceTree = "<group>";
+		};
+		39DF734E1EAFB820005AD7D7 /* TestDataClass */ = {
+			isa = PBXGroup;
+			children = (
+				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
+				39E1DE181E82C091006F3DB9 /* Question.swift */,
+				39E1DE121E82BE54006F3DB9 /* TestSelection.swift */,
+				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
+			);
+			name = TestDataClass;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

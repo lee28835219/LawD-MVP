@@ -15,16 +15,21 @@ class Question {
     let testCategory : String //변시, 원본
     var testSubject : String //민사법, 원본
     var testQuestionNo : Int? //문제번호, 원본
+    
     var testQuestionNote : String? //유니온문제번호 등 기타 정보, 원본
     var testSubjectDetail : String? //민법, 원본
+    
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
     var content: String //원본
+    
     var contentControversal : String? //원본
     var contentNote: String? //원본
-    let answer: Int //불확실
+    
+    let answer: Int //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
+    
     var selections = [TestSelction]() //원본
-    weak var answerSelection: TestSelction? //변경
+    weak var answerSelection: TestSelction? //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
     
     init(questionKey : String, isPublished : Bool, testDate : String, testCategory : String, testSubject : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         self.questionKey = questionKey
@@ -74,51 +79,4 @@ enum QuestionType {
     case Select // 고르시오
     case Find // 모두 고르시오
     case Define // ?
-}
-
-
-//http://stackoverflow.com/questions/34240931/creating-random-bool-in-swift-2
-//Creating random Bool in Swift 2
-
-extension Bool {
-    static func random() -> Bool {
-        return arc4random_uniform(2) == 0
-    }
-}
-
-// 숫자 스트링 -> 라운드 숫자 스트링 변환, 뭔가 더 고급스러운 방법은 없는가? 2017. 4. 9.
-extension Int {
-    var roundInt : String {
-        if self == 1 {
-            return "①"
-        }
-        if self == 2 {
-            return "②"
-        }
-        if self == 3 {
-            return "③"
-        }
-        if self == 4 {
-            return "④"
-        }
-        if self == 5 {
-            return "⑤"
-        }
-        if self == 6 {
-            return "⑥"
-        }
-        if self == 7 {
-            return "⑦"
-        }
-        if self == 8 {
-            return "⑧"
-        }
-        if self == 9 {
-            return "⑨"
-        }
-        if self == 9 {
-            return "⑩"
-        }
-        return self.description
-    }
 }

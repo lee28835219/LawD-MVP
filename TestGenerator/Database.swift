@@ -104,7 +104,7 @@ class Database {
         question3.contentControversal = "동시이행의 항변권에 관한 설명 중 옳지 않은 것을 모두 고른 것은?"
         question3.contentNote = "(다툼이 있는 경우 판례에 의함)"
         
-        // 1번
+        // 1번, 정답
         _ = TestSelction(question: question3, selectNumber: 1, content: "ㄱ,ㄴ")
         // 2번
         _ = TestSelction(question: question3, selectNumber: 2, content: "ㄱ,ㄹ")
@@ -114,6 +114,26 @@ class Database {
         _ = TestSelction(question: question3, selectNumber: 4, content: "ㄱ,ㄴ,ㄹ")
         // 5번
         _ = TestSelction(question: question3, selectNumber: 5, content: "ㄴ,ㄷ,ㄹ")
+        
+        /*
+        // ㄱ, 옳은 지문
+        let selectionVeryFirst31 = TestSelction(question: question2, selectNumber: 1, content: "부동산매수인이 매매계약을 체결하면서 매매목적물에 관한 근저당권의 피담보채무를 인수하는 한편 그 채무액을 매매대금에서 공제하기로 하는 이행인수계약이 함께 이루어진 경우, 매수인의 인수채무 불이행으로 인한 손해배상채무와 매도인의 소유권이전등기의무는 동시이행의 관계에 있다.")
+        // ㄴ, 옳은 지문
+        let selectionVeryFirst32 = TestSelction(question: question2, selectNumber: 2, content: "쌍무계약의 당사자 일방이 먼저 한 번 현실의 제공을 하고 상대방을 수령지체에 빠지게 하였다 하더라도 그 이행의 제공이 계속되지 않는 경우 상대방이 가지는 동시이행의 항변권이 소멸하는 것은 아니다.")
+        // ㄷ, 틀린 지문
+        let selectionVeryFirst33 = TestSelction(question: question2, selectNumber: 3, content: "원고가 단순이행청구를 함에 대하여 피고가 동시이행의 항변권을 행사하지 않더라도 법원은 직권으로 상환이행판결을 할 수 있다.")
+        // ㄹ, 틀린 지문
+        let selectionVeryFirst34 = TestSelction(question: question2, selectNumber: 4, content: "\"피고는 원고로부터 5,000만 원을 지급받음과 동시에 A토지를 인도하라.\"라는 판결을 받은 원고는 반대의무 이행 또는 이행의 제공을 하였다는 것을 증명하여야만 집행을 개시할 수 있다.")
+        
+        // ㄱ 지문 반전, 틀린지문
+        selectionVeryFirst31.contentControversal = "부동산매수인이 매매계약을 체결하면서 매매목적물에 관한 근저당권의 피담보채무를 인수하는 한편 그 채무액을 매매대금에서 공제하기로 하는 이행인수계약이 함께 이루어진 경우, 매수인의 인수채무 불이행으로 인한 손해배상채무는 매도인의 소유권이전등기의무와 동시이행의 관계가 아니다."
+        // ㄴ 지문 반전, 틀린지문
+        selectionVeryFirst32.contentControversal = "쌍무계약의 당사자 일방이 먼저 한 번 현실의 제공을 하고 상대방을 수령지체에 빠지게 하였다면 상대방이 가지는 동시이행의 항변권이 소멸하는 것은 위해 그 이행의 제공이 계속될 필요는 없다."
+        // ㄷ 지문 반전, 옳은지문
+        selectionVeryFirst33.contentControversal = "원고가 단순이행청구를 함에 대하여 피고가 동시이행의 항변권을 행사하지 않더라도 법원은 직권으로 상환이행판결을 할 수 없다."
+        // ㄹ 지문 반전, 옳은지문
+        selectionVeryFirst34.contentControversal = "\"피고는 원고로부터 5,000만 원을 지급받음과 동시에 A토지를 인도하라.\"라는 판결을 받은 원고는 집행을 개시할 때 반대의무 이행 또는 이행의 제공을 하였다는 것의 증명은 필요하지 않다."
+        */
         
         self.questions.append(question3)
         

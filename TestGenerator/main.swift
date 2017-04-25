@@ -17,7 +17,6 @@ print("")
 
 //무한루프 시작
 repeat {
-    
     //명령어
     print(">>>>", terminator : "")
     input = readLine()

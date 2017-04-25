@@ -58,7 +58,7 @@ class InputManager {
             if Int(input!) == quetionShuffled.getAnswerNumber()! + 1 {
                 print("정답!")
             } else {
-                print("오답...정답은 \((quetionShuffled.getAnswerNumber()! + 1).roundInt) \(quetionShuffled.getSelectContent(selection: quetionShuffled.answerSelectionModifed!).content)")
+                print("오답...정답은 \((quetionShuffled.getAnswerNumber()! + 1).roundInt) \(quetionShuffled.getSelectContent(selection: quetionShuffled.answerSelectionModifed).content)")
                 input = readLine()
             }
             print("다음문제~")

@@ -12,6 +12,7 @@ import Foundation
 class TestSelction {
     let question : Question
     var selectNumber : Int = 1
+    var selectString : String?
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
     var contentControversal : String?
     var codes : Array<Codes>?
@@ -46,6 +47,42 @@ class TestSelction {
         self.selectNumber = selectNumber
         self.content = content
     }
-    
-    
 }
+
+// 숫자 스트링 -> 라운드 숫자 스트링 변환, 뭔가 더 고급스러운 방법은 없는가? 2017. 4. 9.
+extension Int {
+    var roundInt : String {
+        if self == 1 {
+            return "①"
+        }
+        if self == 2 {
+            return "②"
+        }
+        if self == 3 {
+            return "③"
+        }
+        if self == 4 {
+            return "④"
+        }
+        if self == 5 {
+            return "⑤"
+        }
+        if self == 6 {
+            return "⑥"
+        }
+        if self == 7 {
+            return "⑦"
+        }
+        if self == 8 {
+            return "⑧"
+        }
+        if self == 9 {
+            return "⑨"
+        }
+        if self == 9 {
+            return "⑩"
+        }
+        return self.description
+    }
+}
+

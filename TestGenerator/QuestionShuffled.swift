@@ -11,7 +11,7 @@ import Foundation
 class QuestionShuffled {
     let question : Question
     var selectionsShuffled = [TestSelction]()
-    weak var answerSelectionModifed : TestSelction?
+    var answerSelectionModifed : TestSelction //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     
     init(question : Question) {
@@ -19,8 +19,10 @@ class QuestionShuffled {
         // 0. 문제, 선택지, 정답의 주소를 저장
         self.question = question
         self.selectionsShuffled = question.selections
-        self.answerSelectionModifed = question.answerSelection
-        
+        self.answerSelectionModifed = question.answerSelection!
+        // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
+        // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(+) 2017. 4. 26.
+
         // 1. 선택지의 순서를 변경
         selectionsShuffled.shuffle()
         print("")
@@ -58,7 +60,7 @@ class QuestionShuffled {
             
             let _randomSelectionNumber = Int(arc4random_uniform(UInt32(selectionsShuffled.count)))
             answerSelectionModifed = selectionsShuffled[_randomSelectionNumber]
-            print("3. 정답을 \(answerSelectionModifed!.selectNumber)(원본 문제기준), \(getAnswerNumber()!+1)(섞인 문제기준)으로 변경함")
+            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(getAnswerNumber()!+1)(섞인 문제기준)으로 변경함")
         }
     }
     
@@ -91,7 +93,7 @@ class QuestionShuffled {
         print("<정답>")
         let answerNumber = getAnswerNumber()
         if answerNumber != nil {
-            printSelect(select: answerSelectionModifed!, modifedNumber: answerNumber! + 1)
+            printSelect(select: answerSelectionModifed, modifedNumber: answerNumber! + 1)
         }
     }
     
@@ -127,8 +129,8 @@ class QuestionShuffled {
         
         // 2. 질문의 OX를 변경을 확인
         if doesQuestionOXChanged {
-            selectionContentShuffled = switchSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-            iscOrrectShuffled = switchIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+            selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+            iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
         }
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
@@ -136,16 +138,16 @@ class QuestionShuffled {
             // 3-1. 출력하려는 선택지가 답이고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
             // 3-2. 출력하려는 선택지가 답이고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
             if selection !== answerSelectionModifed {
-                selectionContentShuffled = switchSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = switchIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
             } else {
             }
         } else {
             // 3-3. 출력하려는 선택지가 답이아니고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
             // 3-4. 출력하려는 선택지가 답이아니고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
             if selection === answerSelectionModifed {
-                selectionContentShuffled = switchSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = switchIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
             } else {
             }
             
@@ -161,7 +163,7 @@ class QuestionShuffled {
         print(selction.iscOrrect ?? "not sure")
     }
     
-    func switchIsCorrect(iscOrrectShuffled : Bool) -> Bool{
+    func toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{
         if iscOrrectShuffled {
             return false
         } else {
@@ -169,7 +171,7 @@ class QuestionShuffled {
         }
     }
     
-    func switchSelectionContent(selectionContentShuffled : String, selection : TestSelction) -> String {
+    func toggleSelectionContent(selectionContentShuffled : String, selection : TestSelction) -> String {
         if selectionContentShuffled == selection.contentControversal  {
             return selection.content
         } else {
@@ -207,5 +209,14 @@ extension Sequence {
     }
 }
 
+
+//http://stackoverflow.com/questions/34240931/creating-random-bool-in-swift-2
+//Creating random Bool in Swift 2
+
+extension Bool {
+    static func random() -> Bool {
+        return arc4random_uniform(2) == 0
+    }
+}
 
 
