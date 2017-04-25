@@ -24,7 +24,7 @@ class Question {
     var contentNote: String? //원본
     let answer: Int //불확실
     var selections = [TestSelction]() //원본
-    var answerSelection: TestSelction? //변경
+    weak var answerSelection: TestSelction? //변경
     
     init(questionKey : String, isPublished : Bool, testDate : String, testCategory : String, testSubject : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         self.questionKey = questionKey
