@@ -11,54 +11,51 @@ import Foundation
 class QuestionShuffled {
     let question : Question
     var selectionsShuffled = [TestSelction]()
-    var doesQuestionOXChanged = false
     var answerSelectionModifed : TestSelction?
+    var doesQuestionOXChanged = false
     
     init(question : Question) {
+        
+        // 0. 문제, 선택지, 정답의 주소를 저장
         self.question = question
         self.selectionsShuffled = question.selections
         self.answerSelectionModifed = question.answerSelection
         
-        // 정오변경 지문이 문제에 있는지 확인
+        // 1. 선택지의 순서를 변경
+        selectionsShuffled.shuffle()
+        print("")
+        print("1. 선택지 순서 변경함")
+        
+        // 2. 문제와 지문 OX변경을 실행
+        // 2-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
-        // 정오변경 지문이 선택지에 모두 있는지 확인
+        // 2-2. 정오변경 지문이 선택지에 모두 있는지 확인
         var isAllSelectionControversalExist = true
         for sel in question.selections {
             if sel.contentControversal == nil {
                 isAllSelectionControversalExist = false
             }
         }
-        
-        // OX를 변경할 문제유형인지 확인
+        // 2-3. OX를 변경할 문제유형인지 확인
         var isGonnaOXConvert = false
         if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
             isGonnaOXConvert = true
         }
-        
-        // 문제와 지문 OX변경을 실행
-        if isOppositeQuestionExist, isAllSelectionControversalExist, isGonnaOXConvert { //문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
-            print("")
-            print("!!!문제변경가능")
+        // 2-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
+        if isOppositeQuestionExist, isAllSelectionControversalExist, isGonnaOXConvert {
             if Bool.random() {
                 doesQuestionOXChanged = true
-                print("1. 문제와 선택지 OX 변경함")
+                print("2. 문제와 선택지 OX 변경함")
             } else {
-                print("1. 문제와 선택지 OX 변경안함")
+                print("2. 문제와 선택지 OX 변경안함")
             }
         }
         
-        //선택지의 순서를 변경
-        selectionsShuffled.shuffle()
-        print("2. 선택지 순서 변경함")
         
-    }
-    
-    func shuffling()  {
     }
     
     // 내용 출력
     func publish() {
-        
         print("")
         
         //////////////////////

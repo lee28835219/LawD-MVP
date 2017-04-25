@@ -11,30 +11,27 @@ import Foundation
 print("Hello!TextGenerator Starts!")
 var input : String?
 var inputManger = InputManager(inputTemp: "")
-var database = Database()
 
 //무한루프 시작
 repeat {
     
-    
-    //질문 자동 초기화
-    print("Intializing..")
-    Question().publish()
+    var database = Database()
     print("Intialization Complete")
-//    Question().shuffle().publish()
+    print("")
     
-    for index in 1...100 {
+    let question = database.questions[0] as Question
+    
+    question.publish()
+    for index in 1...1 {
+        print("")
         print("---\(index)------")
-        QuestionShuffled(question: Question()).publish()
+        QuestionShuffled(question: question).publish()
     }
     
     //명령어 시작
     print(">>>>", terminator : "")
     input = readLine()
-//    var result = inputManger.execute(input: input!, database: database)
     //명령어 끝
-    
-    
     
 } while input != "exit"
 //무한루프 끝 exit 입력 시 종료
