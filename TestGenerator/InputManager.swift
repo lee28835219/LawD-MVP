@@ -30,7 +30,7 @@ class InputManager {
             let input = readLine()
             
             if Int(input!)! < database.questions.count {
-                //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.
+                //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(+)
                 let question = selectQuestion(number : Int(input!)!)
                 question.publish()
                 solveShuffledQuestion(question : question)
@@ -52,13 +52,13 @@ class InputManager {
             print("")
             print("------\(index)------")
             let quetionShuffled = QuestionShuffled(question: question)
-            quetionShuffled.publish()
+            quetionShuffled?.publish()
             print("정답은?>>", terminator : "")
             input = readLine()
-            if Int(input!) == quetionShuffled.getAnswerNumber()! + 1 {
+            if Int(input!) == (quetionShuffled?.getAnswerNumber()!)! + 1 {
                 print("정답!")
             } else {
-                print("오답...정답은 \((quetionShuffled.getAnswerNumber()! + 1).roundInt) \(quetionShuffled.getSelectContent(selection: quetionShuffled.answerSelectionModifed).content)")
+                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber()!)! + 1).roundInt) \(quetionShuffled?.getSelectContent(selection: (quetionShuffled?.answerSelectionModifed)!).content)")
                 input = readLine()
             }
             print("다음문제~")

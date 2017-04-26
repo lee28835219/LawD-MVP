@@ -23,8 +23,14 @@ class TestSelction {
     var iscOrrect : Bool?
     
     init(question : Question, selectNumber : Int, content : String) {
+        
+        //(+)문제와 선택지가 상호참조에 따른 문제점이 없는지 시간내서 확인 2017. 4. 26
         self.question = question
         self.question.selections.append(self)
+        
+        //(+)동일한 선택지 번호가 이미 있으면 에러발생하도록 수정하면 좋을 것 2017. 4. 26.
+        
+        //문제에 있는 정답 정보를 이용하여 선택지가 정답인지를 확인
         if selectNumber == question.answer {
             question.answerSelection = self
             isAnswer = true
@@ -43,6 +49,11 @@ class TestSelction {
                 iscOrrect = true
             }
         }
+
+        //(+) find 유형의 문제에도 자동 확인 기능 추가 필요 2017. 4. 26.
+        //지문이 올바른것/틀린것을 확인한 선택지가 가르키는 ㄱ,ㄴ,ㄷ을 선택지에서 추출하고, 선택지 주소를 각각 찾아내서 그 ㄱ,ㄴ,ㄷ 선택지의 iscOrrect를 수정하면 될 것임
+        //이런 순서대로 답을 찍으려면 ㄱ,ㄴ,ㄷ 선택지를 먼저 db에 입력해야 하는데?
+
         
         self.selectNumber = selectNumber
         self.content = content

@@ -14,14 +14,22 @@ class QuestionShuffled {
     var answerSelectionModifed : TestSelction //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     
-    init(question : Question) {
+    init?(question : Question) {
         
         // 0. 문제, 선택지, 정답의 주소를 저장
         self.question = question
         self.selectionsShuffled = question.selections
-        self.answerSelectionModifed = question.answerSelection!
+        
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
-        // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(+) 2017. 4. 26.
+        // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
+        //http://stackoverflow.com/questions/31038759/conditional-binding-if-let-error-initializer-for-conditional-binding-must-hav
+        //conditional binding에 관하여
+        guard let ansSel = question.answerSelection else {
+            print("Error!!! 문제에 정답이 없음")
+            return nil
+        }
+        self.answerSelectionModifed = ansSel
+        // 완성 2017. 4. 26.
 
         // 1. 선택지의 순서를 변경
         selectionsShuffled.shuffle()
