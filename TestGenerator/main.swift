@@ -23,7 +23,7 @@ repeat {
 //    guard let str = database.createJsonObject() else {
 //        continue
 //    }
-    let sampleQuestion = database.questions[3]
+    let sampleQuestion = database.questions[6]
     sampleQuestion.publish()
     inputManger.solveShuffledQuestion(question: sampleQuestion)
 
