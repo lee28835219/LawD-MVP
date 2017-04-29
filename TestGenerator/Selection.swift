@@ -33,6 +33,7 @@ class Selection {
     
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
     var contentControversal : String?
+    var contentSelectionsList = [Selection]()
     var codes : Array<Codes>?
     var cases : Array<Cases>?
     var keywords : Array<Keyword>?
@@ -130,6 +131,7 @@ class Selection {
         return selection
     }
     
+    // parameter를 간단하게 입력하는 방법을 고민해야함(+) 2017. 4. 30.
     func getListString(int : Int) -> String {
         guard let type = self.selectListStringType else { return "?" }
         switch type {

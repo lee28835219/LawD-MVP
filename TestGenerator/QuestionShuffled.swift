@@ -11,7 +11,6 @@ import Foundation
 class QuestionShuffled {
     let question : Question
     var selectionsShuffled = [Selection]()
-    var listSelectionsShuffled = [Selection]()
     var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     
@@ -20,7 +19,6 @@ class QuestionShuffled {
         // 0. 문제, 선택지, 정답의 주소를 저장
         self.question = question
         self.selectionsShuffled = question.selections
-        self.listSelectionsShuffled = question.listSelections
         
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
@@ -34,15 +32,9 @@ class QuestionShuffled {
         // 완성 2017. 4. 26.
 
         // 1. 선택지의 순서를 변경
-        //    단 questionType이 Find면 선택지말고 열거선택지를 섞음
+        selectionsShuffled.shuffle()
         print("")
-        if question.questionType == QuestionType.Find {
-            listSelectionsShuffled.shuffle()
-            print("1. 열거선택지 순서 변경함")
-        } else {
-            selectionsShuffled.shuffle()
-            print("1. 선택지 순서 변경함")
-        }
+        print("1. 선택지 순서 변경함")
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -98,16 +90,6 @@ class QuestionShuffled {
         
         /////////////////////
         //2. 답안지 출력
-        for (index,sel) in listSelectionsShuffled.enumerated() {
-            if index == 0 {
-                print("------------------------------------------------------------------------------")
-            }
-            printListSelect(selection: sel, modifedNumber: index+1)
-            if index == listSelectionsShuffled.count-1 {
-                print("------------------------------------------------------------------------------")
-            }
-        }
-        print("")
         for (index,sel) in selectionsShuffled.enumerated() {
             // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
             printSelect(select: sel, modifedNumber: index+1)
@@ -150,6 +132,7 @@ class QuestionShuffled {
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(doesQuestionOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
     func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?) {
+        // 1. 기본
         var selectionContentShuffled = selection.content
         var iscOrrectShuffled = selection.iscOrrect
         
@@ -185,14 +168,8 @@ class QuestionShuffled {
     func printSelect(select : Selection, modifedNumber : Int) {
         let selction = getSelectContent(selection: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
-        print(" : \(select.selectNumber.roundInt) ", terminator : "")
+        print("-\(select.selectNumber)- ", terminator : "")
         print(selction.iscOrrect ?? "not sure")
-    }
-    
-    func printListSelect(selection: Selection, modifedNumber: Int) {
-        print("\(selection.getListString(int: modifedNumber)) \(selection.content)")
-        print(" : \(selection.getListString(int: selection.selectListStringInt!)). ", terminator : "")
-        print(selection.iscOrrect ?? "not sure")
     }
     
     func toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{

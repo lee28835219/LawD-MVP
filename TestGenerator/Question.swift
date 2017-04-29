@@ -69,6 +69,7 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
+                setContentSelectionsList()
                 return true
             // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
@@ -83,6 +84,7 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
+                setContentSelectionsList()
                 return true
             default:
                 print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
@@ -91,6 +93,16 @@ class Question {
         default:
             print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
             return false
+        }
+    }
+    
+    func setContentSelectionsList() {
+        for sel in selections {
+            for listSel in listSelections {
+                if sel.content.range(of: listSel.getListString(int: listSel.selectListStringInt!)) != nil {
+                    sel.contentSelectionsList.append(listSel)
+                }
+            }
         }
     }
     
@@ -135,6 +147,9 @@ class Question {
             print((index+1).roundInt+" "+sel.content)
             print(sel.iscOrrect ?? "not sure")
             print(sel.key)
+            for listSel in sel.contentSelectionsList {
+                print(listSel.getListString(int: listSel.selectListStringInt!))
+            }
         }
         
         //정답
