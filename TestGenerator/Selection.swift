@@ -50,7 +50,7 @@ class Selection {
         // array mapping으로 더 멋있게 처리할 방법 궁리 필요함 2017. 4. 29.
         if let selString = selectString {
             self.selectNumber = 0
-            let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅎ"]
+            let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
             let stringArrayLetter = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"]
             if let index = stringArray.index(of: selString) {
                 self.selectStringInt = index + 1

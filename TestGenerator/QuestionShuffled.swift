@@ -11,6 +11,7 @@ import Foundation
 class QuestionShuffled {
     let question : Question
     var selectionsShuffled = [Selection]()
+    var listSelectionsShuffled = [Selection]()
     var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     
@@ -19,6 +20,7 @@ class QuestionShuffled {
         // 0. 문제, 선택지, 정답의 주소를 저장
         self.question = question
         self.selectionsShuffled = question.selections
+        self.listSelectionsShuffled = question.listSelections
         
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
