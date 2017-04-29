@@ -16,11 +16,11 @@ class Selection {
         if selectNumber != 0 {
             return question.questionKey+"-SN"+String(format: "%02d",selectNumber)
         }
-        switch selectStringType! {
+        switch selectListStringType! {
         case .koreanCharcter :
-            return question.questionKey+"-KC"+String(format: "%02d",selectStringInt!)
+            return question.questionKey+"-KC"+String(format: "%02d",selectListStringInt!)
         case .koreanLetter :
-            return question.questionKey+"-KL"+String(format: "%02d",selectStringInt!)
+            return question.questionKey+"-KL"+String(format: "%02d",selectListStringInt!)
             //int에 description 변환할 경우 %02d 구문이 이상하게 변함
             // return question.questionKey+"-KL"+String(format: "%02d",selectStringInt!.description)
         }
@@ -28,8 +28,8 @@ class Selection {
     
     // 0이면 ㄱ,ㄴ,ㄷ혹은 가,나,다 존재 숫자면 선택지임
     var selectNumber : Int = 0
-    var selectStringType : SelectStringType?
-    var selectStringInt : Int?
+    var selectListStringType : SelectStringType?
+    var selectListStringInt : Int?
     
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
     var contentControversal : String?
@@ -53,11 +53,11 @@ class Selection {
             let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
             let stringArrayLetter = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"]
             if let index = stringArray.index(of: selString) {
-                self.selectStringInt = index + 1
-                self.selectStringType = SelectStringType.koreanCharcter
+                self.selectListStringInt = index + 1
+                self.selectListStringType = SelectStringType.koreanCharcter
             } else if let index = stringArrayLetter.index(of: selString) {
-                self.selectStringInt = index + 1
-                self.selectStringType = SelectStringType.koreanCharcter
+                self.selectListStringInt = index + 1
+                self.selectListStringType = SelectStringType.koreanCharcter
             }
             self.question.listSelections.append(self)
         } else {
@@ -128,6 +128,16 @@ class Selection {
             return nil
             }
         return selection
+    }
+    
+    func getListString(int : Int) -> String {
+        guard let type = self.selectListStringType else { return "?" }
+        switch type {
+        case .koreanCharcter :
+            return int.koreanCharaterInt
+        case .koreanLetter :
+            return int.koreanLetterInt
+        }
     }
 }
 
@@ -267,5 +277,7 @@ extension Int {
         return self.description
     }
 }
+
+
 
 

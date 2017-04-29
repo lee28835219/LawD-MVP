@@ -34,9 +34,15 @@ class QuestionShuffled {
         // 완성 2017. 4. 26.
 
         // 1. 선택지의 순서를 변경
-        selectionsShuffled.shuffle()
+        //    단 questionType이 Find면 선택지말고 열거선택지를 섞음
         print("")
-        print("1. 선택지 순서 변경함")
+        if question.questionType == QuestionType.Find {
+            listSelectionsShuffled.shuffle()
+            print("1. 열거선택지 순서 변경함")
+        } else {
+            selectionsShuffled.shuffle()
+            print("1. 선택지 순서 변경함")
+        }
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -92,6 +98,16 @@ class QuestionShuffled {
         
         /////////////////////
         //2. 답안지 출력
+        for (index,sel) in listSelectionsShuffled.enumerated() {
+            if index == 0 {
+                print("------------------------------------------------------------------------------")
+            }
+            printListSelect(selection: sel, modifedNumber: index+1)
+            if index == listSelectionsShuffled.count-1 {
+                print("------------------------------------------------------------------------------")
+            }
+        }
+        print("")
         for (index,sel) in selectionsShuffled.enumerated() {
             // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
             printSelect(select: sel, modifedNumber: index+1)
@@ -169,8 +185,14 @@ class QuestionShuffled {
     func printSelect(select : Selection, modifedNumber : Int) {
         let selction = getSelectContent(selection: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
-        print("-\(select.selectNumber)- ", terminator : "")
+        print(" : \(select.selectNumber.roundInt) ", terminator : "")
         print(selction.iscOrrect ?? "not sure")
+    }
+    
+    func printListSelect(selection: Selection, modifedNumber: Int) {
+        print("\(selection.getListString(int: modifedNumber)) \(selection.content)")
+        print(" : \(selection.getListString(int: selection.selectListStringInt!)). ", terminator : "")
+        print(selection.iscOrrect ?? "not sure")
     }
     
     func toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{

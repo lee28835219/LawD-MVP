@@ -52,7 +52,7 @@ class Question {
     func findAnswer() -> Bool {
         guard let ans = self.answerSelection else { return false }
         switch self.questionType {
-        case .Select:
+        case .Select, .Define:
             return true
         case .Find:
             switch self.questionOX {
@@ -63,6 +63,7 @@ class Question {
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = true
                         listSel.isAnswer = true
+                        self.answerListSelections.append(listSel)
                     } else {
                         listSel.iscOrrect = false
                         listSel.isAnswer = false
@@ -76,6 +77,7 @@ class Question {
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = false
                         listSel.isAnswer = true
+                        self.answerListSelections.append(listSel)
                     } else {
                         listSel.iscOrrect = true
                         listSel.isAnswer = false
@@ -83,21 +85,21 @@ class Question {
                 }
                 return true
             default:
-                print("정답을 찾을 수 없음")
+                print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
                 return false
             }
         default:
-            print("정답을 찾을 수 없음")
+            print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
             return false
         }
     }
     
     func findStringNumberOfSelection(listSel : Selection) -> String {
-        switch listSel.selectStringType! {
+        switch listSel.selectListStringType! {
         case .koreanCharcter :
-            return listSel.selectStringInt!.koreanCharaterInt
+            return listSel.selectListStringInt!.koreanCharaterInt
         case .koreanLetter :
-            return listSel.selectStringInt!.koreanLetterInt
+            return listSel.selectListStringInt!.koreanLetterInt
         }
     }
     
@@ -111,20 +113,19 @@ class Question {
             print("")
         }
         print("\(questionType) \(questionOX)")
+        print("")
         
         if listSelections.count > 0 {
             for (index,sel) in listSelections.enumerated() {
-                switch sel.selectStringType! {
-                case .koreanCharcter :
-                    print((index+1).koreanCharaterInt+" "+sel.content)
-                    print(sel.iscOrrect ?? "not sure")
-                    print(sel.key)
-                case .koreanLetter :
-                    print((index+1).koreanLetterInt+" "+sel.content)
-                    print(sel.iscOrrect ?? "not sure")
-                    print(sel.key)
+                if index == 0 {
+                    print("------------------------------------------------------------------------------")
                 }
-                
+                print(sel.getListString(int : index+1)+". "+sel.content)
+                print(sel.iscOrrect ?? "not sure")
+                print(sel.key)
+                if index == listSelections.count-1 {
+                    print("------------------------------------------------------------------------------")
+                }
             }
         }
         
