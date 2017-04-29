@@ -17,13 +17,26 @@ print("")
 
 //무한루프 시작
 repeat {
+    
+    // db를 json으로 출력
+//    print(database.createJsonObject() != nil ? database.createJsonObject()! : "")
+//    guard let str = database.createJsonObject() else {
+//        continue
+//    }
+    let sampleQuestion = database.questions[6]
+    sampleQuestion.publish()
+    inputManger.solveShuffledQuestion(question: sampleQuestion)
+
+    
     //명령어
     print(">>>>", terminator : "")
     input = readLine()
     
-    if let inp = input {
-        let re = inputManger.execute(input: inp)
+    guard let inp = input else {
+        print("유효하지 않은 입력")
+        continue
     }
+    let re = inputManger.execute(input: inp)
     
 } while input != "exit"
 //무한루프 끝 exit 입력 시 종료

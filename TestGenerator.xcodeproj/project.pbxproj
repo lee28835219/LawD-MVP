@@ -11,7 +11,7 @@
 		39633DDF1E9B134B00F9FD4D /* QuestionShuffled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */; };
 		39DF734B1EAF2EFE005AD7D7 /* Keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */; };
 		39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734C1EAF4036005AD7D7 /* Note.swift */; };
-		39E1DE131E82BE54006F3DB9 /* TestSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE121E82BE54006F3DB9 /* TestSelection.swift */; };
+		39E1DE131E82BE54006F3DB9 /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE121E82BE54006F3DB9 /* Selection.swift */; };
 		39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE141E82BF31006F3DB9 /* Codes.swift */; };
 		39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE161E82BFEE006F3DB9 /* Cases.swift */; };
 		39E1DE191E82C091006F3DB9 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE181E82C091006F3DB9 /* Question.swift */; };
@@ -32,14 +32,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		394553EB1E925442001080BF /* selections.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = selections.csv; path = ../../selections.csv; sourceTree = "<group>"; };
-		394553ED1E9886AA001080BF /* questionss.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = questionss.csv; path = ../../questionss.csv; sourceTree = "<group>"; };
 		395BF6CF1E82BA36004BE198 /* TestGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		395BF6D21E82BA36004BE198 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionShuffled.swift; sourceTree = "<group>"; };
 		39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keyword.swift; sourceTree = "<group>"; };
 		39DF734C1EAF4036005AD7D7 /* Note.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
-		39E1DE121E82BE54006F3DB9 /* TestSelection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestSelection.swift; sourceTree = "<group>"; };
+		39E1DE121E82BE54006F3DB9 /* Selection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		39E1DE141E82BF31006F3DB9 /* Codes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Codes.swift; sourceTree = "<group>"; };
 		39E1DE161E82BFEE006F3DB9 /* Cases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cases.swift; sourceTree = "<group>"; };
 		39E1DE181E82C091006F3DB9 /* Question.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
@@ -77,8 +75,6 @@
 		395BF6D11E82BA36004BE198 /* TestGenerator */ = {
 			isa = PBXGroup;
 			children = (
-				394553EB1E925442001080BF /* selections.csv */,
-				394553ED1E9886AA001080BF /* questionss.csv */,
 				395BF6D21E82BA36004BE198 /* main.swift */,
 				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
 				39DF734E1EAFB820005AD7D7 /* TestDataClass */,
@@ -95,7 +91,7 @@
 			children = (
 				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
 				39E1DE181E82C091006F3DB9 /* Question.swift */,
-				39E1DE121E82BE54006F3DB9 /* TestSelection.swift */,
+				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
 				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
 			);
 			name = TestDataClass;
@@ -160,7 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				39E1DE1B1E82C250006F3DB9 /* InputManager.swift in Sources */,
-				39E1DE131E82BE54006F3DB9 /* TestSelection.swift in Sources */,
+				39E1DE131E82BE54006F3DB9 /* Selection.swift in Sources */,
 				39633DDF1E9B134B00F9FD4D /* QuestionShuffled.swift in Sources */,
 				39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */,
 				39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */,

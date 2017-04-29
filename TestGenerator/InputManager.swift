@@ -58,6 +58,7 @@ class InputManager {
             if Int(input!) == (quetionShuffled?.getAnswerNumber()!)! + 1 {
                 print("정답!")
             } else {
+                //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
                 print("오답...정답은 \(((quetionShuffled?.getAnswerNumber()!)! + 1).roundInt) \(quetionShuffled?.getSelectContent(selection: (quetionShuffled?.answerSelectionModifed)!).content)")
                 input = readLine()
             }

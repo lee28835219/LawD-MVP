@@ -10,8 +10,8 @@ import Foundation
 
 class QuestionShuffled {
     let question : Question
-    var selectionsShuffled = [TestSelction]()
-    var answerSelectionModifed : TestSelction //초기화 단계에서 꼭 정답의 존재를 확인해야 함
+    var selectionsShuffled = [Selection]()
+    var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     
     init?(question : Question) {
@@ -131,7 +131,7 @@ class QuestionShuffled {
     
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(doesQuestionOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
-    func getSelectContent(selection : TestSelction) -> (content :String, iscOrrect : Bool?) {
+    func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?) {
         var selectionContentShuffled = selection.content
         var iscOrrectShuffled = selection.iscOrrect
         
@@ -143,16 +143,16 @@ class QuestionShuffled {
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
         if selection.isAnswer {
-            // 3-1. 출력하려는 선택지가 답이고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
-            // 3-2. 출력하려는 선택지가 답이고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
+            // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
+            // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
             if selection !== answerSelectionModifed {
                 selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
                 iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
             } else {
             }
         } else {
-            // 3-3. 출력하려는 선택지가 답이아니고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
-            // 3-4. 출력하려는 선택지가 답이아니고(testSelction.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
+            // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
+            // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
             if selection === answerSelectionModifed {
                 selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
                 iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
@@ -164,7 +164,7 @@ class QuestionShuffled {
     }
     
     //선택지를 출력하는 함수, 선택지와 변경된 선택지를 입력받아 선택지를 문제의 논리에 맞게 변경한 값을 출력
-    func printSelect(select : TestSelction, modifedNumber : Int) {
+    func printSelect(select : Selection, modifedNumber : Int) {
         let selction = getSelectContent(selection: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
         print("-\(select.selectNumber)- ", terminator : "")
@@ -179,7 +179,7 @@ class QuestionShuffled {
         }
     }
     
-    func toggleSelectionContent(selectionContentShuffled : String, selection : TestSelction) -> String {
+    func toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
         if selectionContentShuffled == selection.contentControversal  {
             return selection.content
         } else {
