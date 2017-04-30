@@ -134,7 +134,7 @@ class Database {
         // ㄴ 지문 반전, 틀린지문
         selectionVeryFirst32.contentControversal = "쌍무계약의 당사자 일방이 먼저 한 번 현실의 제공을 하고 상대방을 수령지체에 빠지게 하였다면 상대방이 가지는 동시이행의 항변권이 소멸하는 것은 위해 그 이행의 제공이 계속될 필요는 없다."
         // ㄷ 지문 반전, 옳은지문
-        selectionVeryFirst33.contentControversal = "원고가 단순이행청구를 함에 대하여 피고가 동시이행의 항변권을 행사하지 않더라도 법원은 직권으로 상환이행판결을 할 수 없다."
+        selectionVeryFirst33.contentControversal = "원고가 단순이행청구를 함에 대하여 피고가 동시이행의 항변권을 행사하지 않는다면 법원은 직권으로 상환이행판결을 할 수 없다."
         // ㄹ 지문 반전, 옳은지문
         selectionVeryFirst34.contentControversal = "\"피고는 원고로부터 5,000만 원을 지급받음과 동시에 A토지를 인도하라.\"라는 판결을 받은 원고는 집행을 개시할 때 반대의무 이행 또는 이행의 제공을 하였다는 것의 증명은 필요하지 않다."
         
