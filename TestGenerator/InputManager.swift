@@ -48,7 +48,7 @@ class InputManager {
     }
     
     func solveShuffledQuestion(question : Question) {
-        let quetionShuffled : QuestionShuffled?
+        var quetionShuffled : QuestionShuffled?
         
         for index in 1...100 {
             if question.questionType == QuestionType.Find {
