@@ -99,7 +99,7 @@ class Question {
     func setContentSelectionsList() {
         for sel in selections {
             for listSel in listSelections {
-                if sel.content.range(of: listSel.getListString(int: listSel.selectListStringInt!)) != nil {
+                if sel.content.range(of: listSel.getListString()) != nil {
                     sel.contentSelectionsList.append(listSel)
                 }
             }
@@ -148,7 +148,7 @@ class Question {
             print(sel.iscOrrect ?? "not sure")
             print(sel.key)
             for listSel in sel.contentSelectionsList {
-                print(listSel.getListString(int: listSel.selectListStringInt!))
+                print(listSel.getListString())
             }
         }
         

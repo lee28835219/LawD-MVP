@@ -131,14 +131,24 @@ class Selection {
         return selection
     }
     
-    // parameter를 간단하게 입력하는 방법을 고민해야함(+) 2017. 4. 30.
-    func getListString(int : Int) -> String {
-        guard let type = self.selectListStringType else { return "?" }
-        switch type {
-        case .koreanCharcter :
-            return int.koreanCharaterInt
-        case .koreanLetter :
-            return int.koreanLetterInt
+    // parameter를 간단하게 입력하는 방법을 고민해서 parameter default 값추가와 conditional unwrapped로 해결함(-) 2017. 4. 30.
+    // int 입력이 없으면 해당 열거선택지의 원래 숫자를 문자열로 변환하며 입력된다면 거기에 맞는 문자열을 열거선택지 출력 형식에 맞는 문자열로 출력하는 함수
+    func getListString(int : Int? = nil) -> String {
+        let intToGet : Int
+        if int == nil {
+            intToGet = self.selectListStringInt!
+        } else {
+            intToGet = int!
+        }
+        // https://thatthinginswift.com/switch-unwrap-shortcut/
+        // switch와 enum의 동시사용 시간날 때 대해 공부해야함 (+) 2017. 4. 30.
+        switch self.selectListStringType {
+        case .some(.koreanCharcter) :
+            return intToGet.koreanCharaterInt
+        case .some(.koreanLetter) :
+            return intToGet.koreanLetterInt
+        case .none :
+            return "?"
         }
     }
 }
