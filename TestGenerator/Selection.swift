@@ -41,6 +41,7 @@ class Selection {
     var isAnswer : Bool = false
     var iscOrrect : Bool?
     
+    // selectString 입력은 nil default로 입력 안될 경우 1,2,3 선택지 입력되면 ㄱ,ㄴ,ㄷ 목록선택지로 객체생성
     init(question : Question, selectNumber : Int, content : String, selectString : String? = nil) {
         
         //(+)문제와 선택지가 상호참조에 따른 문제점이 없는지 시간내서 확인 2017. 4. 26
@@ -49,6 +50,7 @@ class Selection {
         
         // ㄱ,ㄴ,ㄷ 및 가,나,다 패턴을 정리함
         // array mapping으로 더 멋있게 처리할 방법 궁리 필요함 2017. 4. 29.
+        // selectString 파라미터가 입력되었는지 확인
         if let selString = selectString {
             self.selectNumber = 0
             let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
@@ -112,9 +114,20 @@ class Selection {
         self.content = content
     }
     
+    // 선택지가 열겨형일 경우에 그 선택지의 문자열을 형식에 맞게 출력하도록 도와주는 함수
+    func findStringNumberOfSelection() -> String {
+        switch self.selectListStringType {
+        case .some(.koreanCharcter) :
+            return self.selectListStringInt!.koreanCharaterInt
+        case .some(.koreanLetter) :
+            return self.selectListStringInt!.koreanLetterInt
+        case .none :
+            print("error>>findStringNumberOfSelection 실패함")
+            return "?"
+        }
+    }
     
     func createJsonDataTypeStructure() -> [String:Any]? {
-        
         //ContentControversal, nullabe, String
         let contentControversalString = self.contentControversal != nil ? self.contentControversal! : ""
         let contentControversal = ["label":contentControversalString, "Attribute":JsonAttributes().stringNullableAttribute] as [String : Any]
@@ -132,7 +145,7 @@ class Selection {
     }
     
     // parameter를 간단하게 입력하는 방법을 고민해서 parameter default 값추가와 conditional unwrapped로 해결함(-) 2017. 4. 30.
-    // int 입력이 없으면 해당 열거선택지의 원래 숫자를 문자열로 변환하며 입력된다면 거기에 맞는 문자열을 열거선택지 출력 형식에 맞는 문자열로 출력하는 함수
+    // int 입력이 없으면 해당 목록선택지의 원래 숫자를 문자열로 변환하며 입력된다면 거기에 맞는 문자열을 목록선택지 출력 형식에 맞는 문자열로 출력하는 함수
     func getListString(int : Int? = nil) -> String {
         let intToGet : Int
         if int == nil {
@@ -148,6 +161,7 @@ class Selection {
         case .some(.koreanLetter) :
             return intToGet.koreanLetterInt
         case .none :
+            print("error>>getListString 실패함")
             return "?"
         }
     }

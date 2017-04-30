@@ -48,18 +48,24 @@ class InputManager {
     }
     
     func solveShuffledQuestion(question : Question) {
+        let quetionShuffled : QuestionShuffled?
+        if question.questionType == QuestionType.Find {
+            quetionShuffled = QuestionFindTypeShuffled(question: question)
+        } else {
+            quetionShuffled = QuestionShuffled(question: question)
+        }
+        
         for index in 1...100 {
             print("")
             print("------\(index)------")
-            let quetionShuffled = QuestionShuffled(question: question)
             quetionShuffled?.publish()
             print("정답은?>>", terminator : "")
             input = readLine()
-            if Int(input!) == (quetionShuffled?.getAnswerNumber()!)! + 1 {
+            if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
                 print("정답!")
             } else {
                 //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
-                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber()!)! + 1).roundInt) \(quetionShuffled?.getSelectContent(selection: (quetionShuffled?.answerSelectionModifed)!).content)")
+                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(quetionShuffled?.getSelectContent(selection: (quetionShuffled?.answerSelectionModifed)!).content)")
                 input = readLine()
             }
             print("다음문제~")

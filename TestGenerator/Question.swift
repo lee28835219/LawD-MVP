@@ -49,7 +49,7 @@ class Question {
     }
     
     //자동으로 이 명령을 실행하는 방법은 없을까? (+) 2017. 4. 30.
-    func findAnswer() -> Bool {
+    public func findAnswer() -> Bool {
         guard let ans = self.answerSelection else { return false }
         switch self.questionType {
         case .Select, .Define:
@@ -59,7 +59,7 @@ class Question {
             // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
             case .O:
                 for listSel in listSelections {
-                    let listSelString = findStringNumberOfSelection(listSel: listSel)
+                    let listSelString = listSel.findStringNumberOfSelection()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = true
                         listSel.isAnswer = true
@@ -69,12 +69,12 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-                setContentSelectionsList()
+                _setContentSelectionsList()
                 return true
             // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
                 for listSel in listSelections {
-                    let listSelString = findStringNumberOfSelection(listSel: listSel)
+                    let listSelString = listSel.findStringNumberOfSelection()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = false
                         listSel.isAnswer = true
@@ -84,7 +84,7 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-                setContentSelectionsList()
+                _setContentSelectionsList()
                 return true
             default:
                 print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
@@ -96,22 +96,14 @@ class Question {
         }
     }
     
-    func setContentSelectionsList() {
+    // 객체 밖에서 함수가 들어나지 않도록 정의하는 방법은 무었인가 (+) 2017. 4. 30.
+    func _setContentSelectionsList() {
         for sel in selections {
             for listSel in listSelections {
                 if sel.content.range(of: listSel.getListString()) != nil {
                     sel.contentSelectionsList.append(listSel)
                 }
             }
-        }
-    }
-    
-    func findStringNumberOfSelection(listSel : Selection) -> String {
-        switch listSel.selectListStringType! {
-        case .koreanCharcter :
-            return listSel.selectListStringInt!.koreanCharaterInt
-        case .koreanLetter :
-            return listSel.selectListStringInt!.koreanLetterInt
         }
     }
     

@@ -30,7 +30,12 @@ class QuestionShuffled {
         }
         self.answerSelectionModifed = ansSel
         // 완성 2017. 4. 26.
-
+        
+        _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
+    }
+    
+    func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
+        let isSuccess = true
         // 1. 선택지의 순서를 변경
         selectionsShuffled.shuffle()
         print("")
@@ -68,16 +73,28 @@ class QuestionShuffled {
             
             let _randomSelectionNumber = Int(arc4random_uniform(UInt32(selectionsShuffled.count)))
             answerSelectionModifed = selectionsShuffled[_randomSelectionNumber]
-            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(getAnswerNumber()!+1)(섞인 문제기준)으로 변경함")
+            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(getAnswerNumber()+1)(섞인 문제기준)으로 변경함")
         }
+        return isSuccess
     }
     
     // 내용 출력
     func publish() {
         print("")
-        
-        //////////////////////
         //1. 문제 출력
+        prtQuestion()
+        print("")
+        
+        //2. 답안지 출력
+        prtSelection()
+        print("")
+        
+        //3. 정답 출력
+        prtAnswer()
+        print("")
+    }
+    //1. 문제 출력
+    func prtQuestion() {
         let questionModifed = getModifedQuestion()
         print("[\(question.testSubject) \(question.testDate) \(question.testCategory)] "+questionModifed.content, terminator : "")
         if let contNote = question.contentNote {
@@ -86,30 +103,30 @@ class QuestionShuffled {
             print("")
         }
         print("\(question.questionType) \(questionModifed.questionOX)")
-        print("")
-        
-        /////////////////////
-        //2. 답안지 출력
+    }
+    
+    func prtSelection() {
         for (index,sel) in selectionsShuffled.enumerated() {
             // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
             printSelect(select: sel, modifedNumber: index+1)
         }
         print("")
-        
-        /////////////////////
-        //3. 정답 출력
-        print("<정답>")
-        let answerNumber = getAnswerNumber()
-        if answerNumber != nil {
-            printSelect(select: answerSelectionModifed, modifedNumber: answerNumber! + 1)
-        }
     }
     
+    func prtAnswer() {
+        print("<정답>")
+        printSelect(select: answerSelectionModifed, modifedNumber: getAnswerNumber() + 1)
+    }
+    
+    
     // selectionsShuffled 배열 안에서 정답의 Index(정답번호-1)을 반환
-    func getAnswerNumber() -> Int? {
+    func getAnswerNumber() -> Int {
         //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
         //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
-        return selectionsShuffled.index(where: {$0 === answerSelectionModifed})
+        guard let ansNumber = selectionsShuffled.index(where: {$0 === answerSelectionModifed}) else {
+            fatalError("error>>getAnswerNumber 실패함")
+        }
+        return ansNumber
     }
     
     // 문제를 논리에 맞게 변경하여 반환
@@ -138,8 +155,8 @@ class QuestionShuffled {
         
         // 2. 질문의 OX를 변경을 확인
         if doesQuestionOXChanged {
-            selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-            iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+            selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+            iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
         }
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
@@ -147,16 +164,16 @@ class QuestionShuffled {
             // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
             // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
             if selection !== answerSelectionModifed {
-                selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
             } else {
             }
         } else {
             // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
             // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
             if selection === answerSelectionModifed {
-                selectionContentShuffled = toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
             } else {
             }
             
@@ -172,7 +189,7 @@ class QuestionShuffled {
         print(selction.iscOrrect ?? "not sure")
     }
     
-    func toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{
+    func _toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{
         if iscOrrectShuffled {
             return false
         } else {
@@ -180,7 +197,7 @@ class QuestionShuffled {
         }
     }
     
-    func toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
+    func _toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
         if selectionContentShuffled == selection.contentControversal  {
             return selection.content
         } else {
