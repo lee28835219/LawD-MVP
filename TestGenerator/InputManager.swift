@@ -49,13 +49,13 @@ class InputManager {
     
     func solveShuffledQuestion(question : Question) {
         let quetionShuffled : QuestionShuffled?
-        if question.questionType == QuestionType.Find {
-            quetionShuffled = QuestionFindTypeShuffled(question: question)
-        } else {
-            quetionShuffled = QuestionShuffled(question: question)
-        }
         
         for index in 1...100 {
+            if question.questionType == QuestionType.Find {
+                quetionShuffled = QuestionFindTypeShuffled(question: question)
+            } else {
+                quetionShuffled = QuestionShuffled(question: question)
+            }
             print("")
             print("------\(index)------")
             quetionShuffled?.publish()

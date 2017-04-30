@@ -91,6 +91,7 @@ class QuestionShuffled {
         prtSelection()
         print("")
         
+        // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
         //3. 정답 출력
         prtAnswer()
         print("")
@@ -190,8 +191,9 @@ class QuestionShuffled {
     func printSelect(select : Selection, modifedNumber : Int) {
         let selction = getSelectContent(selection: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
-        print("-\(select.selectNumber)- ", terminator : "")
-        print(selction.iscOrrect ?? "not sure")
+        // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
+//        print("-\(select.selectNumber)- ", terminator : "")
+//        print(selction.iscOrrect ?? "not sure")
     }
     
     func _toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{

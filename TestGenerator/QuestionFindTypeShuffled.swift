@@ -23,7 +23,6 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             return nil
         }
         self.listSelectionShuffled = question.listSelections
-//        self.answerListSelectionModifed = question.answerListSelections
         
         super.init(question: question)
         
@@ -43,9 +42,10 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         prtSelection()
         print("")
         
+        // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
         //3. 정답 출력
-        prtAnswer()
-        print("")
+//        prtAnswer()
+//        print("")
     }
     
     
@@ -57,7 +57,8 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             }
             let listSelContent = getListSelectContent(listSelection: listSel)
             print(listSel.getListString(int : index+1)+". "+listSelContent.content)
-            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
+            // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
+//            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
             if index == listSelectionShuffled.count-1 {
                 print("---------------------------------------------------------------------------------------------------------")
             }
@@ -163,7 +164,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             }
         }
         for listSel in listSelInSelectionContentShuffled {
-            print("listSel.getListString()",listSel.getListString())
+//            print("listSel.getListString()",listSel.getListString())
             if let index = listSelectionShuffled.index(where: {$0 === listSel}) {
                 selectionContentShuffledArray.append(listSel.getListString(int: index + 1))
             }
