@@ -13,6 +13,7 @@ class QuestionShuffled {
     var selectionsShuffled = [Selection]()
     var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
+    var doesQuestionAnswerChanged = false
     
     init?(question : Question) {
         
@@ -71,6 +72,7 @@ class QuestionShuffled {
             // 3. 임의로 답변을 변경
             // 3-1. 랜덤답안의 포인터를 선정
             
+            doesQuestionAnswerChanged = true
             let _randomSelectionNumber = Int(arc4random_uniform(UInt32(selectionsShuffled.count)))
             answerSelectionModifed = selectionsShuffled[_randomSelectionNumber]
             print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(getAnswerNumber()+1)(섞인 문제기준)으로 변경함")
@@ -160,23 +162,26 @@ class QuestionShuffled {
         }
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
-        if selection.isAnswer {
-            // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
-            // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
-            if selection !== answerSelectionModifed {
-                selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+        if doesQuestionAnswerChanged {
+            if selection.isAnswer {
+                // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
+                // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
+                if selection !== answerSelectionModifed {
+                    selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                } else {
+                }
             } else {
+                // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
+                // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
+                if selection === answerSelectionModifed {
+                    selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                } else {
+                }
+                
             }
-        } else {
-            // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
-            // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
-            if selection === answerSelectionModifed {
-                selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
-            } else {
-            }
-            
+
         }
         return (selectionContentShuffled, iscOrrectShuffled)
     }

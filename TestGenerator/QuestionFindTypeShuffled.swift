@@ -86,6 +86,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
             isGonnaOXConvert = true
         }
+
         // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
         if isOppositeQuestionExist, isAllSelectionListControversalExist,
             isGonnaOXConvert {
@@ -135,6 +136,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             for (oriSel, shuSel) in originalShuffleMap {
                 print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
             }
+            doesQuestionAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
             // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
         }
@@ -189,21 +191,23 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         }
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
-        if listSelection.isAnswer {
-            // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
-            // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
-            if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
+        if doesQuestionAnswerChanged{
+            if listSelection.isAnswer {
+                // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
+                // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
+                if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
+                } else {
+                    listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                }
             } else {
-                listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
-                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
-            }
-        } else {
-            // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
-            // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
-            if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
-                listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
-                iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
-            } else {
+                // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
+                // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
+                if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
+                    listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                } else {
+                }
             }
         }
         return (listSelContentShuffled, iscOrrectShuffled)
