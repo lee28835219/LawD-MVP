@@ -23,6 +23,10 @@ repeat {
 //    guard let str = database.createJsonObject() else {
 //        continue
 //    }
+//    for que in database.questions {
+//        que.publish()
+//        inputManger.solveShuffledQuestion(question: que, rep: 3)
+//    }
     let sampleQuestion = database.questions[3]
     sampleQuestion.publish()
     inputManger.solveShuffledQuestion(question: sampleQuestion)

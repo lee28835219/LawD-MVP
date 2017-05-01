@@ -75,6 +75,7 @@ class Database {
         
         //기본 문제생성, 계약 SD
         let question2 = Question(questionKey : "TESTCVA00515", isPublished : true, testDate : "1406", testCategory: "변모", testSubject: "민사법", questionType: QuestionType.Select, questionOX : QuestionOX.Difference , content : "다음 설명들에 대하여 옳은 것과 옳지 않은 것을 표시할 경우, 다른 설명과 그 결과가 다른 하나는?", answer : 3)
+        question2.contentControversal = question2.content
         question2.contentNote = "(다툼이 있는 경우 판례에 의함)"
         
         // 1번, 옳은 지문

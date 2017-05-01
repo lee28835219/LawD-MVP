@@ -9,6 +9,7 @@
 import Foundation
 
 class QuestionShuffled {
+    var showSolution = true
     let question : Question
     var selectionsShuffled = [Selection]()
     var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
@@ -44,6 +45,7 @@ class QuestionShuffled {
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
+        
         // 2,3-2. 정오변경 지문이 선택지에 모두 있는지 확인
         var isAllSelectionControversalExist = true
         for sel in question.selections {
@@ -53,7 +55,7 @@ class QuestionShuffled {
         }
         // 2,3-3. OX를 변경할 문제유형인지 확인
         var isGonnaOXConvert = false
-        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
+        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X || question.questionOX == .Difference {
             isGonnaOXConvert = true
         }
         
@@ -91,10 +93,11 @@ class QuestionShuffled {
         prtSelection()
         print("")
         
-        // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
         //3. 정답 출력
-        prtAnswer()
-        print("")
+        if showSolution {
+            prtAnswer()
+            print("")
+        }
     }
     //1. 문제 출력
     func prtQuestion() {
@@ -105,7 +108,9 @@ class QuestionShuffled {
         } else {
             print("")
         }
-        print("\(question.questionType) \(questionModifed.questionOX)")
+        if showSolution {
+            print("\(question.questionType) \(questionModifed.questionOX)")
+        }
     }
     
     func prtSelection() {
@@ -159,7 +164,7 @@ class QuestionShuffled {
         // 2. 질문의 OX를 변경을 확인
         if doesQuestionOXChanged {
             selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-            iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+            iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
         }
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
@@ -169,7 +174,7 @@ class QuestionShuffled {
                 // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
                 if selection !== answerSelectionModifed {
                     selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
                 } else {
                 }
             } else {
@@ -177,7 +182,7 @@ class QuestionShuffled {
                 // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
                 if selection === answerSelectionModifed {
                     selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
-                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled!)
+                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
                 } else {
                 }
                 
@@ -191,17 +196,23 @@ class QuestionShuffled {
     func printSelect(select : Selection, modifedNumber : Int) {
         let selction = getSelectContent(selection: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
-        // 실전테스트용, 패러미터변경에 따라 자동으로 입출력 조절되도록 수정필요 (+) 2017. 4. 30.
-//        print("-\(select.selectNumber)- ", terminator : "")
-//        print(selction.iscOrrect ?? "not sure")
+        if showSolution {
+            print("-\(select.selectNumber)- ", terminator : "")
+            print(selction.iscOrrect ?? "not sure")
+        }
     }
     
-    func _toggleIsCorrect(iscOrrectShuffled : Bool) -> Bool{
-        if iscOrrectShuffled {
-            return false
+    func _toggleIsCorrect(iscOrrectShuffled : Bool?) -> Bool?{
+        if let iscOr = iscOrrectShuffled {
+            if iscOr {
+                return false
+            } else {
+                return true
+            }
         } else {
-            return true
+            return nil
         }
+        
     }
     
     func _toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
