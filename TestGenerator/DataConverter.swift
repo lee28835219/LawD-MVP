@@ -15,7 +15,7 @@ import Cocoa
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
     
-    let filename : String
+    var filename : String
     let path : URL?
     
     init(filename: String) {

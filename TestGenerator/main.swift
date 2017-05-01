@@ -27,11 +27,14 @@ repeat {
 //        que.publish()
 //        inputManger.solveShuffledQuestion(question: que, rep: 3)
 //    }
-    let sampleQuestion = database.questions[3]
-    sampleQuestion.publish()
-    inputManger.solveShuffledQuestion(question: sampleQuestion)
-
+//    let sampleQuestion = database.questions[3]
+//    sampleQuestion.publish()
+//    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
+    let 법조윤리정답 = DC법조윤리().정답
+    for each in 법조윤리정답 {
+        print(each.test,"-",each.questionNumber,"-",each.answer)
+    }
     //명령어
     print(">>>>", terminator : "")
     input = readLine()
