@@ -33,6 +33,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		39E84C031EB7743F00E3790F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -40,8 +49,6 @@
 		395BF6D21E82BA36004BE198 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionShuffled.swift; sourceTree = "<group>"; };
 		396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionFindTypeShuffled.swift; sourceTree = "<group>"; };
-		397631B01EB6EF010040CE01 /* 법조윤리 1회-7회 정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "법조윤리 1회-7회 정답.json"; sourceTree = "<group>"; };
-		397631B11EB6F00E0040CE01 /* 변호사 윤리시험 기출문제 1회-7회 */ = {isa = PBXFileReference; lastKnownFileType = text; path = "변호사 윤리시험 기출문제 1회-7회"; sourceTree = "<group>"; };
 		397631B21EB6F08D0040CE01 /* DataConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
 		397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC법조윤리.swift"; sourceTree = "<group>"; };
 		39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keyword.swift; sourceTree = "<group>"; };
@@ -53,6 +60,8 @@
 		39E1DE1A1E82C250006F3DB9 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
 		39E1DE1C1E82C842006F3DB9 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		39E84BFB1EB7436700E3790F /* 법조윤리정답.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "법조윤리정답.swift"; sourceTree = "<group>"; };
+		39E84C421EB780EB00E3790F /* 법조윤리 1회-7회 문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "법조윤리 1회-7회 문제.txt"; path = "../../TestGeneratorResource/법조윤리 1회-7회 문제.txt"; sourceTree = "<group>"; };
+		39E84C431EB780EB00E3790F /* 법조윤리 1회-7회 정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "법조윤리 1회-7회 정답.json"; path = "../../TestGeneratorResource/법조윤리 1회-7회 정답.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,8 +96,8 @@
 			children = (
 				395BF6D21E82BA36004BE198 /* main.swift */,
 				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
-				397631AE1EB6E7A90040CE01 /* Data */,
-				39DF734E1EAFB820005AD7D7 /* TestDataClass */,
+				397631AE1EB6E7A90040CE01 /* TestData */,
+				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
 				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
 				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
 				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
@@ -97,27 +106,27 @@
 			path = TestGenerator;
 			sourceTree = "<group>";
 		};
-		397631AE1EB6E7A90040CE01 /* Data */ = {
+		397631AE1EB6E7A90040CE01 /* TestData */ = {
 			isa = PBXGroup;
 			children = (
 				397631B21EB6F08D0040CE01 /* DataConverter.swift */,
 				397631AF1EB6E7BC0040CE01 /* 법조윤리 */,
 			);
-			name = Data;
+			name = TestData;
 			sourceTree = "<group>";
 		};
 		397631AF1EB6E7BC0040CE01 /* 법조윤리 */ = {
 			isa = PBXGroup;
 			children = (
+				39E84C421EB780EB00E3790F /* 법조윤리 1회-7회 문제.txt */,
+				39E84C431EB780EB00E3790F /* 법조윤리 1회-7회 정답.json */,
 				39E84BFB1EB7436700E3790F /* 법조윤리정답.swift */,
 				397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */,
-				397631B11EB6F00E0040CE01 /* 변호사 윤리시험 기출문제 1회-7회 */,
-				397631B01EB6EF010040CE01 /* 법조윤리 1회-7회 정답.json */,
 			);
 			name = "법조윤리";
 			sourceTree = "<group>";
 		};
-		39DF734E1EAFB820005AD7D7 /* TestDataClass */ = {
+		39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */ = {
 			isa = PBXGroup;
 			children = (
 				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
@@ -126,7 +135,7 @@
 				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
 				396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */,
 			);
-			name = TestDataClass;
+			name = ProcessingQuestion;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,6 +148,7 @@
 				395BF6CB1E82BA36004BE198 /* Sources */,
 				395BF6CC1E82BA36004BE198 /* Frameworks */,
 				395BF6CD1E82BA36004BE198 /* CopyFiles */,
+				39E84C031EB7743F00E3790F /* CopyFiles */,
 			);
 			buildRules = (
 			);

@@ -15,6 +15,7 @@ var inputManger = InputManager(database : database)
 print("Intialization Complete")
 print("")
 
+
 //무한루프 시작
 repeat {
     
@@ -31,10 +32,11 @@ repeat {
 //    sampleQuestion.publish()
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
-    let 법조윤리정답 = DC법조윤리().정답
-    for each in 법조윤리정답 {
-        print(each.test,"-",each.questionNumber,"-",each.answer)
-    }
+    let 법조윤리 = DC법조윤리()
+    let 법조윤리정답 = 법조윤리.정답
+    print(법조윤리정답.count)
+    
+    
     //명령어
     print(">>>>", terminator : "")
     input = readLine()
