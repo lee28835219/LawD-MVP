@@ -8,8 +8,15 @@
 
 import Foundation
 
-struct 법조윤리정답 {
+struct 법조윤리 {
     let test : String
+    let testNumber : Int
+    
     let questionNumber : Int
-    let answer : Int
+    
+    let answer : Int?
+    
+    let question : String?
+    let listSelections = [String]()
+    let selections = [String]()
 }

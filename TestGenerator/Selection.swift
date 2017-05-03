@@ -197,7 +197,7 @@ extension Int {
         if self == 9 {
             return "⑨"
         }
-        if self == 9 {
+        if self == 10 {
             return "⑩"
         }
         return self.description
@@ -238,19 +238,19 @@ extension Int {
         if self == 9 {
             return "ㅈ"
         }
-        if self == 9 {
+        if self == 10 {
             return "ㅊ"
         }
-        if self == 10 {
+        if self == 11 {
             return "ㅋ"
         }
-        if self == 11 {
+        if self == 12 {
             return "ㅌ"
         }
-        if self == 11 {
+        if self == 13 {
             return "ㅍ"
         }
-        if self == 11 {
+        if self == 14 {
             return "ㅎ"
         }
         return self.description
@@ -285,19 +285,19 @@ extension Int {
         if self == 9 {
             return "자"
         }
-        if self == 9 {
+        if self == 10 {
             return "차"
         }
-        if self == 10 {
+        if self == 11 {
             return "카"
         }
-        if self == 11 {
+        if self == 12 {
             return "타"
         }
-        if self == 12 {
+        if self == 13 {
             return "파"
         }
-        if self == 13 {
+        if self == 14 {
             return "하"
         }
         return self.description
