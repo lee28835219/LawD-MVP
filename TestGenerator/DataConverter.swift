@@ -19,10 +19,16 @@ class DataConverter: NSObject {
     let answerPath : URL?
     var questionFilename : String
     let questionPath : URL?
-    let testName : String
+    let testCategory : String
+    let testSubject : String
     
-    init(testName : String, answerFilename: String, questionFilename : String) {
-        self.testName = testName
+    var 시험들 = [Test]()
+    var 정답들 = [정답]()
+    var 문제들 = [문제]()
+    
+    init(testCategory : String, testSubject : String, answerFilename: String, questionFilename : String) {
+        self.testCategory = testCategory
+        self.testSubject = testSubject
         self.answerFilename = answerFilename
         self.questionFilename = questionFilename
         
@@ -36,7 +42,7 @@ class DataConverter: NSObject {
         //일단 system의 document폴더 안의 TestGeneratorResource 에서 읽는 것으로 진행
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let dirTestGeneratorResource = dir.appendingPathComponent("TestGeneratorResource")
-            print(dirTestGeneratorResource)
+//            print(dirTestGeneratorResource)
             
             self.answerPath = dirTestGeneratorResource.appendingPathComponent(self.answerFilename)
             self.questionPath = dirTestGeneratorResource.appendingPathComponent(self.questionFilename)
@@ -44,6 +50,22 @@ class DataConverter: NSObject {
             self.answerPath = nil
             self.questionPath = nil
         }
+    }
+    
+    func getText(path : URL?) -> String {
+        var wholeStringUn : String?
+        do {
+            if let _path = path {
+                //                print(path)
+                wholeStringUn = try String(contentsOf: _path, encoding: String.Encoding.utf8)
+            }
+        } catch {
+            fatalError("법조윤리 문제 파싱 error")
+        }
+        guard let wholeString = wholeStringUn else {
+            fatalError("can't find test string")
+        }
+        return wholeString
     }
     
     // http://kandelvijaya.com/2016/10/11/swiftstringrange/
@@ -79,4 +101,110 @@ class DataConverter: NSObject {
     // https://www.raywenderlich.com/86205/nsregularexpression-swift-tutorial
     // https://regexone.com
     
+    // https://www.raywenderlich.com/86205/nsregularexpression-swift-tutorial
+    // NSRegularExpression Tutorial: Getting Started
+    
+    // 시험문제 String에서 시험들 별로 String을 나누는 함수
+    // pattern - testString - Patter - String 순
+    // pattern에서 나오는 첫번째 숫자가 시험의 번호가 됨
+    
+    func sliceTestString(regexPattern : String, string : String) {
+        _sliceTestString(regexPattern : regexPattern, residualString : string, headerUn : nil)
+    }
+    
+    private func _sliceTestString(regexPattern : String, residualString : String, headerUn : String?) {
+        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
+        // 패턴을 못찾았을 경우 else구문 실행하여 종료
+        // 1. 패턴이 없는데 첫번째 루프 -> 치명적 에러
+        // 2. 패턴이 없는데 첫번째 루프가 아님 -> 파싱이 완료될 때가 되었음
+        guard let headerRange = headerRangeUn else
+        {
+            // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
+            guard let testHeader = headerUn else {
+                fatalError("이상한 입력으로 인하여 시험 파싱을 진행할 수 없음")
+            }
+            // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
+            //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
+            let testString = residualString
+            let newTest = Test(category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader))
+            newTest.description = testHeader
+            newTest.string = testString
+            시험들.append(newTest)
+            print("---시험 파싱완료")
+            return
+        }
+        
+        var _testHeader = headerUn
+        var _residualString = residualString
+        
+        //첫번째 루프가 아님
+        if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
+            let testString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
+            let newTest = Test(category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!))
+            newTest.description = _testHeader!
+            newTest.string = testString
+            시험들.append(newTest)
+        } else {
+            print("---시험파싱중")
+        }
+        
+        _testHeader = _residualString.substring(with: headerRange) // 이는 절대로 nil이 될 수 없다. 왜냐하면 위에서 이미 headerRange을 체크하였기 때문이다. headerRange가 nil이 아니라는 것은 _residualString에 결과가 있다는 의미이다
+        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
+        
+        _sliceTestString(regexPattern: regexPattern, residualString: _residualString, headerUn: _testHeader)
+    }
+    
+    // func sliceTestString(regexPattern : String, string : String) 보조함수
+    // 문자에서 첫번째 숫자만 추출해서 가져옴, 향후 정밀하게 변경하거나, 오버라이딩으로 사용하도록 수정 필요 (+) 2017. 5. 3.
+    func getTestNumber(testHeader: String) -> Int {
+        // 일단 첫번째 것만 반환받아도 되니 간단히 넘어가는데 뒤에 연도를 가져오려면 regex를 어떻게 짜야 하는지 고민해야함 (+) 2017. 5. 3.
+        guard let intTestIntRange = testHeader.range(of: "\\d+", options: .regularExpression) else {
+            fatalError("번호를 파싱할 수 없음")
+        }
+        let stringToIntUn = Int(testHeader.substring(with: intTestIntRange))
+        guard let stringToInt = stringToIntUn else {
+            fatalError("번호를 파싱할 수 없음")
+        }
+        return stringToInt
+    }
+    
+    func sliceQuestionString(regexPattern : String, residualString : String, test : Test, headerUn : String?) {
+        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
+        // 패턴을 못찾았을 경우 else구문 실행하여 종료
+        // 1. 패턴이 없는데 첫번째 루프 -> 치명적 에러
+        // 2. 패턴이 없는데 첫번째 루프가 아님 -> 파싱이 완료될 때가 되었음
+        guard let headerRange = headerRangeUn else
+        {
+            // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
+            guard let testHeader = headerUn else {
+                fatalError("이상한 입력으로 인하여 문제 파싱을 진행할 수 없음")
+            }
+            // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
+            //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
+            let questionString = residualString
+            let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
+            newQuestion.string = questionString
+            test.questions.append(newQuestion)
+            print("---문제 파싱완료")
+            return
+        }
+        
+        var _testHeader = headerUn
+        var _residualString = residualString
+        
+        //첫번째 루프가 아님
+        if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
+            let questionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
+            let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
+            newQuestion.string = questionString
+            test.questions.append(newQuestion)
+        } else {
+            print("---시험파싱중")
+        }
+        
+        _testHeader = _residualString.substring(with: headerRange) // 이는 절대로 nil이 될 수 없다. 왜냐하면 위에서 이미 headerRange을 체크하였기 때문이다. headerRange가 nil이 아니라는 것은 _residualString에 결과가 있다는 의미이다
+        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
+        
+        sliceQuestionString(regexPattern: regexPattern, residualString: _residualString, test: test, headerUn: _testHeader)
+    }
 }

@@ -93,14 +93,17 @@ class Selection {
                     iscOrrect = true
                 }
             case .Difference, .Unknown:
-                print("OX를 파악할 수 없음, 문제타입을 직접확인해야 OX를 찾을 수 있음 \(self.key)")
+//                print("OX를 파악할 수 없음, 문제타입을 직접확인해야 OX를 찾을 수 있음 \(self.key)")
+                _ = true
             }
         case .Find:
             switch question.questionOX {
             case .O:
-                print("check")
+//                print("check")
+                _ = true
             default:
-                print("OX를 파악할 수 없음, 문제타입을 직접확인해야 OX를 찾을 수 있음 \(self.key)")
+//                print("OX를 파악할 수 없음, 문제타입을 직접확인해야 OX를 찾을 수 있음 \(self.key)")
+                _ = true
             }
         default:
             print("not suitable for finding OX of selection \(self.key)")

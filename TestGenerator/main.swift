@@ -33,8 +33,12 @@ repeat {
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
     let 법조윤리 = DC법조윤리()
-    let 법조윤리정답 = 법조윤리.정답
-    print(법조윤리정답.count)
+//    database.tests = 법조윤리.시험들
+    print("--법조윤리 파싱 complete")
+//    for te in 법조윤리.시험들 {
+//        print("ooooo")
+//        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
+//    }
     
     
     //명령어

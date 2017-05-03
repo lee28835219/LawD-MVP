@@ -9,6 +9,7 @@
 import Foundation
 class Database {
     var name = "default"
+    var tests : [Test] = []
     var questions : [Question] = []
     var questionsShuffled : [QuestionShuffled] = []
     

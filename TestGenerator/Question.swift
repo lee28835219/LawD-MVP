@@ -17,6 +17,8 @@ class Question {
     let testCategory : String //변시, 원본
     var testSubject : String //민사법, 원본
     
+    var string = ""
+    
     var testQuestionNo : Int? //문제번호, 원본
     var testQuestionNote : String? //유니온문제번호 등 기타 정보, 원본
     var testSubjectDetail : String? //민법, 원본
