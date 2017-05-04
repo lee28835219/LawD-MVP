@@ -50,7 +50,7 @@ class Selection {
         
         // ㄱ,ㄴ,ㄷ 및 가,나,다 패턴을 정리함
         // array mapping으로 더 멋있게 처리할 방법 궁리 필요함 2017. 4. 29.
-        // selectString 파라미터가 입력되었는지 확인
+        // selectString 파라미터가 입력되었는지 확인해서 그 문자에 맞는 문제번호를 출력
         if let selString = selectString {
             self.selectNumber = 0
             let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
@@ -207,9 +207,59 @@ extension Int {
     }
 }
 
+extension String {
+    var roundInt : Int {
+        if self == "①" {return 1}
+        if self == "②" {return 2}
+        if self == "③" {return 3}
+        if self == "④" {return 4}
+        if self == "⑤" {return 5}
+        if self == "⑥" {return 6}
+        if self == "⑦" {return 7}
+        if self == "⑧" {return 8}
+        if self == "⑨" {return 9}
+        if self == "⑩" {return 10}
+        return 0
+    }
+}
+
 enum SelectStringType {
     case koreanCharcter
     case koreanLetter
+}
+
+extension String {
+    var koreanCharacterAndLetterInt : Int {
+        if self == "ㄱ" {return 1}
+        if self == "ㄴ" {return 2}
+        if self == "ㄷ" {return 3}
+        if self == "ㄹ" {return 4}
+        if self == "ㅁ" {return 5}
+        if self == "ㅂ" {return 6}
+        if self == "ㅅ" {return 7}
+        if self == "ㅇ" {return 8}
+        if self == "ㅈ" {return 9}
+        if self == "ㅊ" {return 10}
+        if self == "ㅋ" {return 11}
+        if self == "ㅌ" {return 12}
+        if self == "ㅍ" {return 13}
+        if self == "ㅎ" {return 14}
+        if self == "가" {return 1}
+        if self == "나" {return 2}
+        if self == "다" {return 3}
+        if self == "라" {return 4}
+        if self == "마" {return 5}
+        if self == "바" {return 6}
+        if self == "사" {return 7}
+        if self == "아" {return 8}
+        if self == "자" {return 9}
+        if self == "차" {return 10}
+        if self == "카" {return 11}
+        if self == "타" {return 12}
+        if self == "파" {return 13}
+        if self == "하" {return 14}
+        return 0
+    }
 }
 
 extension Int {

@@ -41,6 +41,15 @@ repeat {
 //    }
     
     
+    let que = 법조윤리.시험들[6].questions[38]
+    
+    que.publish()
+    
+    let queShu = QuestionFindTypeShuffled(question: que)
+    
+    queShu?.publish()
+    
+    
     //명령어
     print(">>>>", terminator : "")
     input = readLine()

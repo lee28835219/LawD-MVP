@@ -22,6 +22,7 @@
 		39E1DE191E82C091006F3DB9 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE181E82C091006F3DB9 /* Question.swift */; };
 		39E1DE1B1E82C250006F3DB9 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1A1E82C250006F3DB9 /* InputManager.swift */; };
 		39E1DE1D1E82C842006F3DB9 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1C1E82C842006F3DB9 /* Database.swift */; };
+		39E7E2AE1EBB263700087D73 /* QShufflingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */; };
 		39E84BFC1EB7436700E3790F /* 정답.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E84BFB1EB7436700E3790F /* 정답.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,9 +65,10 @@
 		39E1DE181E82C091006F3DB9 /* Question.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 		39E1DE1A1E82C250006F3DB9 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
 		39E1DE1C1E82C842006F3DB9 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QShufflingManager.swift; sourceTree = "<group>"; };
 		39E84BFB1EB7436700E3790F /* 정답.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "정답.swift"; sourceTree = "<group>"; };
-		39E84C421EB780EB00E3790F /* 법조윤리 1회-7회 문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "법조윤리 1회-7회 문제.txt"; path = "../../TestGeneratorResource/법조윤리 1회-7회 문제.txt"; sourceTree = "<group>"; };
-		39E84C431EB780EB00E3790F /* 법조윤리 1회-7회 정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "법조윤리 1회-7회 정답.json"; path = "../../TestGeneratorResource/법조윤리 1회-7회 정답.json"; sourceTree = "<group>"; };
+		39F2DEF11EBA4C3C005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "변호사윤리시험-1회~7회-법조윤리-정답.json"; path = "../../Test/TestGeneratorResource/변호사윤리시험-1회~7회-법조윤리-정답.json"; sourceTree = "<group>"; };
+		39F2DEF21EBA4F47005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "변호사윤리시험-1회~7회-법조윤리-문제.txt"; path = "../../Test/TestGeneratorResource/변호사윤리시험-1회~7회-법조윤리-문제.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,8 +104,9 @@
 				3903139D1EB98F7F006FE79A /* MyPlayground.playground */,
 				395BF6D21E82BA36004BE198 /* main.swift */,
 				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
-				397631AE1EB6E7A90040CE01 /* TestData */,
 				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
+				39E7E2AF1EBB274F00087D73 /* DataStructure */,
+				397631AE1EB6E7A90040CE01 /* TestData */,
 				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
 				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
 				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
@@ -126,8 +129,8 @@
 		397631AF1EB6E7BC0040CE01 /* 법조윤리 */ = {
 			isa = PBXGroup;
 			children = (
-				39E84C421EB780EB00E3790F /* 법조윤리 1회-7회 문제.txt */,
-				39E84C431EB780EB00E3790F /* 법조윤리 1회-7회 정답.json */,
+				39F2DEF21EBA4F47005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-문제.txt */,
+				39F2DEF11EBA4C3C005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-정답.json */,
 				397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */,
 			);
 			name = "법조윤리";
@@ -136,14 +139,22 @@
 		39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */ = {
 			isa = PBXGroup;
 			children = (
-				3903139E1EB9BC8B006FE79A /* Test.swift */,
-				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
-				39E1DE181E82C091006F3DB9 /* Question.swift */,
-				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
+				39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */,
 				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
 				396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */,
 			);
 			name = ProcessingQuestion;
+			sourceTree = "<group>";
+		};
+		39E7E2AF1EBB274F00087D73 /* DataStructure */ = {
+			isa = PBXGroup;
+			children = (
+				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
+				3903139E1EB9BC8B006FE79A /* Test.swift */,
+				39E1DE181E82C091006F3DB9 /* Question.swift */,
+				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
+			);
+			name = DataStructure;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -214,6 +225,7 @@
 				39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */,
 				397631B51EB6F4CE0040CE01 /* DC법조윤리.swift in Sources */,
 				39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */,
+				39E7E2AE1EBB263700087D73 /* QShufflingManager.swift in Sources */,
 				39E1DE191E82C091006F3DB9 /* Question.swift in Sources */,
 				39E1DE1D1E82C842006F3DB9 /* Database.swift in Sources */,
 				39DF734B1EAF2EFE005AD7D7 /* Keyword.swift in Sources */,

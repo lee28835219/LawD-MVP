@@ -8,18 +8,14 @@
 
 import Foundation
 
-class QuestionShuffled {
+class QuestionShuffled : QShufflingManager {
     var showSolution = true
-    let question : Question
     var selectionsShuffled = [Selection]()
-    var answerSelectionModifed : Selection //초기화 단계에서 꼭 정답의 존재를 확인해야 함
     var doesQuestionOXChanged = false
     var doesQuestionAnswerChanged = false
     
-    init?(question : Question) {
-        
+    override init?(question : Question) {
         // 0. 문제, 선택지, 정답의 주소를 저장
-        self.question = question
         self.selectionsShuffled = question.selections
         
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
@@ -33,8 +29,12 @@ class QuestionShuffled {
         self.answerSelectionModifed = ansSel
         // 완성 2017. 4. 26.
         
+        super.init(question: question)
+        
         _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
     }
+    
+    
     
     func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
         let isSuccess = true
@@ -111,6 +111,14 @@ class QuestionShuffled {
         if showSolution {
             print("\(question.questionType) \(questionModifed.questionOX)")
         }
+    }
+    
+    func prtList() {
+        for (index,sel) in selectionsShuffled.enumerated() {
+            // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
+            printSelect(select: sel, modifedNumber: index+1)
+        }
+        print("")
     }
     
     func prtSelection() {

@@ -24,7 +24,6 @@ class DataConverter: NSObject {
     
     var 시험들 = [Test]()
     var 정답들 = [정답]()
-    var 문제들 = [문제]()
     
     init(testCategory : String, testSubject : String, answerFilename: String, questionFilename : String) {
         self.testCategory = testCategory
@@ -41,9 +40,7 @@ class DataConverter: NSObject {
         
         //일단 system의 document폴더 안의 TestGeneratorResource 에서 읽는 것으로 진행
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let dirTestGeneratorResource = dir.appendingPathComponent("TestGeneratorResource")
-//            print(dirTestGeneratorResource)
-            
+            let dirTestGeneratorResource = dir.appendingPathComponent("Test").appendingPathComponent("TestGeneratorResource")
             self.answerPath = dirTestGeneratorResource.appendingPathComponent(self.answerFilename)
             self.questionPath = dirTestGeneratorResource.appendingPathComponent(self.questionFilename)
         } else {
@@ -96,6 +93,7 @@ class DataConverter: NSObject {
     // ①.+\n{0,}\s{0,}②.+\n{0,}\s{0,}③.+\n{0,}\s{0,}④.+
     // =>
     // (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\n){1,9}
+    // (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\n{0,}){1,9}
     
     // NSRegularExpression Tutorial: Getting Started
     // https://www.raywenderlich.com/86205/nsregularexpression-swift-tutorial
@@ -176,13 +174,14 @@ class DataConverter: NSObject {
         guard let headerRange = headerRangeUn else
         {
             // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
-            guard let testHeader = headerUn else {
+            guard let header = headerUn else {
                 fatalError("이상한 입력으로 인하여 문제 파싱을 진행할 수 없음")
             }
             // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
             //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
             let questionString = residualString
             let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
+            newQuestion.number = getTestNumber(testHeader: header)
             newQuestion.string = questionString
             test.questions.append(newQuestion)
             print("---문제 파싱완료")
@@ -197,6 +196,7 @@ class DataConverter: NSObject {
             let questionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
             newQuestion.string = questionString
+            newQuestion.number = getTestNumber(testHeader: _testHeader!)
             test.questions.append(newQuestion)
         } else {
             print("---시험파싱중")
@@ -206,5 +206,74 @@ class DataConverter: NSObject {
         _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
         
         sliceQuestionString(regexPattern: regexPattern, residualString: _residualString, test: test, headerUn: _testHeader)
+    }
+    
+    func sliceSelectionString(regexPattern : String, residualString : String, question : Question, headerUn : String?) {
+        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
+        
+        guard let headerRange = headerRangeUn else
+        {
+            guard let header = headerUn else {
+                fatalError("이상한 입력으로 인하여 선택지 파싱을 진행할 수 없음")
+            }
+            _ = Selection(question: question, selectNumber: header.roundInt, content: residualString.trimmingCharacters(in: .whitespacesAndNewlines))
+            // 선택지 생성 시에 자동으로 문제에 append되므로 아래 명령 필요없음
+            // question.selections.append(newSelection)
+            print("---선택지 파싱완료")
+            return
+        }
+        
+        var _header = headerUn
+        var _residualString = residualString
+        
+        if _header != nil {
+            let selectionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
+            _ = Selection(question: question, selectNumber: _header!.roundInt, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines))
+        } else {
+            print("---선택지파싱중")
+        }
+        
+        _header = _residualString.substring(with: headerRange)
+        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
+        
+        sliceSelectionString(regexPattern: regexPattern, residualString: _residualString, question: question, headerUn: _header)
+    }
+    
+    func sliceListSelectionString(regexPattern : String, residualString : String, question : Question, headerUn : String?) {
+        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
+        
+        guard let headerRange = headerRangeUn else
+        {
+            guard let header = headerUn else {
+                fatalError("이상한 입력으로 인하여 목록선택지 파싱을 진행할 수 없음")
+            }
+            _ = Selection(question: question, selectNumber: getKoreanCharacterOrLetterInListSelection(header: header).koreanCharacterAndLetterInt, content: residualString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: header))
+            print("---목록선택지 파싱완료")
+            return
+        }
+        
+        var _header = headerUn
+        var _residualString = residualString
+        
+        if _header != nil {
+            let selectNumber = getKoreanCharacterOrLetterInListSelection(header: _header!).koreanCharacterAndLetterInt
+            let selectionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
+            let a = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
+        } else {
+            print("---목록선택지파싱중")
+        }
+        
+        _header = _residualString.substring(with: headerRange)
+        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
+        
+        sliceListSelectionString(regexPattern: regexPattern, residualString: _residualString, question: question, headerUn: _header)
+    }
+    
+    func getKoreanCharacterOrLetterInListSelection(header: String) -> String {
+        let rangeUn = header.range(of: "ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ|가|나|다|라|마|바|사|아|자|차|카|타|파|하", options: .regularExpression)
+        guard let range = rangeUn else {
+            fatalError("목록선택지안의 문자를 해석할 수 없음")
+        }
+        return header.substring(with: range)
     }
 }

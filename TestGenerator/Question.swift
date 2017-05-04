@@ -19,7 +19,7 @@ class Question {
     
     var string = ""
     
-    var testQuestionNo : Int? //문제번호, 원본
+    var number : Int? //문제번호, 원본
     var testQuestionNote : String? //유니온문제번호 등 기타 정보, 원본
     var testSubjectDetail : String? //민법, 원본
     
@@ -30,12 +30,14 @@ class Question {
     var contentControversal : String? //원본
     var contentNote: String? //원본
     
-    let answer: Int //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
+    var answer: Int //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
     //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요 2017. 4.29.
     
     var selections = [Selection]() //원본
+    var selectionsString : String? = nil
     weak var answerSelection: Selection? //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
     var listSelections = [Selection]() //원본
+    var listSelectionsString : String? = nil
     var answerListSelections = [Selection]()
     
     init(questionKey : String, isPublished : Bool, testDate : String, testCategory : String, testSubject : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
