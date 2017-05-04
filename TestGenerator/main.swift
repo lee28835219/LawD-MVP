@@ -19,9 +19,36 @@ print("")
 //무한루프 시작
 repeat {
     
-    let que = database.questions[3]
-//    que.publish()
-    que.publish(showAttribute: true, showAnswer: true)
+    let que = database.questions[0]
+    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+    
+    
+    let qs = QuestionShuffled(question: que)
+
+    qs?.publish()
+    
+    let question = qs?.question
+    var answerSelectionModifed = qs?.answerSelectionModifed
+    var selectionsShuffled = qs?.selectionsShuffled
+    
+    var doesQuestionOXChanged = qs?.doesQuestionOXChanged
+    var doesQuestionAnswerChanged = qs?.doesQuestionAnswerChanged
+    
+    print("question\(question)")
+    print("answerSelectionModifed\(answerSelectionModifed)")
+    print("selectionsShuffled\(selectionsShuffled)")
+    print("doesQuestionOXChanged\(doesQuestionOXChanged)")
+    print("doesQuestionAnswerChanged\(doesQuestionAnswerChanged)")
+    
+    let newQS = QuestionShuffled(question: que)
+    newQS?.publish()
+    newQS?.answerSelectionModifed = answerSelectionModifed!
+    newQS?.selectionsShuffled = selectionsShuffled!
+    newQS?.doesQuestionAnswerChanged = doesQuestionAnswerChanged!
+    newQS?.doesQuestionOXChanged = doesQuestionOXChanged!
+    
+    newQS?.publish()
+    
     
     
     // db를 json으로 출력

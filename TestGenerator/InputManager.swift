@@ -34,7 +34,6 @@ class InputManager {
                 //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(+)
                 let question = selectQuestion(number : Int(input!)!)
                 question.publish()
-                question.publish(showAttribute: false, showAnswer: false)
                 
                 solveShuffledQuestion(question : question)
             } else {
@@ -55,11 +54,10 @@ class InputManager {
         
         for index in 1...rep {
             if question.questionType == QuestionType.Find {
-                quetionShuffled = QuestionFindTypeShuffled(question: question)
+//                quetionShuffled = QuestionFindTypeShuffled(question: question)
             } else {
                 quetionShuffled = QuestionShuffled(question: question)
             }
-            quetionShuffled?.showSolution = false
             print("")
             print("------\(index)------")
             quetionShuffled?.publish()

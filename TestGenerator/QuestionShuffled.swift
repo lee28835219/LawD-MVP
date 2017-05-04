@@ -16,6 +16,59 @@ class QuestionShuffled : QShufflingManager {
         _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
     }
     
+    func publish(showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
+        let oManager = OutputManager()
+        oManager.showAnswer = showAnswer
+        oManager.showTitle = showTitle
+        oManager.showAttribute = showAttribute
+        oManager.showOrigSel = showOrigSel
+        
+        let test = Test(category: question.test.category, subject: question.test.subject, number: question.test.number, numHelper: question.test.numHelper)
+        test.isPublished = false
+        
+        var selectionsContent = [String]()
+        var selsIscOrrect = [Bool?]()
+        var selsIsAnswer = [Bool]()
+        var originalSelectionsNumber = [String]()
+        
+        
+        for sel in selectionsShuffled {
+            selectionsContent.append(getSelectContent(selection : sel).content)
+            selsIscOrrect.append(getSelectContent(selection : sel).iscOrrect)
+            selsIsAnswer.append(sel.isAnswer)
+            originalSelectionsNumber.append(sel.selectNumber.roundInt)
+        }
+        
+        
+        let questionModifed = getModifedQuestion()
+        let ansSel = getSelectContent(selection: answerSelectionModifed)
+
+        
+        oManager.questionPublish(
+            testCategroy: test.category,
+            testNumber: test.number,
+            testSubject: test.subject,
+            isPublished: test.isPublished,
+            questionNumber: question.number,
+            questionContent: questionModifed.content,  // 셔플하면 변경
+            questionContentNote: question.testQuestionNote,
+            questionType: question.questionType,
+            questionOX: questionModifed.questionOX ,   // 셔플하면 변경
+            listSelsCont : [],
+            listSelsIscOrrect : [],
+            listSelsIntString : [],
+            selectionsContent : selectionsContent,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber,
+            ansSelContent: ansSel.content,  // 셔플하면 변경
+            ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: true,  // 셔플하면 변경
+            questionAnswer: (getAnswerNumber() + 1),  // 셔플하면 변경
+            originalAnsSelectionNumber: answerSelectionModifed.selectNumber.roundInt
+        )
+    }
+    
     func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
         let isSuccess = true
         // 1. 선택지의 순서를 변경
@@ -62,86 +115,6 @@ class QuestionShuffled : QShufflingManager {
         return isSuccess
     }
     
-    // 내용 출력
-    func publish() {
-        print("")
-        //1. 문제 출력
-        prtQuestion()
-        print("")
-        
-        //2. 답안지 출력
-        prtSelection()
-        print("")
-        
-        //3. 정답 출력
-        if showSolution {
-            prtAnswer()
-            print("")
-        }
-    }
-    //1. 문제 출력
-    func prtQuestion() {
-        let questionModifed = getModifedQuestion()
-        print("[\(question.testSubject) \(question.testDate) \(question.testCategory)] "+questionModifed.content, terminator : "")
-        if let contNote = question.contentNote {
-            print(" "+contNote)
-        } else {
-            print("")
-        }
-        if showSolution {
-            print("\(question.questionType) \(questionModifed.questionOX)")
-        }
-    }
-    
-    func prtList() {
-        for (index,sel) in selectionsShuffled.enumerated() {
-            // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
-            printSelect(select: sel, modifedNumber: index+1)
-        }
-        print("")
-    }
-    
-    func prtSelection() {
-        for (index,sel) in selectionsShuffled.enumerated() {
-            // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
-            printSelect(select: sel, modifedNumber: index+1)
-        }
-        print("")
-    }
-    
-    func prtAnswer() {
-        print("<정답>")
-        printSelect(select: answerSelectionModifed, modifedNumber: getAnswerNumber() + 1)
-    }
-    
-    
-    // selectionsShuffled 배열 안에서 정답의 Index(정답번호-1)을 반환
-    func getAnswerNumber() -> Int {
-        //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
-        //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
-        guard let ansNumber = selectionsShuffled.index(where: {$0 === answerSelectionModifed}) else {
-            fatalError("error>>getAnswerNumber 실패함")
-        }
-        return ansNumber
-    }
-    
-    // 문제를 논리에 맞게 변경하여 반환
-    func getModifedQuestion() -> (questionOX : QuestionOX, content : String) {
-        var questionShuffledOX = question.questionOX
-        var questionContent = question.content
-        
-        // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
-        if doesQuestionOXChanged {
-            if questionShuffledOX == QuestionOX.O {
-                questionShuffledOX = QuestionOX.X
-            } else {
-                questionShuffledOX = QuestionOX.O
-            }
-            questionContent = question.contentControversal!
-        }
-        return (questionShuffledOX,questionContent)
-    }
-    
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(doesQuestionOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
     func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?) {
@@ -178,37 +151,6 @@ class QuestionShuffled : QShufflingManager {
 
         }
         return (selectionContentShuffled, iscOrrectShuffled)
-    }
-    
-    //선택지를 출력하는 함수, 선택지와 변경된 선택지를 입력받아 선택지를 문제의 논리에 맞게 변경한 값을 출력
-    func printSelect(select : Selection, modifedNumber : Int) {
-        let selction = getSelectContent(selection: select)
-        print("\((modifedNumber).roundInt) \(selction.content)")
-        if showSolution {
-            print("-\(select.selectNumber)- ", terminator : "")
-            print(selction.iscOrrect ?? "not sure")
-        }
-    }
-    
-    func _toggleIsCorrect(iscOrrectShuffled : Bool?) -> Bool?{
-        if let iscOr = iscOrrectShuffled {
-            if iscOr {
-                return false
-            } else {
-                return true
-            }
-        } else {
-            return nil
-        }
-        
-    }
-    
-    func _toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
-        if selectionContentShuffled == selection.contentControversal  {
-            return selection.content
-        } else {
-            return selection.contentControversal!
-        }
     }
 }
 

@@ -23,6 +23,7 @@
 		39E1DE1B1E82C250006F3DB9 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1A1E82C250006F3DB9 /* InputManager.swift */; };
 		39E1DE1D1E82C842006F3DB9 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1C1E82C842006F3DB9 /* Database.swift */; };
 		39E7E2AE1EBB263700087D73 /* QShufflingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */; };
+		39E7E2B21EBB88E800087D73 /* OutputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7E2B11EBB88E800087D73 /* OutputManager.swift */; };
 		39E84BFC1EB7436700E3790F /* 정답.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E84BFB1EB7436700E3790F /* 정답.swift */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		39E1DE1A1E82C250006F3DB9 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
 		39E1DE1C1E82C842006F3DB9 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QShufflingManager.swift; sourceTree = "<group>"; };
+		39E7E2B11EBB88E800087D73 /* OutputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputManager.swift; sourceTree = "<group>"; };
 		39E84BFB1EB7436700E3790F /* 정답.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "정답.swift"; sourceTree = "<group>"; };
 		39F2DEF11EBA4C3C005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "변호사윤리시험-1회~7회-법조윤리-정답.json"; path = "../../Test/TestGeneratorResource/변호사윤리시험-1회~7회-법조윤리-정답.json"; sourceTree = "<group>"; };
 		39F2DEF21EBA4F47005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "변호사윤리시험-1회~7회-법조윤리-문제.txt"; path = "../../Test/TestGeneratorResource/변호사윤리시험-1회~7회-법조윤리-문제.txt"; sourceTree = "<group>"; };
@@ -101,9 +103,9 @@
 		395BF6D11E82BA36004BE198 /* TestGenerator */ = {
 			isa = PBXGroup;
 			children = (
+				39E7E2B01EBB889E00087D73 /* IO */,
 				3903139D1EB98F7F006FE79A /* MyPlayground.playground */,
 				395BF6D21E82BA36004BE198 /* main.swift */,
-				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
 				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
 				39E7E2AF1EBB274F00087D73 /* DataStructure */,
 				397631AE1EB6E7A90040CE01 /* TestData */,
@@ -155,6 +157,15 @@
 				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
 			);
 			name = DataStructure;
+			sourceTree = "<group>";
+		};
+		39E7E2B01EBB889E00087D73 /* IO */ = {
+			isa = PBXGroup;
+			children = (
+				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
+				39E7E2B11EBB88E800087D73 /* OutputManager.swift */,
+			);
+			name = IO;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -222,6 +233,7 @@
 				39633DDF1E9B134B00F9FD4D /* QuestionShuffled.swift in Sources */,
 				39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */,
 				397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */,
+				39E7E2B21EBB88E800087D73 /* OutputManager.swift in Sources */,
 				39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */,
 				397631B51EB6F4CE0040CE01 /* DC법조윤리.swift in Sources */,
 				39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */,

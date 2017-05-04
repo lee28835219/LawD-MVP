@@ -180,8 +180,8 @@ class DataConverter: NSObject {
             // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
             //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
             let questionString = residualString
-            let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
-            newQuestion.number = getTestNumber(testHeader: header)
+            
+            let newQuestion = Question(test: test,number: getTestNumber(testHeader: header), questionKey: "", questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
             newQuestion.string = questionString
             test.questions.append(newQuestion)
             print("---문제 파싱완료")
@@ -194,9 +194,8 @@ class DataConverter: NSObject {
         //첫번째 루프가 아님
         if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
             let questionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
-            let newQuestion = Question(questionKey: "", isPublished: test.isPublished, testDate: test.testDate, testCategory: test.category, testSubject: test.subject, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
+            let newQuestion = Question(test: test,number: getTestNumber(testHeader: _testHeader!), questionKey: "",  questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
             newQuestion.string = questionString
-            newQuestion.number = getTestNumber(testHeader: _testHeader!)
             test.questions.append(newQuestion)
         } else {
             print("---시험파싱중")
@@ -258,7 +257,7 @@ class DataConverter: NSObject {
         if _header != nil {
             let selectNumber = getKoreanCharacterOrLetterInListSelection(header: _header!).koreanCharacterAndLetterInt
             let selectionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
-            let a = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
+            _ = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
         } else {
             print("---목록선택지파싱중")
         }

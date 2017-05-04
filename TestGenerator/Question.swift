@@ -9,24 +9,23 @@
 import Foundation
 
 class Question {
+    let test : Test
+    
     let questionKey : String //Primary key, 원본
     
-    // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29.
-    let isPublished : Bool //기출, 원본
-    let testDate : String //1701, 원본
-    let testCategory : String //변시, 원본
-    var testSubject : String //민사법, 원본
+    
     
     var string = ""
     
-    var number : Int? //문제번호, 원본
+    // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29.
+    var number : Int //문제번호, 원본
     var testQuestionNote : String? //유니온문제번호 등 기타 정보, 원본
     var testSubjectDetail : String? //민법, 원본
     
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
-    var content: String //원본
     
+    var content: String //원본
     var contentControversal : String? //원본
     var contentNote: String? //원본
     
@@ -40,16 +39,16 @@ class Question {
     var listSelectionsString : String? = nil
     var answerListSelections = [Selection]()
     
-    init(questionKey : String, isPublished : Bool, testDate : String, testCategory : String, testSubject : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
+    init(test : Test, number : Int, questionKey : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
+        
+        self.test = test
         self.questionKey = questionKey
-        self.isPublished = isPublished
-        self.testCategory = testCategory
-        self.testDate = testDate
-        self.testSubject = testSubject
+        
         self.questionType = questionType
         self.questionOX = questionOX
         self.content = content
         self.answer = answer
+        self.number = number
     }
     
     //자동으로 이 명령을 실행하는 방법은 없을까? (+) 2017. 4. 30.
@@ -111,63 +110,106 @@ class Question {
         }
     }
     
+    func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
+        let oManager = OutputManager()
+        oManager.showAnswer = showAnswer
+        oManager.showTitle = showTitle
+        oManager.showAttribute = showAttribute
+        oManager.showOrigSel = showOrigSel
+        
+        var selectionsContent = [String]()
+        var selsIscOrrect = [Bool?]()
+        var selsIsAnswer = [Bool]()
+        var originalSelectionsNumber = [String]()
+        
+        for sel in selections {
+            selectionsContent.append(sel.content)
+            selsIscOrrect.append(sel.iscOrrect)
+            selsIsAnswer.append(sel.isAnswer)
+            originalSelectionsNumber.append(sel.selectNumber.roundInt)
+        }
+        
+        var listSelectionsContent = [String]()
+        var listSelsIscOrrect = [Bool?]()
+        var listSelsIntString = [String]()
+        
+        
+            for (index,sel) in listSelections.enumerated() {
+                listSelectionsContent.append(sel.content)
+                listSelsIscOrrect.append(sel.iscOrrect)
+                listSelsIntString.append(sel.getListString(int: index+1))
+            }
+        
+        
+        oManager.questionPublish(
+            testCategroy: test.category,
+            testNumber: test.number,
+            testSubject: test.subject,
+            isPublished: test.isPublished,
+            questionNumber: number,
+            questionContent: content,  // 셔플하면 변경
+            questionContentNote: contentNote,
+            questionType: questionType,
+            questionOX: questionOX,   // 셔플하면 변경
+            listSelsCont : listSelectionsContent,
+            listSelsIscOrrect : listSelsIscOrrect,
+            listSelsIntString : listSelsIntString,
+            selectionsContent : selectionsContent,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber,
+            ansSelContent: answerSelection?.content,  // 셔플하면 변경
+            ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: answerSelection!.isAnswer,  // 셔플하면 변경
+            questionAnswer: answer,  // 셔플하면 변경
+            originalAnsSelectionNumber: answerSelection!.selectNumber.roundInt
+        )
+    }
+    
+    
+    
+    /*
     //문제와 선택지를 출판하는 함수
-    func publish(showAttribute : Bool = false, showAnswer : Bool = false) {
+    func publish(showAttribute : Bool = false, showAnswer : Bool = false, showTitle : Bool = true) {
         
         //문제
         print("")
-        let queTitle = "[\(testSubject) \(testDate) \(testCategory)]"
-        print(queTitle+String(repeating: "-", count: 118-queTitle.characters.count))
-        number = 1
-        var queNu : String = ""
-        if let nu = number?.description {
-            queNu = "문"+nu+". "
+        if showTitle {
+            let queTitle = "[\(test.category) \(test.number)회 \(test.subject) "+(test.isPublished ? "기출]" : "변형]")
+            print(queTitle)
         }
-        print(queNu+content, terminator : "")
+        
+        print("문 "+number.description+". ")
+        var queCont = content
         if let contNote = contentNote {
-            print(" "+contNote, terminator : "")
+            queCont = queCont + " " + contNote
         }
         if showAttribute {
-            print(" (문제유형 :","\(questionType)\(questionOX))", terminator : "")
+            queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
         }
+        print("  "+queCont.spacing(2))
         print()
+        
         
         //목록
         if listSelections.count > 0 {
-            print()
             for (index,sel) in listSelections.enumerated() {
-                print(sel.getListString(int : index+1)+". "+sel.content, terminator : "")
+                var selectionStr = sel.content
                 if showAttribute {
                     if let OX = sel.iscOrrect {
-                        print(OX ? " (O)" : " (X)", terminator : "")
+                        selectionStr = selectionStr + (OX ? " (O)" : " (X)")
                     } else {
-                        print(" (O?,X?)", terminator : "")
+                        selectionStr = selectionStr + " (O?,X?)"
                     }
                 }
-                print()
+                print(" "+sel.getListString(int : index+1)+". "+selectionStr.spacing(4))
             }
+            print()
         }
         
         //선택지
-        print()
         for (index,sel) in selections.enumerated() {
-            print((index+1).roundInt+" "+sel.content, terminator : "")
-            if showAttribute {
-                if let OX = sel.iscOrrect {
-                    print(OX ? " (O)" : " (X)", terminator : "")
-                } else {
-                    if questionType != .Select {
-                        if sel.isAnswer {
-                            print(" (O)", terminator : "")
-                        } else {
-                            print(" (X)", terminator : "")
-                        }
-                    } else {
-                        print(" (O?,X?)", terminator : "")
-                    }
-                }
-            }
-            print("")
+            print("  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(sel : sel, showAttribute : showAttribute).spacing(5))
         }
         print()
         
@@ -176,21 +218,34 @@ class Question {
             print("<정답>")
             guard let ansS = answerSelection
                 else {
-                    print("  정답없음")
+                    print("  정답이 입력되지 않음")
                     return
             }
-            print(answer.roundInt + " " + ansS.content, terminator : "")
-            if showAttribute {
-                if let OX = ansS.iscOrrect {
-                    print(OX ? " (O)" : " (X)", terminator : "")
+            print("  " + answer.roundInt + "  " + _getSelectionStringForPrinting(sel : ansS, showAttribute : showAttribute).spacing(5))
+        }
+        print()
+    }
+    private func _getSelectionStringForPrinting(sel : Selection, showAttribute : Bool) -> String {
+        var selectionStr = sel.content
+        if showAttribute {
+            if let OX = sel.iscOrrect {
+                selectionStr = selectionStr+(OX ? " (O)" : " (X)")
+            } else {
+                if questionType != .Select {
+                    if sel.isAnswer {
+                        selectionStr = selectionStr+" (O)"
+                    } else {
+                        selectionStr = selectionStr+" (X)"
+                    }
                 } else {
-                    print(" (O?,X?)", terminator : "")
+                    selectionStr = selectionStr+" (O,X)?"
                 }
             }
-            print("")
         }
-        print(String(repeating: "-", count: 120))
+        return selectionStr
     }
+    */
+
     
     func createJsonDataTypeStructure() -> [String:Any]? {
 
@@ -210,10 +265,10 @@ class Question {
         let content = ["label":self.content, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
         let questionOX = ["label":self.questionOX.rawValue, "Attribute":JsonAttributes().questionOXNotNullableAttribute] as [String : Any]
         let questionType = ["label":self.questionType.rawValue, "Attribute":JsonAttributes().questionTypeNotNullableAttribute] as [String : Any]
-        let testSubject = ["label":self.testSubject, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testCategory = ["label":self.testCategory, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testDate = ["label":self.testDate, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let isPublished = ["label":self.isPublished, "Attribute":JsonAttributes().boolNotNullableAttribute] as [String : Any]
+        let testSubject = ["label":self.test.subject, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
+        let testCategory = ["label":self.test.category, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
+        let testDate = ["label":self.test.date, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
+        let isPublished = ["label":self.test.isPublished, "Attribute":JsonAttributes().boolNotNullableAttribute] as [String : Any]
         
         // 최종 question infromation
         let questionInfromation = ["isPublished":isPublished, "testDate":testDate, "testCategory":testCategory, "testSubject":testSubject, "questionType":questionType, "questionOX":questionOX, "content":content, "contentControversal":contentControversal, "contentNote":contentNote]
@@ -238,6 +293,9 @@ class Question {
         }
         return question
     }
+}
+
+extension Question {
 }
 
 enum QuestionOX : String {
@@ -266,3 +324,30 @@ struct JsonAttributes {
     let questionTypeNotNullableAttribute = ["Type":"QuestionType", "Nullable":"false"]
     let questionOXNotNullableAttribute = ["Type":"QuestionOX", "Nullable":"false"]
 }
+
+extension String {
+    func spacing(_ space:Int, _ cutLength: Int = 39) -> String {
+        // http://stackoverflow.com/questions/39677330/how-does-string-substring-work-in-swift-3
+        // How does String substring work in Swift 3
+        // 공부해야함 (+) 2017. 5. 4.
+        
+        var str = ""
+        let chars = self.characters
+        
+        for (index,char) in chars.enumerated() {
+            if index+1 < cutLength-space {
+                str = str + char.description
+            } else if (index+1) % (cutLength-space) == 0 {
+                str = str + "\n" + String(repeating: " ", count: space)
+                if char == " " {
+                    continue
+                }
+                str = str + char.description
+            } else {
+                str = str + char.description
+            }
+        }
+        return str
+    }
+}
+
