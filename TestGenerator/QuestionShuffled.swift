@@ -9,32 +9,12 @@
 import Foundation
 
 class QuestionShuffled : QShufflingManager {
-    var showSolution = true
-    var selectionsShuffled = [Selection]()
-    var doesQuestionOXChanged = false
-    var doesQuestionAnswerChanged = false
     
     override init?(question : Question) {
-        // 0. 문제, 선택지, 정답의 주소를 저장
-        self.selectionsShuffled = question.selections
-        
-        // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
-        // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
-        //http://stackoverflow.com/questions/31038759/conditional-binding-if-let-error-initializer-for-conditional-binding-must-hav
-        //conditional binding에 관하여
-        guard let ansSel = question.answerSelection else {
-            print("Error!!! 문제에 정답이 없음")
-            return nil
-        }
-        self.answerSelectionModifed = ansSel
-        // 완성 2017. 4. 26.
-        
         super.init(question: question)
-        
+        // 문제를 섞는 가장 중요한 함수
         _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
     }
-    
-    
     
     func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
         let isSuccess = true
@@ -233,42 +213,5 @@ class QuestionShuffled : QShufflingManager {
 }
 
 
-//http://stackoverflow.com/questions/24026510/how-do-i-shuffle-an-array-in-swift
-//How do I shuffle an array in Swift?
-//담에 구조를 공부합시다. 2017. 4. 8.
-
-extension MutableCollection where Indices.Iterator.Element == Index {
-    /// Shuffles the contents of this collection.
-    mutating func shuffle() {
-        let c = count
-        guard c > 1 else { return }
-        
-        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
-            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
-            guard d != 0 else { continue }
-            let i = index(firstUnshuffled, offsetBy: d)
-            swap(&self[firstUnshuffled], &self[i])
-        }
-    }
-}
-
-extension Sequence {
-    /// Returns an array with the contents of this sequence, shuffled.
-    func shuffled() -> [Iterator.Element] {
-        var result = Array(self)
-        result.shuffle()
-        return result
-    }
-}
-
-
-//http://stackoverflow.com/questions/34240931/creating-random-bool-in-swift-2
-//Creating random Bool in Swift 2
-
-extension Bool {
-    static func random() -> Bool {
-        return arc4random_uniform(2) == 0
-    }
-}
 
 

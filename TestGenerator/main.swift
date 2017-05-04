@@ -19,6 +19,11 @@ print("")
 //무한루프 시작
 repeat {
     
+    let que = database.questions[3]
+//    que.publish()
+    que.publish(showAttribute: true, showAnswer: true)
+    
+    
     // db를 json으로 출력
 //    print(database.createJsonObject() != nil ? database.createJsonObject()! : "")
 //    guard let str = database.createJsonObject() else {
@@ -32,22 +37,22 @@ repeat {
 //    sampleQuestion.publish()
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
-    let 법조윤리 = DC법조윤리()
-//    database.tests = 법조윤리.시험들
-    print("--법조윤리 파싱 complete")
-//    for te in 법조윤리.시험들 {
-//        print("ooooo")
-//        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
-//    }
+//    let 법조윤리 = DC법조윤리()
+////    database.tests = 법조윤리.시험들
+//    print("--법조윤리 파싱 complete")
+////    for te in 법조윤리.시험들 {
+////        print("ooooo")
+////        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
+////    }
     
     
-    let que = 법조윤리.시험들[6].questions[38]
-    
-    que.publish()
-    
-    let queShu = QuestionFindTypeShuffled(question: que)
-    
-    queShu?.publish()
+//    let que = 법조윤리.시험들[6].questions[38]
+//
+//    que.publish()
+//    
+//    let queShu = QuestionFindTypeShuffled(question: que)
+//    
+//    queShu?.publish()
     
     
     //명령어

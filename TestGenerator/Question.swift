@@ -112,55 +112,84 @@ class Question {
     }
     
     //문제와 선택지를 출판하는 함수
-    func publish() {
-        //문제
-        print("[\(testSubject) \(testDate) \(testCategory)] "+content, terminator : "")
-        if let contNote = contentNote {
-            print(" "+contNote)
-        } else {
-            print("")
-        }
-        print("\(questionType) \(questionOX)")
-        print("")
+    func publish(showAttribute : Bool = false, showAnswer : Bool = false) {
         
+        //문제
+        print("")
+        let queTitle = "[\(testSubject) \(testDate) \(testCategory)]"
+        print(queTitle+String(repeating: "-", count: 118-queTitle.characters.count))
+        number = 1
+        var queNu : String = ""
+        if let nu = number?.description {
+            queNu = "문"+nu+". "
+        }
+        print(queNu+content, terminator : "")
+        if let contNote = contentNote {
+            print(" "+contNote, terminator : "")
+        }
+        if showAttribute {
+            print(" (문제유형 :","\(questionType)\(questionOX))", terminator : "")
+        }
+        print()
+        
+        //목록
         if listSelections.count > 0 {
+            print()
             for (index,sel) in listSelections.enumerated() {
-                if index == 0 {
-                    print("------------------------------------------------------------------------------")
+                print(sel.getListString(int : index+1)+". "+sel.content, terminator : "")
+                if showAttribute {
+                    if let OX = sel.iscOrrect {
+                        print(OX ? " (O)" : " (X)", terminator : "")
+                    } else {
+                        print(" (O?,X?)", terminator : "")
+                    }
                 }
-                print(sel.getListString(int : index+1)+". "+sel.content)
-                print(sel.iscOrrect ?? "not sure")
-                print(sel.key)
-                if index == listSelections.count-1 {
-                    print("------------------------------------------------------------------------------")
-                }
+                print()
             }
         }
         
         //선택지
-        print("")
+        print()
         for (index,sel) in selections.enumerated() {
-            print((index+1).roundInt+" "+sel.content)
-            print(sel.iscOrrect ?? "not sure")
-            print(sel.key)
-            for listSel in sel.contentSelectionsList {
-                print(listSel.getListString())
+            print((index+1).roundInt+" "+sel.content, terminator : "")
+            if showAttribute {
+                if let OX = sel.iscOrrect {
+                    print(OX ? " (O)" : " (X)", terminator : "")
+                } else {
+                    if questionType != .Select {
+                        if sel.isAnswer {
+                            print(" (O)", terminator : "")
+                        } else {
+                            print(" (X)", terminator : "")
+                        }
+                    } else {
+                        print(" (O?,X?)", terminator : "")
+                    }
+                }
             }
+            print("")
         }
+        print()
         
         //정답
-        print("")
-        print("<정답>")
-        printAnswer(answerSelection: answerSelection)
-    }
-    
-    func printAnswer(answerSelection : Selection?) {
-        guard let ansS = answerSelection
-            else {
-                print("정답없음")
-                return
+        if showAnswer {
+            print("<정답>")
+            guard let ansS = answerSelection
+                else {
+                    print("  정답없음")
+                    return
+            }
+            print(answer.roundInt + " " + ansS.content, terminator : "")
+            if showAttribute {
+                if let OX = ansS.iscOrrect {
+                    print(OX ? " (O)" : " (X)", terminator : "")
+                } else {
+                    print(" (O?,X?)", terminator : "")
+                }
+            }
+            print("")
         }
-        print(answer.roundInt + " " + ansS.content)
+        print(String(repeating: "-", count: 120))
     }
     
     func createJsonDataTypeStructure() -> [String:Any]? {

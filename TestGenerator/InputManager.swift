@@ -30,9 +30,12 @@ class InputManager {
             let input = readLine()
             
             if Int(input!)! < database.questions.count {
+                
                 //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(+)
                 let question = selectQuestion(number : Int(input!)!)
                 question.publish()
+                question.publish(showAttribute: false, showAnswer: false)
+                
                 solveShuffledQuestion(question : question)
             } else {
                 print("선택한 문제가 없음")
