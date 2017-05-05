@@ -14,13 +14,13 @@ class Selection {
     // 답선택지이면 SN접두어, ㄱ,ㄴ,ㄷ이면 KC접두어, 가,나,다이면 KL접두어
     var key : String {
         if selectNumber != 0 {
-            return question.questionKey+"-SN"+String(format: "%02d",selectNumber)
+            return question.key+"=SN"+String(format: "%02d",selectNumber)
         }
         switch selectListStringType! {
         case .koreanCharcter :
-            return question.questionKey+"-KC"+String(format: "%02d",selectListStringInt!)
+            return question.key+"=KC"+String(format: "%02d",selectListStringInt!)
         case .koreanLetter :
-            return question.questionKey+"-KL"+String(format: "%02d",selectListStringInt!)
+            return question.key+"=KL"+String(format: "%02d",selectListStringInt!)
             //int에 description 변환할 경우 %02d 구문이 이상하게 변함
             // return question.questionKey+"-KL"+String(format: "%02d",selectStringInt!.description)
         }

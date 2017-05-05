@@ -19,6 +19,22 @@ print("")
 //무한루프 시작
 repeat {
     
+    
+    print(database.tests.count)
+    
+    for test in database.tests {
+        print("------------",test.key)
+        for que in test.questions {
+            print("-------", que.key)
+            for sel in que.listSelections {
+                print("--",sel.key)
+            }
+            for sel in que.selections {
+                print("--",sel.key)
+            }
+        }
+    }
+    
 //    let que = database.questions[0]
 //    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
 //    
@@ -64,20 +80,20 @@ repeat {
 //    sampleQuestion.publish()
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
-    let 법조윤리 = DC법조윤리()
+//    let 법조윤리 = DC법조윤리()
 //    database.tests = 법조윤리.시험들
-    print("--법조윤리 파싱 complete")
+//    print("--법조윤리 파싱 complete")
 //    for te in 법조윤리.시험들 {
 //        print("ooooo")
 //        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
 //    }
     
     
-    let ques = 법조윤리.시험들[4]
-    
-    for que in ques.questions {
-        QuestionShuffled(question: que)?.publish()
-    }
+//    let ques = 법조윤리.시험들[4]
+//    
+//    for que in ques.questions {
+//        QuestionShuffled(question: que)?.publish()
+//    }
     
     //명령어
     print(">>>>", terminator : "")

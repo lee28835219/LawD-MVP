@@ -11,11 +11,10 @@ import Foundation
 class Question {
     let test : Test
     
-    let questionKey : String //Primary key, 원본
-    
-    
+    let key : String //Primary key, 원본
     
     var string = ""
+    var description : String? = nil
     
     // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29.
     var number : Int //문제번호, 원본
@@ -39,16 +38,24 @@ class Question {
     var listSelectionsString : String? = nil
     var answerListSelections = [Selection]()
     
-    init(test : Test, number : Int, questionKey : String, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
+    init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
         self.test = test
-        self.questionKey = questionKey
         
         self.questionType = questionType
         self.questionOX = questionOX
         self.content = content
         self.answer = answer
         self.number = number
+        
+        let str = self.test.key + "=" + String(format: "%04d", self.number)
+        
+        if !test.questions.filter({$0.key == str}).isEmpty {
+            fatalError("잘못된 문제key 입력 이미 \(str)이 존재함")
+        }
+        self.key = str
+        
+        self.test.questions.append(self)
     }
     
     //자동으로 이 명령을 실행하는 방법은 없을까? (+) 2017. 4. 30.
@@ -90,11 +97,11 @@ class Question {
                 _setContentSelectionsList()
                 return true
             default:
-                print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
+                print("정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
                 return false
             }
         default:
-            print("정답을 찾으려고 했으나 확인할 수 없음 ", self.questionKey)
+            print("정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
             return false
         }
     }
@@ -277,18 +284,18 @@ class Question {
         var selections = [Any]()
         for sel in self.selections {
             guard let selUnwrapped = sel.createJsonDataTypeStructure() else {
-                print("Creating Selection JSON Error While dealing with \(sel.question.questionKey)-\(sel.selectNumber)")
+                print("Creating Selection JSON Error While dealing with \(sel.question.key)-\(sel.selectNumber)")
                 continue
             }
             selections.append(selUnwrapped)
         }
         
         //// 3. question의 완성 = label + question inforation + selections
-        let question = ["label":self.questionKey, "information":questionInfromation, "Selections":selections] as [String : Any]
+        let question = ["label":self.key, "information":questionInfromation, "Selections":selections] as [String : Any]
         
         //// 4. json 형식인지 확인해서 그러하면 question json type structure 반환 아니면, nil
         guard JSONSerialization.isValidJSONObject(question) else {
-            print("Creating Question JSON Error While dealing with \(self.questionKey)")
+            print("Creating Question JSON Error While dealing with \(self.key)")
             return nil
         }
         return question

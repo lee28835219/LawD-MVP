@@ -29,7 +29,7 @@ class InputManager {
             print("출력할 문제번호(0~)>", terminator : "")
             let input = readLine()
             
-            if Int(input!)! < database.questions.count {
+            if Int(input!)! < database.tests[0].questions.count {
                 
                 //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(+)
                 let question = selectQuestion(number : Int(input!)!)
@@ -45,7 +45,7 @@ class InputManager {
     }
     
     func selectQuestion(number : Int) -> Question {
-        let question = database.questions[number] as Question
+        let question = database.tests[0].questions[number] as Question
         return question
     }
     

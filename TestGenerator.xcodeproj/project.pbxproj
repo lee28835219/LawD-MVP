@@ -10,6 +10,7 @@
 		3903139F1EB9BC8B006FE79A /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3903139E1EB9BC8B006FE79A /* Test.swift */; };
 		390313A11EB9BDF6006FE79A /* 문제.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390313A01EB9BDF6006FE79A /* 문제.swift */; };
 		395BF6D31E82BA36004BE198 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395BF6D21E82BA36004BE198 /* main.swift */; };
+		396291AE1EBC41CC00FADC4C /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396291AD1EBC41CC00FADC4C /* List.swift */; };
 		39633DDF1E9B134B00F9FD4D /* QuestionShuffled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */; };
 		396453381EB58902001BEC9D /* QuestionFindTypeShuffled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */; };
 		397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B21EB6F08D0040CE01 /* DataConverter.swift */; };
@@ -54,6 +55,7 @@
 		390313A01EB9BDF6006FE79A /* 문제.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "문제.swift"; sourceTree = "<group>"; };
 		395BF6CF1E82BA36004BE198 /* TestGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		395BF6D21E82BA36004BE198 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		396291AD1EBC41CC00FADC4C /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionShuffled.swift; sourceTree = "<group>"; };
 		396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionFindTypeShuffled.swift; sourceTree = "<group>"; };
 		397631B21EB6F08D0040CE01 /* DataConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
@@ -103,16 +105,12 @@
 		395BF6D11E82BA36004BE198 /* TestGenerator */ = {
 			isa = PBXGroup;
 			children = (
+				397631AE1EB6E7A90040CE01 /* TestData */,
+				39E7E2AF1EBB274F00087D73 /* DataStructure */,
+				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
 				39E7E2B01EBB889E00087D73 /* IO */,
 				3903139D1EB98F7F006FE79A /* MyPlayground.playground */,
 				395BF6D21E82BA36004BE198 /* main.swift */,
-				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
-				39E7E2AF1EBB274F00087D73 /* DataStructure */,
-				397631AE1EB6E7A90040CE01 /* TestData */,
-				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
-				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
-				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
-				39DF734C1EAF4036005AD7D7 /* Note.swift */,
 			);
 			path = TestGenerator;
 			sourceTree = "<group>";
@@ -131,9 +129,9 @@
 		397631AF1EB6E7BC0040CE01 /* 법조윤리 */ = {
 			isa = PBXGroup;
 			children = (
+				397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */,
 				39F2DEF21EBA4F47005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-문제.txt */,
 				39F2DEF11EBA4C3C005F5A30 /* 변호사윤리시험-1회~7회-법조윤리-정답.json */,
-				397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */,
 			);
 			name = "법조윤리";
 			sourceTree = "<group>";
@@ -155,6 +153,11 @@
 				3903139E1EB9BC8B006FE79A /* Test.swift */,
 				39E1DE181E82C091006F3DB9 /* Question.swift */,
 				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
+				396291AD1EBC41CC00FADC4C /* List.swift */,
+				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
+				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
+				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
+				39DF734C1EAF4036005AD7D7 /* Note.swift */,
 			);
 			name = DataStructure;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 				390313A11EB9BDF6006FE79A /* 문제.swift in Sources */,
 				396453381EB58902001BEC9D /* QuestionFindTypeShuffled.swift in Sources */,
 				395BF6D31E82BA36004BE198 /* main.swift in Sources */,
+				396291AE1EBC41CC00FADC4C /* List.swift in Sources */,
 				3903139F1EB9BC8B006FE79A /* Test.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
