@@ -23,7 +23,7 @@ class QuestionShuffled : QShufflingManager {
         oManager.showAttribute = showAttribute
         oManager.showOrigSel = showOrigSel
         
-        let test = Test(database: question.test.database, isPublished: false, category: question.test.category, subject: question.test.subject, number: question.test.number, numHelper: question.test.numHelper)
+        let test = Test(testDB: question.test.testDB, isPublished: false, category: question.test.category, subject: question.test.subject, number: question.test.number, numHelper: question.test.numHelper)
         
         var selectionsContent = [String]()
         var selsIscOrrect = [Bool?]()

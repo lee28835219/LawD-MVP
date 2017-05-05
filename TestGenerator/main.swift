@@ -10,8 +10,8 @@ import Foundation
 
 print("Hello!TextGenerator Starts!")
 var input : String?
-var database = Database()
-var inputManger = InputManager(database : database)
+var testDB = TestDB()
+var inputManger = InputManager(testDB : testDB)
 print("Intialization Complete")
 print("")
 
@@ -20,9 +20,9 @@ print("")
 repeat {
     
     
-    print(database.tests.count)
+    print(testDB.tests.count)
     
-    for test in database.tests {
+    for test in testDB.tests {
         print("------------",test.key)
         for que in test.questions {
             print("-------", que.key)

@@ -22,7 +22,7 @@
 		39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE161E82BFEE006F3DB9 /* Cases.swift */; };
 		39E1DE191E82C091006F3DB9 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE181E82C091006F3DB9 /* Question.swift */; };
 		39E1DE1B1E82C250006F3DB9 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1A1E82C250006F3DB9 /* InputManager.swift */; };
-		39E1DE1D1E82C842006F3DB9 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1C1E82C842006F3DB9 /* Database.swift */; };
+		39E1DE1D1E82C842006F3DB9 /* TestDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1C1E82C842006F3DB9 /* TestDB.swift */; };
 		39E7E2AE1EBB263700087D73 /* QShufflingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */; };
 		39E7E2B21EBB88E800087D73 /* OutputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E7E2B11EBB88E800087D73 /* OutputManager.swift */; };
 		39E84BFC1EB7436700E3790F /* 정답.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E84BFB1EB7436700E3790F /* 정답.swift */; };
@@ -67,7 +67,7 @@
 		39E1DE161E82BFEE006F3DB9 /* Cases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cases.swift; sourceTree = "<group>"; };
 		39E1DE181E82C091006F3DB9 /* Question.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 		39E1DE1A1E82C250006F3DB9 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
-		39E1DE1C1E82C842006F3DB9 /* Database.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
+		39E1DE1C1E82C842006F3DB9 /* TestDB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDB.swift; sourceTree = "<group>"; };
 		39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QShufflingManager.swift; sourceTree = "<group>"; };
 		39E7E2B11EBB88E800087D73 /* OutputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputManager.swift; sourceTree = "<group>"; };
 		39E84BFB1EB7436700E3790F /* 정답.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "정답.swift"; sourceTree = "<group>"; };
@@ -115,6 +115,33 @@
 			path = TestGenerator;
 			sourceTree = "<group>";
 		};
+		396291AF1EBC41FA00FADC4C /* 5.Test */ = {
+			isa = PBXGroup;
+			children = (
+				3903139E1EB9BC8B006FE79A /* Test.swift */,
+				39E1DE181E82C091006F3DB9 /* Question.swift */,
+				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
+				396291AD1EBC41CC00FADC4C /* List.swift */,
+			);
+			name = 5.Test;
+			sourceTree = "<group>";
+		};
+		396291B01EBC422000FADC4C /* 1.Code */ = {
+			isa = PBXGroup;
+			children = (
+				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
+			);
+			name = 1.Code;
+			sourceTree = "<group>";
+		};
+		396291B11EBC423100FADC4C /* 2.Case */ = {
+			isa = PBXGroup;
+			children = (
+				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
+			);
+			name = 2.Case;
+			sourceTree = "<group>";
+		};
 		397631AE1EB6E7A90040CE01 /* TestData */ = {
 			isa = PBXGroup;
 			children = (
@@ -149,14 +176,11 @@
 		39E7E2AF1EBB274F00087D73 /* DataStructure */ = {
 			isa = PBXGroup;
 			children = (
-				39E1DE1C1E82C842006F3DB9 /* Database.swift */,
-				3903139E1EB9BC8B006FE79A /* Test.swift */,
-				39E1DE181E82C091006F3DB9 /* Question.swift */,
-				39E1DE121E82BE54006F3DB9 /* Selection.swift */,
-				396291AD1EBC41CC00FADC4C /* List.swift */,
-				39E1DE141E82BF31006F3DB9 /* Codes.swift */,
+				396291B01EBC422000FADC4C /* 1.Code */,
+				396291B11EBC423100FADC4C /* 2.Case */,
+				39E1DE1C1E82C842006F3DB9 /* TestDB.swift */,
+				396291AF1EBC41FA00FADC4C /* 5.Test */,
 				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
-				39E1DE161E82BFEE006F3DB9 /* Cases.swift */,
 				39DF734C1EAF4036005AD7D7 /* Note.swift */,
 			);
 			name = DataStructure;
@@ -242,7 +266,7 @@
 				39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */,
 				39E7E2AE1EBB263700087D73 /* QShufflingManager.swift in Sources */,
 				39E1DE191E82C091006F3DB9 /* Question.swift in Sources */,
-				39E1DE1D1E82C842006F3DB9 /* Database.swift in Sources */,
+				39E1DE1D1E82C842006F3DB9 /* TestDB.swift in Sources */,
 				39DF734B1EAF2EFE005AD7D7 /* Keyword.swift in Sources */,
 				390313A11EB9BDF6006FE79A /* 문제.swift in Sources */,
 				396453381EB58902001BEC9D /* QuestionFindTypeShuffled.swift in Sources */,

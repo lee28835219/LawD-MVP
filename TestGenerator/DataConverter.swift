@@ -125,7 +125,7 @@ class DataConverter: NSObject {
             //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
             let testString = residualString
         // newTest 초기화에 대해서 고민해봐야 함 (+) 2017. 5. 5.
-            let newTest = Test(database : Database(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
+            let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
             newTest.description = testHeader
             newTest.string = testString
             시험들.append(newTest)
@@ -139,7 +139,7 @@ class DataConverter: NSObject {
         //첫번째 루프가 아님
         if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
             let testString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
-            let newTest = Test(database : Database(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
+            let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
             newTest.description = _testHeader!
             newTest.string = testString
             시험들.append(newTest)

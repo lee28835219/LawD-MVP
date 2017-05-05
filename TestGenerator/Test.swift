@@ -9,7 +9,7 @@ import Foundation
 
 class Test {
     var key : String
-    let database : Database?
+    let testDB : TestDB?
     var isPublished : Bool //기출, 원본
     let category : String //변호사시험
     let catHelper : String? = nil //모의
@@ -24,8 +24,8 @@ class Test {
     
     var questions = [Question]()
     
-    init(database : Database?, isPublished: Bool, category: String, catHelper: String? = nil, subject: String, number: Int, numHelper: Int? = nil) {
-        self.database = database
+    init(testDB : TestDB?, isPublished: Bool, category: String, catHelper: String? = nil, subject: String, number: Int, numHelper: Int? = nil) {
+        self.testDB = testDB
         self.isPublished = isPublished
         self.category = category
         self.subject = subject
@@ -48,11 +48,11 @@ class Test {
         
         self.key = str
         
-        if database != nil {
-            if !database!.tests.filter({$0.key == str}).isEmpty {
-                fatalError("잘못된 시험key 입력 : 이미 \(database!.name)에 \(str)이 존재함")
+        if testDB != nil {
+            if !testDB!.tests.filter({$0.key == str}).isEmpty {
+                fatalError("잘못된 시험key 입력 : 이미 \(testDB!.name)에 \(str)이 존재함")
             }
-            database!.tests.append(self)
+            testDB!.tests.append(self)
         }
         
     }
