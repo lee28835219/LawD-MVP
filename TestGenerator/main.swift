@@ -23,11 +23,11 @@ repeat {
         print("------------",test.key)
         for que in test.questions {
             print("-------", que.key)
-            for sel in que.listSelections {
-                print("--",sel.key)
+            for sel in que.lists {
+                print("---",sel.key)
             }
             for sel in que.selections {
-                print("--",sel.key)
+                print("---",sel.key)
             }
         }
     }
@@ -36,14 +36,30 @@ repeat {
         que.publish()
     }
     
-//    let que = database.questions[0]
-//    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
-//    
-//    
-//    let qs = QuestionShuffled(question: que)
-//
-//    qs?.publish()
-//    
+    let que = testDB.tests[0].questions[0]
+    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+
+    
+    let qs = QuestionShuffled(question: que)
+
+    qs?.publish()
+    
+    let que1 = testDB.tests[0].questions[1]
+    que1.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+    
+    
+    let qs1 = QuestionFindTypeShuffled(question: que1)
+    
+    qs1?.publish()
+    
+    for sel in que1.selections {
+        for list in sel.listInContentOfSelection {
+            print(list.getListString(),",", terminator: "")
+        }
+        print()
+    }
+    
+    
 //    let question = qs?.question
 //    var answerSelectionModifed = qs?.answerSelectionModifed
 //    var selectionsShuffled = qs?.selectionsShuffled

@@ -8,13 +8,12 @@
 
 import Cocoa
 
-class QuestionFindTypeShuffled: QuestionShuffled {
-    var listSelectionShuffled = [List]()
+class QuestionFindTypeShuffled: QShufflingManager {
     var originalShuffleMap = [(original : List, shuffled : List)]()
     var answerListSelectionModifed = [List]()
     
     override init?(question: Question) {
-        if question.listSelections.count == 0 {
+        if question.lists.count == 0 {
             print("error>> 목록선택지가 없음")
             return nil
         }
@@ -22,45 +21,14 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             print("error>> 목록선택지의 정답이 없음")
             return nil
         }
-        self.listSelectionShuffled = question.listSelections
         
         super.init(question: question)
+        
+        self.listSelectionShuffled = question.lists
+        _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
     }
     
-    func publish() {
-        print("")
-        //1. 문제 출력
-        prtQuestion()
-        print("")
-        
-        //2-0. 선택지 출력
-        prtListSelection()
-        print("")
-        
-        //2. 답안지 출력
-        prtSelection()
-        print("")
-        
-        //3. 정답 출력
-        prtAnswer()
-        print("")
-    }
-    
-    func prtListSelection() {
-        for (index,listSel) in listSelectionShuffled.enumerated() {
-            if index == 0 {
-                print("---------------------------------------------------------------------------------------------------------")
-            }
-            let listSelContent = getListSelectContent(listSelection: listSel)
-            print(listSel.getListString(int : index+1)+". "+listSelContent.content)
-            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
-            if index == listSelectionShuffled.count-1 {
-                print("---------------------------------------------------------------------------------------------------------")
-            }
-        }
-    }
-    
-    override func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
+    func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
         let isSuccess = true
         listSelectionShuffled.shuffle()
         selectionsShuffled.shuffle()
@@ -72,7 +40,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
         // 2,3-2. 정오변경 지문이 목록선택지에 모두 있는지 확인
         var isAllSelectionListControversalExist = true
-        for sel in question.listSelections {
+        for sel in question.lists {
             if sel.contentControversal == nil {
                 isAllSelectionListControversalExist = false
             }
@@ -94,7 +62,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
             } else {
                 print("2. 문제와 목록선택지 OX 변경안함")
             }
-            
+
             // 3. 임의로 답변을 변경
             let numberOfListSel = listSelectionShuffled.count //5
             let numberOfAnsListSel = question.answerListSelections.count //3
@@ -107,13 +75,13 @@ class QuestionFindTypeShuffled: QuestionShuffled {
                     if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
                     } else {
                         answerListSelectionModifed.append(randomListSel)
-                        originalShuffleMap.append((question.answerListSelections[index] as! List, randomListSel))
+                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
                         cont = false
                     }
                 }
             }
             
-            var tempListSelections = question.listSelections
+            var tempListSelections = question.lists
             var tempListSelectionsShuffled = listSelectionShuffled
             for ansSel in question.answerListSelections {
                 if let ix = tempListSelections.index(where: {$0 === ansSel}) {
@@ -140,6 +108,41 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         return isSuccess
     }
     
+    func publish() {
+        print("")
+        //1. 문제 출력
+        prtQuestion()
+        print("")
+        
+        //2-0. 선택지 출력
+        prtListSelection()
+        print("")
+        
+        //2. 답안지 출력
+        prtSelection()
+        print("")
+        
+        //3. 정답 출력
+        prtAnswer()
+        print("")
+    }
+
+    func prtListSelection() {
+        for (index,listSel) in listSelectionShuffled.enumerated() {
+            if index == 0 {
+                print("---------------------------------------------------------------------------------------------------------")
+            }
+            let listSelContent = getListSelectContent(listSelection: listSel)
+            print(listSel.getListString(int : index+1)+". "+listSelContent.content)
+            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
+            if index == listSelectionShuffled.count-1 {
+                print("---------------------------------------------------------------------------------------------------------")
+            }
+        }
+    }
+    
+    
+    
     func getListContent(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         // 1. 기본
         var selectionContentShuffled = ""
@@ -150,7 +153,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         // 조금더 정밀하게 고민 필요 2017. 5. 5.
         let isAnswerShuffled : Bool? = true
         
-        for listSel in selection.contentSelectionsList {
+        for listSel in selection.listInContentOfSelection {
             if originalShuffleMap.count > 0 {
                 for (ori, shu) in originalShuffleMap {
                     if ori === listSel {
@@ -247,7 +250,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
     
     //선택지를 출력하는 함수, 선택지와 변경된 선택지를 입력받아 선택지를 문제의 논리에 맞게 변경한 값을 출력
     func printSelect(select : Selection, modifedNumber : Int) {
-        let selction = getSelectContent(selection: select)
+        let selction = getStatementContent(statement: select)
         print("\((modifedNumber).roundInt) \(selction.content)")
         print("-\(select.selectNumber)- ", terminator : "")
         print(selction.iscOrrect ?? "not sure")

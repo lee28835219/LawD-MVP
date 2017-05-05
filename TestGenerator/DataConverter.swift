@@ -257,7 +257,7 @@ class DataConverter: NSObject {
         var _residualString = residualString
         
         if _header != nil {
-            let selectNumber = getKoreanCharacterOrLetterInListSelection(header: _header!).koreanCharacterAndLetterInt
+            _ = getKoreanCharacterOrLetterInListSelection(header: _header!).koreanCharacterAndLetterInt
             let selectionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             _ = List(question: question, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
 //            _ = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))

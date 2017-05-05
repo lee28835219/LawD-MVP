@@ -11,9 +11,13 @@ import Foundation
 class QShufflingManager {
     
     let question : Question
+    
     //초기화 단계에서 꼭 정답의 존재를 확인해야 함
-    var answerSelectionModifed : Selection  //출력
     var selectionsShuffled = [Selection]() //출력
+    var listSelectionShuffled = [List]() //출력
+    
+    var answerSelectionModifed : Selection  //출력
+    
     
     var doesQuestionOXChanged = false  //출력
     var doesQuestionAnswerChanged = false  //출력
@@ -66,6 +70,7 @@ class QShufflingManager {
             return selection.contentControversal!
         }
     }
+    
     // 문제를 논리에 맞게 변경하여 반환
     func getModifedQuestion() -> (questionOX : QuestionOX, content : String) {
         var questionShuffledOX = question.questionOX
@@ -93,6 +98,9 @@ class QShufflingManager {
         return ansNumber
     }
     
+    func getStatementContent(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
+        return (statement.content, statement.iscOrrect, nil)
+    }
 }
 
 //http://stackoverflow.com/questions/24026510/how-do-i-shuffle-an-array-in-swift
@@ -128,5 +136,80 @@ extension Sequence {
 extension Bool {
     static func random() -> Bool {
         return arc4random_uniform(2) == 0
+    }
+}
+
+extension QShufflingManager {
+    func publish(showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
+        let oManager = OutputManager()
+        oManager.showAnswer = showAnswer
+        oManager.showTitle = showTitle
+        oManager.showAttribute = showAttribute
+        oManager.showOrigSel = showOrigSel
+        
+        var listsContent = [String]()
+        var listsIscOrrect = [Bool?]()
+        var listsIsAnswer = [Bool?]()
+        var listsNumberString = [String]()
+        var origialListsNumberString = [String]()
+        
+        for (index, list) in listSelectionShuffled.enumerated() {
+            let listResult = getStatementContent(statement: list)
+            listsContent.append(listResult.content)
+            listsIscOrrect.append(listResult.iscOrrect)
+            listsIsAnswer.append(listResult.isAnswer)
+            listsNumberString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
+        }
+        
+        print(origialListsNumberString)
+        
+        var selectionsContent = [String]()
+        var selsIscOrrect = [Bool?]()
+        var selsIsAnswer = [Bool]()
+        var originalSelectionsNumber = [String]()
+        
+        
+        
+        for sel in selectionsShuffled {
+            selectionsContent.append(getStatementContent(statement : sel).content)
+            selsIscOrrect.append(getStatementContent(statement : sel).iscOrrect)
+            selsIsAnswer.append(sel.isAnswer)
+            originalSelectionsNumber.append(sel.selectNumber.roundInt)
+        }
+        
+        
+        let questionModifed = getModifedQuestion()
+        let ansSel = getStatementContent(statement: answerSelectionModifed)
+        
+        
+        oManager.questionPublish(
+            testCategroy: question.test.category,
+            testNumber: question.test.number,
+            testSubject: question.test.subject,
+            isPublished: question.test.isPublished,
+            
+            questionNumber: question.number,
+            questionContent: questionModifed.content,  // 셔플하면 변경
+            questionContentNote: question.testQuestionNote,
+            questionType: question.questionType,
+            questionOX: questionModifed.questionOX ,   // 셔플하면 변경
+            
+            listsContents : listsContent, // 셔플하면 변경
+            listsIscOrrect : listsIscOrrect, // 셔플하면 변경
+            listsNumberString : listsNumberString, // 셔플하면 변경
+            origialListsNumberString : origialListsNumberString, // 셔플하면 변경
+            
+            selectionsContent : selectionsContent,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber, // 셔플하면 변경,
+            
+            ansSelContent: ansSel.content,  // 셔플하면 변경
+            ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: ansSel.isAnswer,  // 셔플하면 변경
+            questionAnswer: (getAnswerNumber() + 1),
+            originalAnsSelectionNumber: answerSelectionModifed.selectNumber.roundInt // 셔플하면 변경
+        )
     }
 }

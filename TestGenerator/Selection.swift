@@ -13,7 +13,7 @@ class Selection: Statement {
     let key : String
     
     let selectNumber : Int
-    var contentSelectionsList = [List]()
+    var listInContentOfSelection = [List]()
     
     var isAnswer : Bool = false
     
@@ -31,11 +31,11 @@ class Selection: Statement {
             isAnswer = true
         }
         
-        //문제 유형을 통해서 정답지가 T/F 인지 자동 판단하는 로직
+        //Select OX 문제 유형에 대하여 선택지가 T/F 인지 자동 판단하는 로직
         switch question.questionType {
         case .Select:
             switch question.questionOX {
-            case .Correct, .O:
+            case .O:
                 if isAnswer {
                     iscOrrect = true
                 } else {
@@ -47,13 +47,11 @@ class Selection: Statement {
                 } else {
                     iscOrrect = true
                 }
-            case .Difference, .Unknown:
-                //                print("OX를 파악할 수 없음, 문제타입을 직접확인해야 OX를 찾을 수 있음 \(self.key)")
-                _ = true
+            default:
+                iscOrrect = nil
             }
         default:
-            _ = true
-            //            print("not suitable for finding OX of selection \(self.key)")
+            iscOrrect = nil
         }
         //(-) find 유형의 문제에도 자동 확인 기능 추가 필요 2017. 4. 26.
         //find 유형 문제에는 의미있는 OX 질문이 없을 것이므로 필요없을 것임, 차리리 Select.Defference를 추가하는게 나을듯 2017. 5. 5.

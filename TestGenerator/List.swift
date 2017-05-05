@@ -38,7 +38,7 @@ class List: Statement {
         self.key = question.key + "=L" + String(format: "%02d",number)
         
         super.init(question: question, content: content)
-        self.question.listSelections.append(self)
+        self.question.lists.append(self)
     }
     
     // 선택지가 열겨형일 경우에 그 선택지의 문자열을 형식에 맞게 출력하도록 도와주는 함수
@@ -64,12 +64,12 @@ class List: Statement {
         // https://thatthinginswift.com/switch-unwrap-shortcut/
         // switch와 enum의 동시사용 시간날 때 대해 공부해야함 (+) 2017. 4. 30.
         if self.listStringType == .koreanCharcter {
-            return self.number.koreanCharaterInt
+            return intToGet.koreanCharaterInt
         } else if self.listStringType == .koreanLetter {
-            return self.number.koreanLetterInt
+            return intToGet.koreanLetterInt
         }
-        print("error>>findStringNumberOfSelection 실패함")
-        return "?"
+        print("\(self.question) 문제의 목록 문자열 찾기를 실패함")
+        return "??"
     }
 }
 

@@ -17,7 +17,18 @@ class OutputManager {
     init() {
     }
     
-    func questionPublish(testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool, questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX, listSelsCont : [String], listSelsIscOrrect : [Bool?], listSelsIntString : [String], selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool],originalSelectionsNumber : [String], ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String) {
+    func questionPublish(
+        //시험
+        testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool,
+        //질문
+        questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
+        //목록
+        listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
+        //선택지
+        selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool],originalSelectionsNumber : [String],
+        //정답
+        ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String
+        ) {
         
         //문제
         print("")
@@ -39,17 +50,20 @@ class OutputManager {
         
         
         //목록
-        if listSelsCont.count > 0 {
-            for (index,listSelCont) in listSelsCont.enumerated() {
+        if listsContents.count > 0 {
+            for (index,listSelCont) in listsContents.enumerated() {
                 var selectionStr = listSelCont
+                if showOrigSel {
+                    selectionStr = "[\(origialListsNumberString[index])] " + selectionStr
+                }
                 if showAttribute {
-                    if let OX = listSelsIscOrrect[index] {
+                    if let OX = listsIscOrrect[index] {
                         selectionStr = selectionStr + (OX ? " (O)" : " (X)")
                     } else {
                         selectionStr = selectionStr + " (O?,X?)"
                     }
                 }
-                print(" "+listSelsIntString[index]+". "+selectionStr.spacing(4))
+                print(" "+listsNumberString[index]+". "+selectionStr.spacing(4))
             }
             print()
         }

@@ -39,13 +39,12 @@ class Question {
     
 ////내 식구들은 누구인지
     var selections = [Selection]() //원본
-    var listSelections = [List]() //원본
-    var answerListSelections = [List]()
+    var lists = [List]() //원본
     
 ////식구들이 정해지면 내가 찾아야 하는 존재
     //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
     weak var answerSelection: Selection?
-    
+    var answerListSelections = [List]()
     
     init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
@@ -76,13 +75,11 @@ class Question {
             fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
         }
         switch self.questionType {
-        case .Select, .Define:
-            return true
         case .Find:
             switch self.questionOX {
             // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
             case .O:
-                for listSel in listSelections {
+                for listSel in lists {
                     let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = true
@@ -93,11 +90,11 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-//                _setContentSelectionsList()
+                _setlistInContentOfSelection()
                 return true
             // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
-                for listSel in listSelections {
+                for listSel in lists {
                     let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = false
@@ -108,7 +105,7 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-//                _setContentSelectionsList()
+                _setlistInContentOfSelection()
                 return true
             default:
                 print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
@@ -123,15 +120,15 @@ class Question {
     // 객체 밖에서 함수가 들어나지 않도록 정의하는 방법은 무었인가 (+) 2017. 4. 30.
     // 다시 체크할 수 있도록 수정필요 (+) 2017. 5. 5.
     
-//    func _setContentSelectionsList() {
-//        for sel in selections {
-//            for listSel in listSelections {
-//                if sel.content.range(of: listSel.getListString()) != nil {
-//                    sel.contentSelectionsList.append(listSel)
-//                }
-//            }
-//        }
-//    }
+    func _setlistInContentOfSelection() {
+        for selection in selections {
+            for list in lists {
+                if selection.content.range(of: list.getListString()) != nil {
+                    selection.listInContentOfSelection.append(list)
+                }
+            }
+        }
+    }
     
     func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
         let oManager = OutputManager()
@@ -155,12 +152,13 @@ class Question {
         var listSelectionsContent = [String]()
         var listSelsIscOrrect = [Bool?]()
         var listSelsIntString = [String]()
+        var origialListsNumberString = [String]()
         
-        
-        for (index,sel) in listSelections.enumerated() {
-            listSelectionsContent.append(sel.content)
-            listSelsIscOrrect.append(sel.iscOrrect)
-            listSelsIntString.append(sel.getListString(int: index+1))
+        for (index,list) in lists.enumerated() {
+            listSelectionsContent.append(list.content)
+            listSelsIscOrrect.append(list.iscOrrect)
+            listSelsIntString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
         }
         
         oManager.questionPublish(
@@ -168,18 +166,23 @@ class Question {
             testNumber: test.number,
             testSubject: test.subject,
             isPublished: test.isPublished,
+            
             questionNumber: number,
             questionContent: content,  // 셔플하면 변경
             questionContentNote: contentNote,
             questionType: questionType,
             questionOX: questionOX,   // 셔플하면 변경
-            listSelsCont : listSelectionsContent,
-            listSelsIscOrrect : listSelsIscOrrect,
-            listSelsIntString : listSelsIntString,
+            
+            listsContents : listSelectionsContent,
+            listsIscOrrect : listSelsIscOrrect,
+            listsNumberString : listSelsIntString,
+            origialListsNumberString : origialListsNumberString,
+            
             selectionsContent : selectionsContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
             selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
             originalSelectionsNumber : originalSelectionsNumber,
+            
             ansSelContent: answerSelection?.content,  // 셔플하면 변경
             ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
@@ -317,23 +320,20 @@ class Question {
     }
 }
 
-extension Question {
-}
-
 enum QuestionOX : String {
     case O //옳은 것
     case X //옳지 않은 것
-    case Correct //맞는 것
-    case Difference //다른 것
     case Unknown
 }
 
 enum QuestionType : String {
     case Select // 고르시오
     case Find // 모두 고르시오
-    case Define // ?
     case Unknown
 }
+
+
+
 
 // 변수타입을 정의
 // enum을 이용해서 멋잇게 저장하는 법을 고민해봐야 한다. 2017. 4. 29.
