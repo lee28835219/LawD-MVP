@@ -8,9 +8,7 @@
 
 import Cocoa
 
-class QuestionFindTypeShuffled: QShufflingManager {
-    var originalShuffleMap = [(original : List, shuffled : List)]()
-    var answerListSelectionModifed = [List]()
+class QuestionFindTypeShuffled: QuestionShuffled {
     
     override init?(question: Question) {
         if question.lists.count == 0 {
@@ -24,14 +22,14 @@ class QuestionFindTypeShuffled: QShufflingManager {
         
         super.init(question: question)
         
-        self.listSelectionShuffled = question.lists
-        _ = _shufflingAndOXChangingAndChangingAnswerOfSelection()
+        self.lists = question.lists
+        _ = _shufflingAndOXChangingAndChangingAnswerOfSelectionOfFindType()
     }
     
-    func _shufflingAndOXChangingAndChangingAnswerOfSelection() -> Bool {
+    func _shufflingAndOXChangingAndChangingAnswerOfSelectionOfFindType() -> Bool {
         let isSuccess = true
-        listSelectionShuffled.shuffle()
-        selectionsShuffled.shuffle()
+        lists.shuffle()
+        selections.shuffle()
         
         print("")
         print("1. 목록선택지와 선택지 순서 변경함")
@@ -57,21 +55,21 @@ class QuestionFindTypeShuffled: QShufflingManager {
             
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
-                doesQuestionOXChanged = true
+                isOXChanged = true
                 print("2. 문제와 목록선택지 OX 변경함")
             } else {
                 print("2. 문제와 목록선택지 OX 변경안함")
             }
 
             // 3. 임의로 답변을 변경
-            let numberOfListSel = listSelectionShuffled.count //5
+            let numberOfListSel = lists.count //5
             let numberOfAnsListSel = question.answerListSelections.count //3
             
             for index in 0...numberOfAnsListSel-1 {
                 var cont = true
                 while cont {
                     let randomNumber = Int(arc4random_uniform(UInt32(numberOfListSel)))
-                    let randomListSel = listSelectionShuffled[randomNumber]
+                    let randomListSel = lists[randomNumber]
                     if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
                     } else {
                         answerListSelectionModifed.append(randomListSel)
@@ -82,7 +80,7 @@ class QuestionFindTypeShuffled: QShufflingManager {
             }
             
             var tempListSelections = question.lists
-            var tempListSelectionsShuffled = listSelectionShuffled
+            var tempListSelectionsShuffled = lists
             for ansSel in question.answerListSelections {
                 if let ix = tempListSelections.index(where: {$0 === ansSel}) {
                     tempListSelections.remove(at: ix)
@@ -100,7 +98,7 @@ class QuestionFindTypeShuffled: QShufflingManager {
             for (oriSel, shuSel) in originalShuffleMap {
                 print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
             }
-            doesQuestionAnswerChanged = true
+            isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
             // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
         }
@@ -108,151 +106,79 @@ class QuestionFindTypeShuffled: QShufflingManager {
         return isSuccess
     }
     
-    func publish() {
-        print("")
-        //1. 문제 출력
-        prtQuestion()
-        print("")
-        
-        //2-0. 선택지 출력
-        prtListSelection()
-        print("")
-        
-        //2. 답안지 출력
-        prtSelection()
-        print("")
-        
-        //3. 정답 출력
-        prtAnswer()
-        print("")
-    }
+//    func publish2() {
+//        print("")
+//        //1. 문제 출력
+//        prtQuestion()
+//        print("")
+//        
+////        //2-0. 선택지 출력
+////        prtListSelection()
+////        print("")
+//        
+//        //2. 답안지 출력
+//        prtSelection()
+//        print("")
+//        
+//        //3. 정답 출력
+//        prtAnswer()
+//        print("")
+//    }
 
-    func prtListSelection() {
-        for (index,listSel) in listSelectionShuffled.enumerated() {
-            if index == 0 {
-                print("---------------------------------------------------------------------------------------------------------")
-            }
-            let listSelContent = getListSelectContent(listSelection: listSel)
-            print(listSel.getListString(int : index+1)+". "+listSelContent.content)
-            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
-            if index == listSelectionShuffled.count-1 {
-                print("---------------------------------------------------------------------------------------------------------")
-            }
-        }
-    }
+//    func prtListSelection() {
+//        for (index,listSel) in listSelectionShuffled.enumerated() {
+//            if index == 0 {
+//                print("---------------------------------------------------------------------------------------------------------")
+//            }
+//            let listSelContent = getListSelectContent(listSelection: listSel)
+//            print(listSel.getListString(int : index+1)+". "+listSelContent.content)
+//            print("-\(listSel.getListString())-"," ",listSelContent.iscOrrect ?? "not sure")
+//            if index == listSelectionShuffled.count-1 {
+//                print("---------------------------------------------------------------------------------------------------------")
+//            }
+//        }
+//    }
     
     
     
-    func getListContent(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
-        // 1. 기본
-        var selectionContentShuffled = ""
-        var selectionContentShuffledArray = [String]()
-        var listSelInSelectionContentShuffled = [List]()
-        let iscOrrectShuffled : Bool? = nil
-        
-        // 조금더 정밀하게 고민 필요 2017. 5. 5.
-        let isAnswerShuffled : Bool? = true
-        
-        for listSel in selection.listInContentOfSelection {
-            if originalShuffleMap.count > 0 {
-                for (ori, shu) in originalShuffleMap {
-                    if ori === listSel {
-                        listSelInSelectionContentShuffled.append(shu)
-                    }
-                }
-            } else {
-                listSelInSelectionContentShuffled.append(listSel)
-            }
-        }
-        for listSel in listSelInSelectionContentShuffled {
-//            print("listSel.getListString()",listSel.getListString())
-            if let index = listSelectionShuffled.index(where: {$0 === listSel}) {
-                selectionContentShuffledArray.append(listSel.getListString(int: index + 1))
-            }
-        }
-        selectionContentShuffledArray.sort()
-        for (index, selCon) in selectionContentShuffledArray.enumerated() {
-            if index == 0 {
-                selectionContentShuffled = selCon
-            } else {
-                selectionContentShuffled = "\(selectionContentShuffled), \(selCon)"
-            }
-        }
-        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
-    }
-    
-    func getListSelectContent(listSelection : List) -> (content : String, iscOrrect : Bool?) {
-        // 1. 기본
-        var listSelContentShuffled = listSelection.content
-        var iscOrrectShuffled = listSelection.iscOrrect
-        
-        // 2. 질문의 OX를 변경을 확인
-        if doesQuestionOXChanged {
-            listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
-            iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
-        }
-        
-        // 3. 랜덤하게 변경된 정답에 맞춰 수정
-        if doesQuestionAnswerChanged{
-            if listSelection.isAnswer {
-                // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
-                // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
-                if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
-                } else {
-                    listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
-                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
-                }
-            } else {
-                // 3-3. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
-                // 3-4. 출력하려는 선택지가 답이아니고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
-                if let _ = answerListSelectionModifed.index(where: {$0 === listSelection}) {
-                    listSelContentShuffled = _toggleSelectionContent(selectionContentShuffled: listSelContentShuffled, selection: listSelection)
-                    iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
-                } else {
-                }
-            }
-        }
-        return (listSelContentShuffled, iscOrrectShuffled)
-    }
-    
-    //1. 문제 출력
-    func prtQuestion() {
-        let questionModifed = getModifedQuestion()
-        print("[\(question.test.subject) \(question.test.date.yyyymmdd) \(question.test.category)] "+questionModifed.content, terminator : "")
-        if let contNote = question.contentNote {
-            print(" "+contNote)
-        } else {
-            print("")
-        }
-        print("\(question.questionType) \(questionModifed.questionOX)")
-    }
-    
-    func prtList() {
-        for (index,sel) in selectionsShuffled.enumerated() {
-            // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
-            printSelect(select: sel, modifedNumber: index+1)
-        }
-        print("")
-    }
-    
-    func prtSelection() {
-        for (index,sel) in selectionsShuffled.enumerated() {
-            // doesQuestionOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
-            printSelect(select: sel, modifedNumber: index+1)
-        }
-        print("")
-    }
-    
-    func prtAnswer() {
-        print("<정답>")
-        printSelect(select: answerSelectionModifed, modifedNumber: getAnswerNumber() + 1)
-    }
-    
-    //선택지를 출력하는 함수, 선택지와 변경된 선택지를 입력받아 선택지를 문제의 논리에 맞게 변경한 값을 출력
-    func printSelect(select : Selection, modifedNumber : Int) {
-        let selction = getStatementContent(statement: select)
-        print("\((modifedNumber).roundInt) \(selction.content)")
-        print("-\(select.selectNumber)- ", terminator : "")
-        print(selction.iscOrrect ?? "not sure")
-    }
+//    //1. 문제 출력
+//    func prtQuestion() {
+//        let questionModifed = getModifedQuestion()
+//        print("[\(question.test.subject) \(question.test.date.yyyymmdd) \(question.test.category)] "+questionModifed.content, terminator : "")
+//        if let contNote = question.contentNote {
+//            print(" "+contNote)
+//        } else {
+//            print("")
+//        }
+//        print("\(question.questionType) \(questionModifed.questionOX)")
+//    }
+//    
+//    func prtList() {
+//        for (index,sel) in selections.enumerated() {
+//            // isOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
+//            printSelect(select: sel, modifedNumber: index+1)
+//        }
+//        print("")
+//    }
+//    
+//    func prtSelection() {
+//        for (index,sel) in selections.enumerated() {
+//            // isOXChanged을 확인하여 OX를 변경할 경우에 선택지출력할 때 변경할 내용들 확정
+//            printSelect(select: sel, modifedNumber: index+1)
+//        }
+//        print("")
+//    }
+//    
+//    func prtAnswer() {
+//        print("<정답>")
+//        printSelect(select: answerSelectionModifed, modifedNumber: getAnswerNumber() + 1)
+//    }
+//    
+//    //선택지를 출력하는 함수, 선택지와 변경된 선택지를 입력받아 선택지를 문제의 논리에 맞게 변경한 값을 출력
+//    func printSelect(select : Selection, modifedNumber : Int) {
+//        let selction = getModfiedStatement(statement: select)
+//        print("\((modifedNumber).roundInt) \(selction.content)")
+//        print("-\(select.selectNumber)- ", terminator : "")
+//        print(selction.iscOrrect ?? "not sure")
+//    }
 }

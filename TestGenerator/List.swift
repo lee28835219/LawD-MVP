@@ -15,9 +15,6 @@ class List: Statement {
     var listStringType : SelectStringType = .koreanCharcter
     var number : Int = 0
     
-    var isAnswer : Bool = false
-    
-    
     // super클라스의 초기화 함수를 덮어 씌울수는 없는가? (-) 2017. 5. 5.
     // http://stackoverflow.com/questions/39344422/delegating-up-to-convenience-initializer-of-superclass
     // Delegating up to Convenience Initializer of Superclass

@@ -36,28 +36,34 @@ repeat {
         que.publish()
     }
     
-    let que = testDB.tests[0].questions[0]
+    var que = testDB.tests[0].questions[0]
     que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
-
     
-    let qs = QuestionShuffled(question: que)
-
-    qs?.publish()
+    var queS = QuestionShuffled(question: que)
     
-    let que1 = testDB.tests[0].questions[1]
-    que1.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+    QShufflingManager(question: que, qShuffled: queS).publish()
     
+    que = testDB.tests[0].questions[1]
+    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
     
-    let qs1 = QuestionFindTypeShuffled(question: que1)
+    queS = QuestionShuffled(question: que)
     
-    qs1?.publish()
+    QShufflingManager(question: que, qShuffled: queS).publish()
     
-    for sel in que1.selections {
-        for list in sel.listInContentOfSelection {
-            print(list.getListString(),",", terminator: "")
-        }
-        print()
-    }
+//    let que1 = testDB.tests[0].questions[1]
+//    que1.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+//    
+//    
+//    let qs1 = QuestionFindTypeShuffled(question: que1)
+//    
+//    qs1?.publish()
+//    
+//    for sel in que1.selections {
+//        for list in sel.listInContentOfSelection {
+//            print(list.getListString(),",", terminator: "")
+//        }
+//        print()
+//    }
     
     
 //    let question = qs?.question

@@ -15,8 +15,6 @@ class Selection: Statement {
     let selectNumber : Int
     var listInContentOfSelection = [List]()
     
-    var isAnswer : Bool = false
-    
     init(question: Question, selectNumber: Int, content: String) {
         
         self.selectNumber = selectNumber
@@ -26,6 +24,7 @@ class Selection: Statement {
         
         self.question.selections.append(self)
         
+        isAnswer = false
         if self.selectNumber == question.answer {
             question.answerSelection = self
             isAnswer = true
@@ -36,13 +35,13 @@ class Selection: Statement {
         case .Select:
             switch question.questionOX {
             case .O:
-                if isAnswer {
+                if isAnswer! {  //selection에서는 항상 isAnwer가 존재
                     iscOrrect = true
                 } else {
                     iscOrrect = false
                 }
             case .X:
-                if isAnswer {
+                if isAnswer! {
                     iscOrrect = false
                 } else {
                     iscOrrect = true

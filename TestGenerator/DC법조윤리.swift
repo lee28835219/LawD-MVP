@@ -114,13 +114,13 @@ class DC법조윤리: DataConverter {
                     fatalError("문제 파싱중에 목록선택지의 구조가 이상하게 파싱되었음")
                 }
                 if queCutListSelLetter != nil {
-                    que.listSelectionsString = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    sliceListSelectionString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", residualString: que.listSelectionsString!, question: que, headerUn: nil)
+                    que.listsString = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
+                    sliceListSelectionString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", residualString: que.listsString!, question: que, headerUn: nil)
                     print(que.findAnswer(),"answer")
                 }
                 if queCutListSelWord != nil {
-                    que.listSelectionsString = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    sliceListSelectionString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", residualString: que.listSelectionsString!, question: que, headerUn: nil)
+                    que.listsString = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
+                    sliceListSelectionString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", residualString: que.listsString!, question: que, headerUn: nil)
                     print(que.findAnswer(),"answer")
                 }
             }

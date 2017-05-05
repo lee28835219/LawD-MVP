@@ -34,7 +34,7 @@ class Question {
     var answer: Int
     
     var selectionsString : String? = nil
-    var listSelectionsString : String? = nil
+    var listsString : String? = nil
     
     
 ////내 식구들은 누구인지
@@ -139,7 +139,7 @@ class Question {
         
         var selectionsContent = [String]()
         var selsIscOrrect = [Bool?]()
-        var selsIsAnswer = [Bool]()
+        var selsIsAnswer = [Bool?]()
         var originalSelectionsNumber = [String]()
         
         for sel in selections {

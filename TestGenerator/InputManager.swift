@@ -50,28 +50,28 @@ class InputManager {
     }
     
     func solveShuffledQuestion(question : Question, rep: Int = 20) {
-        var quetionShuffled : QuestionShuffled?
-        
-        for index in 1...rep {
-            if question.questionType == QuestionType.Find {
-//                quetionShuffled = QuestionFindTypeShuffled(question: question)
-            } else {
-                quetionShuffled = QuestionShuffled(question: question)
-            }
-            print("")
-            print("------\(index)------")
-            quetionShuffled?.publish()
-            print("정답은?>>", terminator : "")
-            input = readLine()
-            if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
-                print("정답!")
-            } else {
-                //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
-                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(quetionShuffled?.getStatementContent(statement: (quetionShuffled?.answerSelectionModifed)!).content)")
-                input = readLine()
-            }
-            print("다음문제~")
-        }
+//        var quetionShuffled : QuestionShuffled?
+//        
+//        for index in 1...rep {
+//            if question.questionType == QuestionType.Find {
+////                quetionShuffled = QuestionFindTypeShuffled(question: question)
+//            } else {
+//                quetionShuffled = QuestionShuffled(question: question)
+//            }
+//            print("")
+//            print("------\(index)------")
+//            quetionShuffled?.publish()
+//            print("정답은?>>", terminator : "")
+//            input = readLine()
+//            if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
+//                print("정답!")
+//            } else {
+//                //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
+//                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(quetionShuffled?.getModfiedStatement(statement: (quetionShuffled?.answerSelectionModifed)!).content)")
+//                input = readLine()
+//            }
+//            print("다음문제~")
+//        }
     }
     
     func createQuestion() {

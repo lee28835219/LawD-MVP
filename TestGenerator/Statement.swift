@@ -20,6 +20,8 @@ class Statement {
     var notes : Array<Note>?
     var iscOrrect : Bool?
     
+    var isAnswer : Bool? = false
+    
     init(question : Question, content : String) {
         
         //(+)문제와 선택지가 상호참조에 따른 문제점이 없는지 시간내서 확인 2017. 4. 26

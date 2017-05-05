@@ -18,17 +18,17 @@ class OutputManager {
     }
     
     func questionPublish(
-        //시험
-        testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool,
-        //질문
-        questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
-        //목록
-        listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
-        //선택지
-        selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool],originalSelectionsNumber : [String],
-        //정답
-        ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String
-        ) {
+            //시험
+            testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool,
+            //질문
+            questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
+            //목록
+            listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
+            //선택지
+            selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool?],originalSelectionsNumber : [String],
+            //정답
+            ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String
+            ) {
         
         //문제
         print("")
