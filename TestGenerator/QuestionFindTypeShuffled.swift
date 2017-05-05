@@ -23,88 +23,10 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         super.init(question: question)
         
         self.lists = question.lists
-        _ = _shufflingAndOXChangingAndChangingAnswerOfSelectionOfFindType()
+//        _ = _shufflingAndOXChangingAndChangingAnswerOfSelectionOfFindType()
     }
     
-    func _shufflingAndOXChangingAndChangingAnswerOfSelectionOfFindType() -> Bool {
-        let isSuccess = true
-        lists.shuffle()
-        selections.shuffle()
-        
-        print("")
-        print("1. 목록선택지와 선택지 순서 변경함")
-        
-        // 2,3-1. 정오변경 지문이 문제에 있는지 확인
-        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
-        // 2,3-2. 정오변경 지문이 목록선택지에 모두 있는지 확인
-        var isAllSelectionListControversalExist = true
-        for sel in question.lists {
-            if sel.contentControversal == nil {
-                isAllSelectionListControversalExist = false
-            }
-        }
-        // 2,3-3. OX를 변경할 문제유형인지 확인
-        var isGonnaOXConvert = false
-        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
-            isGonnaOXConvert = true
-        }
-
-        // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
-        if isOppositeQuestionExist, isAllSelectionListControversalExist,
-            isGonnaOXConvert {
-            
-            // 2. 문제와 지문 OX변경을 실행
-            if Bool.random() {
-                isOXChanged = true
-                print("2. 문제와 목록선택지 OX 변경함")
-            } else {
-                print("2. 문제와 목록선택지 OX 변경안함")
-            }
-
-            // 3. 임의로 답변을 변경
-            let numberOfListSel = lists.count //5
-            let numberOfAnsListSel = question.answerListSelections.count //3
-            
-            for index in 0...numberOfAnsListSel-1 {
-                var cont = true
-                while cont {
-                    let randomNumber = Int(arc4random_uniform(UInt32(numberOfListSel)))
-                    let randomListSel = lists[randomNumber]
-                    if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
-                    } else {
-                        answerListSelectionModifed.append(randomListSel)
-                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
-                        cont = false
-                    }
-                }
-            }
-            
-            var tempListSelections = question.lists
-            var tempListSelectionsShuffled = lists
-            for ansSel in question.answerListSelections {
-                if let ix = tempListSelections.index(where: {$0 === ansSel}) {
-                    tempListSelections.remove(at: ix)
-                }
-            }
-            for ansSel in answerListSelectionModifed {
-                if let ix = tempListSelectionsShuffled.index(where: {$0 === ansSel}) {
-                    tempListSelectionsShuffled.remove(at: ix)
-                }
-            }
-            for index in 0...tempListSelectionsShuffled.count-1 {
-                originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
-            }
-            print("3. 목록선택지 정답을 아래와 같이 변경")
-            for (oriSel, shuSel) in originalShuffleMap {
-                print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
-            }
-            isAnswerChanged = true
-            // 3. 임의로 답변을 변경 끝
-            // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
-        }
-        
-        return isSuccess
-    }
+    
     
 //    func publish2() {
 //        print("")
