@@ -9,6 +9,6 @@
 import Foundation
 
 class Keyword {
-    let keywordKey : String = "1"
+    let key : String = "1"
     let content : String = "1"
 }

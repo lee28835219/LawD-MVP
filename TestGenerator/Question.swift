@@ -9,10 +9,11 @@
 import Foundation
 
 class Question {
+////내가 무엇인지
     let test : Test
-    
     let key : String //Primary key, 원본
     
+////나의 속성은 무었인지
     var string = ""
     var description : String? = nil
     
@@ -28,15 +29,23 @@ class Question {
     var contentControversal : String? //원본
     var contentNote: String? //원본
     
-    var answer: Int //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
-    //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요 2017. 4.29.
+    //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
+    //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요(+) 2017. 4.29.
+    var answer: Int
     
-    var selections = [Selection]() //원본
     var selectionsString : String? = nil
-    weak var answerSelection: Selection? //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
-    var listSelections = [Selection]() //원본
     var listSelectionsString : String? = nil
-    var answerListSelections = [Selection]()
+    
+    
+////내 식구들은 누구인지
+    var selections = [Selection]() //원본
+    var listSelections = [List]() //원본
+    var answerListSelections = [List]()
+    
+////식구들이 정해지면 내가 찾아야 하는 존재
+    //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
+    weak var answerSelection: Selection?
+    
     
     init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
@@ -59,8 +68,13 @@ class Question {
     }
     
     //자동으로 이 명령을 실행하는 방법은 없을까? (+) 2017. 4. 30.
+    //목록에 자동으로 iscOrrect와 isAnswer를 찍어주는 함수
+    //정답이 제대로 입력 안되있으면 못찼음
+    //현재 FO와 FX만 구현됨, FC는 못찾음
     public func findAnswer() -> Bool {
-        guard let ans = self.answerSelection else { return false }
+        guard let ans = self.answerSelection else {
+            fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
+        }
         switch self.questionType {
         case .Select, .Define:
             return true
@@ -69,7 +83,7 @@ class Question {
             // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
             case .O:
                 for listSel in listSelections {
-                    let listSelString = listSel.findStringNumberOfSelection()
+                    let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = true
                         listSel.isAnswer = true
@@ -79,12 +93,12 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-                _setContentSelectionsList()
+//                _setContentSelectionsList()
                 return true
             // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
                 for listSel in listSelections {
-                    let listSelString = listSel.findStringNumberOfSelection()
+                    let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = false
                         listSel.isAnswer = true
@@ -94,28 +108,30 @@ class Question {
                         listSel.isAnswer = false
                     }
                 }
-                _setContentSelectionsList()
+//                _setContentSelectionsList()
                 return true
             default:
-                print("정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+                print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
                 return false
             }
         default:
-            print("정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+            print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
             return false
         }
     }
     
     // 객체 밖에서 함수가 들어나지 않도록 정의하는 방법은 무었인가 (+) 2017. 4. 30.
-    func _setContentSelectionsList() {
-        for sel in selections {
-            for listSel in listSelections {
-                if sel.content.range(of: listSel.getListString()) != nil {
-                    sel.contentSelectionsList.append(listSel)
-                }
-            }
-        }
-    }
+    // 다시 체크할 수 있도록 수정필요 (+) 2017. 5. 5.
+    
+//    func _setContentSelectionsList() {
+//        for sel in selections {
+//            for listSel in listSelections {
+//                if sel.content.range(of: listSel.getListString()) != nil {
+//                    sel.contentSelectionsList.append(listSel)
+//                }
+//            }
+//        }
+//    }
     
     func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
         let oManager = OutputManager()
@@ -141,12 +157,11 @@ class Question {
         var listSelsIntString = [String]()
         
         
-            for (index,sel) in listSelections.enumerated() {
-                listSelectionsContent.append(sel.content)
-                listSelsIscOrrect.append(sel.iscOrrect)
-                listSelsIntString.append(sel.getListString(int: index+1))
-            }
-        
+        for (index,sel) in listSelections.enumerated() {
+            listSelectionsContent.append(sel.content)
+            listSelsIscOrrect.append(sel.iscOrrect)
+            listSelsIntString.append(sel.getListString(int: index+1))
+        }
         
         oManager.questionPublish(
             testCategroy: test.category,
@@ -167,7 +182,7 @@ class Question {
             originalSelectionsNumber : originalSelectionsNumber,
             ansSelContent: answerSelection?.content,  // 셔플하면 변경
             ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
-            ansSelIsAnswer: answerSelection!.isAnswer,  // 셔플하면 변경
+            ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
             questionAnswer: answer,  // 셔플하면 변경
             originalAnsSelectionNumber: answerSelection!.selectNumber.roundInt
         )

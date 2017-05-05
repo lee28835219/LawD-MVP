@@ -62,7 +62,7 @@ class QuestionShuffled : QShufflingManager {
             originalSelectionsNumber : originalSelectionsNumber,
             ansSelContent: ansSel.content,  // 셔플하면 변경
             ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
-            ansSelIsAnswer: true,  // 셔플하면 변경
+            ansSelIsAnswer: ansSel.isAnswer,  // 셔플하면 변경
             questionAnswer: (getAnswerNumber() + 1),  // 셔플하면 변경
             originalAnsSelectionNumber: answerSelectionModifed.selectNumber.roundInt
         )
@@ -116,10 +116,12 @@ class QuestionShuffled : QShufflingManager {
     
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(doesQuestionOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
-    func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?) {
+    func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         // 1. 기본
         var selectionContentShuffled = selection.content
         var iscOrrectShuffled = selection.iscOrrect
+        // 정답출력에 대해서 좀더 고민 필요 2017. 5. 5. (+)
+        var isAnswerShuffled = selection.isAnswer
         
         // 2. 질문의 OX를 변경을 확인
         if doesQuestionOXChanged {
@@ -129,12 +131,13 @@ class QuestionShuffled : QShufflingManager {
         
         // 3. 랜덤하게 변경된 정답에 맞춰 수정
         if doesQuestionAnswerChanged {
-            if selection.isAnswer {
+            if isAnswerShuffled {
                 // 3-1. 출력하려는 선택지가 답이고(selection.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 반전
                 // 3-2. 출력하려는 선택지가 답이고(selction.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 유지
                 if selection !== answerSelectionModifed {
                     selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
                     iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
+                    isAnswerShuffled = !isAnswerShuffled
                 } else {
                 }
             } else {
@@ -143,13 +146,14 @@ class QuestionShuffled : QShufflingManager {
                 if selection === answerSelectionModifed {
                     selectionContentShuffled = _toggleSelectionContent(selectionContentShuffled: selectionContentShuffled, selection: selection)
                     iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
+                    isAnswerShuffled = !isAnswerShuffled
                 } else {
                 }
                 
             }
 
         }
-        return (selectionContentShuffled, iscOrrectShuffled)
+        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
 }
 

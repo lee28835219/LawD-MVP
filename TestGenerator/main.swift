@@ -19,9 +19,6 @@ print("")
 //무한루프 시작
 repeat {
     
-    
-    print(testDB.tests.count)
-    
     for test in testDB.tests {
         print("------------",test.key)
         for que in test.questions {
@@ -33,6 +30,10 @@ repeat {
                 print("--",sel.key)
             }
         }
+    }
+    
+    for que in testDB.tests[0].questions {
+        que.publish()
     }
     
 //    let que = database.questions[0]

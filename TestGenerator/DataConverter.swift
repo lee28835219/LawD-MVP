@@ -247,7 +247,8 @@ class DataConverter: NSObject {
             guard let header = headerUn else {
                 fatalError("이상한 입력으로 인하여 목록선택지 파싱을 진행할 수 없음")
             }
-            _ = Selection(question: question, selectNumber: getKoreanCharacterOrLetterInListSelection(header: header).koreanCharacterAndLetterInt, content: residualString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: header))
+            _ = List(question: question, content: residualString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: header))
+//            _ = Selection(question: question, selectNumber: getKoreanCharacterOrLetterInListSelection(header: header).koreanCharacterAndLetterInt, content: residualString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: header))
             print("---목록선택지 파싱완료")
             return
         }
@@ -258,7 +259,8 @@ class DataConverter: NSObject {
         if _header != nil {
             let selectNumber = getKoreanCharacterOrLetterInListSelection(header: _header!).koreanCharacterAndLetterInt
             let selectionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
-            _ = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
+            _ = List(question: question, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
+//            _ = Selection(question: question, selectNumber: selectNumber, content: selectionString.trimmingCharacters(in: .whitespacesAndNewlines), selectString: getKoreanCharacterOrLetterInListSelection(header: _header!))
         } else {
             print("---목록선택지파싱중")
         }

@@ -9,9 +9,9 @@
 import Cocoa
 
 class QuestionFindTypeShuffled: QuestionShuffled {
-    var listSelectionShuffled = [Selection]()
-    var originalShuffleMap = [(original : Selection, shuffled : Selection)]()
-    var answerListSelectionModifed = [Selection]()
+    var listSelectionShuffled = [List]()
+    var originalShuffleMap = [(original : List, shuffled : List)]()
+    var answerListSelectionModifed = [List]()
     
     override init?(question: Question) {
         if question.listSelections.count == 0 {
@@ -45,8 +45,6 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         prtAnswer()
         print("")
     }
-    
-    
     
     func prtListSelection() {
         for (index,listSel) in listSelectionShuffled.enumerated() {
@@ -109,7 +107,7 @@ class QuestionFindTypeShuffled: QuestionShuffled {
                     if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
                     } else {
                         answerListSelectionModifed.append(randomListSel)
-                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
+                        originalShuffleMap.append((question.answerListSelections[index] as! List, randomListSel))
                         cont = false
                     }
                 }
@@ -142,12 +140,15 @@ class QuestionFindTypeShuffled: QuestionShuffled {
         return isSuccess
     }
     
-    override func getSelectContent(selection : Selection) -> (content :String, iscOrrect : Bool?) {
+    func getListContent(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         // 1. 기본
         var selectionContentShuffled = ""
         var selectionContentShuffledArray = [String]()
-        var listSelInSelectionContentShuffled = [Selection]()
+        var listSelInSelectionContentShuffled = [List]()
         let iscOrrectShuffled : Bool? = nil
+        
+        // 조금더 정밀하게 고민 필요 2017. 5. 5.
+        let isAnswerShuffled : Bool? = true
         
         for listSel in selection.contentSelectionsList {
             if originalShuffleMap.count > 0 {
@@ -174,10 +175,10 @@ class QuestionFindTypeShuffled: QuestionShuffled {
                 selectionContentShuffled = "\(selectionContentShuffled), \(selCon)"
             }
         }
-        return (selectionContentShuffled, iscOrrectShuffled)
+        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
     
-    func getListSelectContent(listSelection : Selection) -> (content : String, iscOrrect : Bool?) {
+    func getListSelectContent(listSelection : List) -> (content : String, iscOrrect : Bool?) {
         // 1. 기본
         var listSelContentShuffled = listSelection.content
         var iscOrrectShuffled = listSelection.iscOrrect

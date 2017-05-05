@@ -8,8 +8,11 @@
 import Foundation
 
 class Test {
-    var key : String
+    //내가 무엇인지
     let testDB : TestDB?
+    var key : String
+    
+    //나의 속성은 어떤지
     var isPublished : Bool //기출, 원본
     let category : String //변호사시험
     let catHelper : String? = nil //모의
@@ -22,6 +25,7 @@ class Test {
     
     var date : Date //1701, 원본
     
+    //내 식구들은 누구인지
     var questions = [Question]()
     
     init(testDB : TestDB?, isPublished: Bool, category: String, catHelper: String? = nil, subject: String, number: Int, numHelper: Int? = nil) {
@@ -44,7 +48,6 @@ class Test {
         } else {
             str = str + "." + String(format: "%03d", self.number)
         }
-        
         
         self.key = str
         

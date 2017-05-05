@@ -29,15 +29,14 @@ class QShufflingManager {
         
         // 주어진 문제에 답이 있는지 확인
         guard let ansSel = question.answerSelection else {
-            print("Failed<<<\(question.test.category) Shuffling하려하니 문제 정답이 없음")
-            return nil
+            fatalError("Failed<<<\(question.key) Shuffling하려하니 문제 정답이 없음")
         }
         self.answerSelectionModifed = ansSel
         // 완성 2017. 4. 26.
         
         // 0. 문제, 선택지, 정답의 주소를 저장
         guard question.selections.count != 0 else {
-            print("Failed<<<\(question.number) Shuffling하려하니 문제 선택지가 없음")
+            print("Failed<<<\(question.key) Shuffling하려하니 문제 선택지가 없음")
             return nil
         }
         
@@ -60,7 +59,7 @@ class QShufflingManager {
         
     }
     
-    func _toggleSelectionContent(selectionContentShuffled : String, selection : Selection) -> String {
+    func _toggleSelectionContent(selectionContentShuffled : String, selection : Statement) -> String {
         if selectionContentShuffled == selection.contentControversal  {
             return selection.content
         } else {

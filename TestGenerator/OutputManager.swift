@@ -17,7 +17,7 @@ class OutputManager {
     init() {
     }
     
-    func questionPublish(testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool, questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX, listSelsCont : [String], listSelsIscOrrect : [Bool?], listSelsIntString : [String], selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool],originalSelectionsNumber : [String], ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool, questionAnswer : Int, originalAnsSelectionNumber : String) {
+    func questionPublish(testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool, questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX, listSelsCont : [String], listSelsIscOrrect : [Bool?], listSelsIntString : [String], selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool],originalSelectionsNumber : [String], ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String) {
         
         //문제
         print("")
@@ -76,7 +76,7 @@ class OutputManager {
         print()
     }
     
-    private func _getSelectionStringForPrinting2(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
+    private func _getSelectionStringForPrinting2(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
         var selectionStr = ""
         if showOrigSel {
             selectionStr = selectionStr + "[" + originalSelectionNumber + "] "
@@ -87,10 +87,12 @@ class OutputManager {
                 selectionStr = selectionStr+(OX ? " (O)" : " (X)")
             } else {
                 if questionType != .Select {
-                    if selIsAnswer {
-                        selectionStr = selectionStr+" (O)"
-                    } else {
-                        selectionStr = selectionStr+" (X)"
+                    if let ans = selIsAnswer {
+                        if ans {
+                            selectionStr = selectionStr+" (O)"
+                        } else {
+                            selectionStr = selectionStr+" (X)"
+                        }
                     }
                 } else {
                     selectionStr = selectionStr+" (O,X)?"
