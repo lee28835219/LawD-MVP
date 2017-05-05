@@ -19,35 +19,35 @@ print("")
 //무한루프 시작
 repeat {
     
-    let que = database.questions[0]
-    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
-    
-    
-    let qs = QuestionShuffled(question: que)
-
-    qs?.publish()
-    
-    let question = qs?.question
-    var answerSelectionModifed = qs?.answerSelectionModifed
-    var selectionsShuffled = qs?.selectionsShuffled
-    
-    var doesQuestionOXChanged = qs?.doesQuestionOXChanged
-    var doesQuestionAnswerChanged = qs?.doesQuestionAnswerChanged
-    
-    print("question\(question)")
-    print("answerSelectionModifed\(answerSelectionModifed)")
-    print("selectionsShuffled\(selectionsShuffled)")
-    print("doesQuestionOXChanged\(doesQuestionOXChanged)")
-    print("doesQuestionAnswerChanged\(doesQuestionAnswerChanged)")
-    
-    let newQS = QuestionShuffled(question: que)
-    newQS?.publish()
-    newQS?.answerSelectionModifed = answerSelectionModifed!
-    newQS?.selectionsShuffled = selectionsShuffled!
-    newQS?.doesQuestionAnswerChanged = doesQuestionAnswerChanged!
-    newQS?.doesQuestionOXChanged = doesQuestionOXChanged!
-    
-    newQS?.publish()
+//    let que = database.questions[0]
+//    que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
+//    
+//    
+//    let qs = QuestionShuffled(question: que)
+//
+//    qs?.publish()
+//    
+//    let question = qs?.question
+//    var answerSelectionModifed = qs?.answerSelectionModifed
+//    var selectionsShuffled = qs?.selectionsShuffled
+//    
+//    var doesQuestionOXChanged = qs?.doesQuestionOXChanged
+//    var doesQuestionAnswerChanged = qs?.doesQuestionAnswerChanged
+//    
+//    print("question\(question)")
+//    print("answerSelectionModifed\(answerSelectionModifed)")
+//    print("selectionsShuffled\(selectionsShuffled)")
+//    print("doesQuestionOXChanged\(doesQuestionOXChanged)")
+//    print("doesQuestionAnswerChanged\(doesQuestionAnswerChanged)")
+//    
+//    let newQS = QuestionShuffled(question: que)
+//    newQS?.publish()
+//    newQS?.answerSelectionModifed = answerSelectionModifed!
+//    newQS?.selectionsShuffled = selectionsShuffled!
+//    newQS?.doesQuestionAnswerChanged = doesQuestionAnswerChanged!
+//    newQS?.doesQuestionOXChanged = doesQuestionOXChanged!
+//    
+//    newQS?.publish()
     
     
     
@@ -64,23 +64,20 @@ repeat {
 //    sampleQuestion.publish()
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
-//    let 법조윤리 = DC법조윤리()
-////    database.tests = 법조윤리.시험들
-//    print("--법조윤리 파싱 complete")
-////    for te in 법조윤리.시험들 {
-////        print("ooooo")
-////        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
-////    }
+    let 법조윤리 = DC법조윤리()
+//    database.tests = 법조윤리.시험들
+    print("--법조윤리 파싱 complete")
+//    for te in 법조윤리.시험들 {
+//        print("ooooo")
+//        print("[",te.category,"-",te.subject,"-",te.number,"회 ]")
+//    }
     
     
-//    let que = 법조윤리.시험들[6].questions[38]
-//
-//    que.publish()
-//    
-//    let queShu = QuestionFindTypeShuffled(question: que)
-//    
-//    queShu?.publish()
+    let ques = 법조윤리.시험들[4]
     
+    for que in ques.questions {
+        QuestionShuffled(question: que)?.publish()
+    }
     
     //명령어
     print(">>>>", terminator : "")
