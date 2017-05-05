@@ -24,6 +24,10 @@ class QShufflingManager {
         oManager.showAttribute = showAttribute
         oManager.showOrigSel = showOrigSel
         
+        //질문
+        let questionModifed = qShuffled.getModifedQuestion()  // (questionOX: QuestionOX, content: String)
+        
+        //목록
         var listsContent = [String]()
         var listsIscOrrect = [Bool?]()
         var listsIsAnswer = [Bool?]()
@@ -32,6 +36,7 @@ class QShufflingManager {
         
         for (index, list) in qShuffled.lists.enumerated() {
             let listResult = qShuffled.getModfiedStatementOfCommonStatement(statement: list)
+                            // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
             listsContent.append(listResult.content)
             listsIscOrrect.append(listResult.iscOrrect)
             listsIsAnswer.append(listResult.isAnswer)
@@ -39,15 +44,16 @@ class QShufflingManager {
             origialListsNumberString.append(list.getListString())
         }
         
-        print(origialListsNumberString)
-        
+        //선택지
         var selectionsContent = [String]()
         var selsIscOrrect = [Bool?]()
         var selsIsAnswer = [Bool?]()
         var originalSelectionsNumber = [String]()
         
         for sel in qShuffled.selections {
+            // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (+)
             var selResult = qShuffled.getModfiedStatementOfCommonStatement(statement: sel)
+                           // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
             if qShuffled.question.questionType == QuestionType.Find {
                 selResult = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
             }
@@ -57,9 +63,9 @@ class QShufflingManager {
             originalSelectionsNumber.append(sel.selectNumber.roundInt)
         }
         
-        
-        let questionModifed = qShuffled.getModifedQuestion()
+        //정답
         var ansSel = qShuffled.getModfiedStatementOfCommonStatement(statement: qShuffled.answerSelectionModifed)
+                     // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
         if qShuffled.question.questionType == .Find {
             ansSel = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuffled.answerSelectionModifed)
         }

@@ -25,7 +25,6 @@ class QuestionShuffled {
     var originalShuffleMap = [(original : List, shuffled : List)]()
     var answerListSelectionModifed = [List]()
     
-    
     init?(question : Question) {
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
@@ -52,6 +51,7 @@ class QuestionShuffled {
         
         // 추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
 
+        print("\(question.key) 문제 변경을 시작함")
         // 문제를 섞는 가장 중요한 함수
         switch question.questionType {
         case .Find:
@@ -61,18 +61,8 @@ class QuestionShuffled {
         case .Unknown:
             _ = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
-        
+        print("\(question.key) 문제 변경성공")
     }
-    
-//    func getModifiedStatement(statement: Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
-//        
-//        switch question.questionType {
-//        case .Find:
-//            getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: statement)
-//        default:
-//            <#code#>
-//        }
-//    }
     
     // 공통 변경사항
     func changeCommonTypeQuestion() {
@@ -113,20 +103,20 @@ class QuestionShuffled {
     func getModfiedStatementOfCommonStatement(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         
         // 1. 기본
-        var selectionContentShuffled = statement.content
+        var statementContentShuffled = statement.content
         var iscOrrectShuffled = statement.iscOrrect
         
         // 정답출력에 대해서 좀더 고민 필요 2017. 5. 5. (+), 
         // 고민중..일단 정답이 nil이면 이는 내용을 변경할 여지가 없는 것이니 원래 내용을 반환하도록 짜보고 있음
         // 문제의 ox를 바꾸거나 정답을 바꿀 때 선택지들의 isAnswer가 존재하는지를 체크하는게 필요할 듯
         if statement.isAnswer == nil {
-            return (selectionContentShuffled, iscOrrectShuffled, nil)
+            return (statementContentShuffled, iscOrrectShuffled, nil)
         }
         var isAnswerShuffled = statement.isAnswer!
         
         // 2. 질문의 OX를 변경을 확인
         if isOXChanged {
-            selectionContentShuffled = _toggleStatementContent(selectionContentShuffled: selectionContentShuffled, selection: statement)
+            statementContentShuffled = _toggleStatementContent(statementContentShuffled: statementContentShuffled, selection: statement)
             iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
         }
         
@@ -137,7 +127,7 @@ class QuestionShuffled {
                 // 3-2. 출력하려는 선택지가 답이고(statement.isAnswer.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerStatement) T/F를 유지
                 //      정답포인터와의 비교는 statement가 list인가 selection인가에 따라 다르므로 그에 맞게 statementIsAnswer 함수로 비교함
                 if !statementIsAnswer(statement) {
-                    selectionContentShuffled = _toggleStatementContent(selectionContentShuffled: selectionContentShuffled, selection: statement)
+                    statementContentShuffled = _toggleStatementContent(statementContentShuffled: statementContentShuffled, selection: statement)
                     iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
                     isAnswerShuffled = !isAnswerShuffled
                 } else {
@@ -146,7 +136,7 @@ class QuestionShuffled {
                 // 3-3. 출력하려는 선택지가 답이아니고(statement.isAnswer = true) 랜덤으로 선정된 정답포인터면(self = answerSelectionModifed) T/F를 변경
                 // 3-4. 출력하려는 선택지가 답이아니고(statement.isAnswer = true) 랜덤으로 선정된 정답포인터가 아니면(self <> answerSelectionModifed) T/F를 유지
                 if statementIsAnswer(statement) {
-                    selectionContentShuffled = _toggleStatementContent(selectionContentShuffled: selectionContentShuffled, selection: statement)
+                    statementContentShuffled = _toggleStatementContent(statementContentShuffled: statementContentShuffled, selection: statement)
                     iscOrrectShuffled = _toggleIsCorrect(iscOrrectShuffled: iscOrrectShuffled)
                     isAnswerShuffled = !isAnswerShuffled
                 } else {
@@ -154,7 +144,7 @@ class QuestionShuffled {
             }
 
         }
-        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
+        return (statementContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
     
     // getModfiedStatement에서 사용하는 statement가 정답인지 아닌지를 확인하는 함수
@@ -185,11 +175,11 @@ class QuestionShuffled {
         
     }
     
-    private func _toggleStatementContent(selectionContentShuffled : String, selection : Statement) -> String {
+    private func _toggleStatementContent(statementContentShuffled : String, selection : Statement) -> String {
         guard let statementCont = selection.contentControversal else {
             return selection.content
         }
-        if selectionContentShuffled == statementCont  {
+        if statementContentShuffled == statementCont  {
             return selection.content
         } else {
             return statementCont
@@ -258,7 +248,7 @@ class QuestionShuffled {
         changeCommonTypeQuestion()
         
         lists.shuffle()
-        print("1-1. 목록 순서 변경함")
+        print("1. 목록 순서 변경함")
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -340,8 +330,14 @@ class QuestionShuffled {
         var listSelInSelectionContentShuffled = [List]()
         let iscOrrectShuffled : Bool? = nil
         
-        // 조금더 정밀하게 고민 필요 2017. 5. 5.
-        let isAnswerShuffled : Bool? = true
+        // 조금더 정밀하게 고민 필요 2017. 5. 5. 일단 정답에다가 참을 찍어주도록 하였음
+        var isAnswerShuffled : Bool?
+        if statementIsAnswer(selection) {
+            isAnswerShuffled = true
+        } else {
+            isAnswerShuffled = false
+        }
+        
         
         for listSel in selection.listInContentOfSelection {
             if originalShuffleMap.count > 0 {
@@ -354,6 +350,7 @@ class QuestionShuffled {
                 listSelInSelectionContentShuffled.append(listSel)
             }
         }
+        
         for listSel in listSelInSelectionContentShuffled {
             //            print("listSel.getListString()",listSel.getListString())
             if let index = lists.index(where: {$0 === listSel}) {
@@ -361,6 +358,7 @@ class QuestionShuffled {
             }
         }
         selectionContentShuffledArray.sort()
+        
         for (index, selCon) in selectionContentShuffledArray.enumerated() {
             if index == 0 {
                 selectionContentShuffled = selCon
@@ -368,6 +366,7 @@ class QuestionShuffled {
                 selectionContentShuffled = "\(selectionContentShuffled), \(selCon)"
             }
         }
+        
         return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
 }

@@ -13,7 +13,6 @@
 		396291AE1EBC41CC00FADC4C /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396291AD1EBC41CC00FADC4C /* List.swift */; };
 		396291B31EBC60C300FADC4C /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396291B21EBC60C300FADC4C /* Selection.swift */; };
 		39633DDF1E9B134B00F9FD4D /* QuestionShuffled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */; };
-		396453381EB58902001BEC9D /* QuestionFindTypeShuffled.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */; };
 		397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B21EB6F08D0040CE01 /* DataConverter.swift */; };
 		397631B51EB6F4CE0040CE01 /* DC법조윤리.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */; };
 		39DF734B1EAF2EFE005AD7D7 /* Keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */; };
@@ -59,7 +58,6 @@
 		396291AD1EBC41CC00FADC4C /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		396291B21EBC60C300FADC4C /* Selection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionShuffled.swift; sourceTree = "<group>"; };
-		396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionFindTypeShuffled.swift; sourceTree = "<group>"; };
 		397631B21EB6F08D0040CE01 /* DataConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
 		397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC법조윤리.swift"; sourceTree = "<group>"; };
 		39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keyword.swift; sourceTree = "<group>"; };
@@ -120,6 +118,7 @@
 		396291AF1EBC41FA00FADC4C /* 5.Test */ = {
 			isa = PBXGroup;
 			children = (
+				39E1DE1C1E82C842006F3DB9 /* TestDB.swift */,
 				3903139E1EB9BC8B006FE79A /* Test.swift */,
 				39E1DE181E82C091006F3DB9 /* Question.swift */,
 				396291B41EBC628B00FADC4C /* Statement */,
@@ -179,7 +178,6 @@
 			children = (
 				39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */,
 				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
-				396453371EB58902001BEC9D /* QuestionFindTypeShuffled.swift */,
 			);
 			name = ProcessingQuestion;
 			sourceTree = "<group>";
@@ -189,7 +187,6 @@
 			children = (
 				396291B01EBC422000FADC4C /* 1.Code */,
 				396291B11EBC423100FADC4C /* 2.Case */,
-				39E1DE1C1E82C842006F3DB9 /* TestDB.swift */,
 				396291AF1EBC41FA00FADC4C /* 5.Test */,
 				39DF734A1EAF2EFE005AD7D7 /* Keyword.swift */,
 				39DF734C1EAF4036005AD7D7 /* Note.swift */,
@@ -280,7 +277,6 @@
 				39E1DE1D1E82C842006F3DB9 /* TestDB.swift in Sources */,
 				39DF734B1EAF2EFE005AD7D7 /* Keyword.swift in Sources */,
 				390313A11EB9BDF6006FE79A /* 문제.swift in Sources */,
-				396453381EB58902001BEC9D /* QuestionFindTypeShuffled.swift in Sources */,
 				396291B31EBC60C300FADC4C /* Selection.swift in Sources */,
 				395BF6D31E82BA36004BE198 /* main.swift in Sources */,
 				396291AE1EBC41CC00FADC4C /* List.swift in Sources */,
