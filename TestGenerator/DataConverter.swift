@@ -184,7 +184,6 @@ class DataConverter: NSObject {
             
             let newQuestion = Question(test: test,number: getTestNumber(testHeader: header), questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
             newQuestion.string = questionString
-            test.questions.append(newQuestion)
             print("---문제 파싱완료")
             return
         }
@@ -197,7 +196,6 @@ class DataConverter: NSObject {
             let questionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             let newQuestion = Question(test: test,number: getTestNumber(testHeader: _testHeader!),  questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
             newQuestion.string = questionString
-            test.questions.append(newQuestion)
         } else {
             print("---시험파싱중")
         }

@@ -9,13 +9,13 @@
 import Foundation
 
 struct 문제 {
-    let testNumber : Int
-    let test : String?
-    let testYear : Int?
-
-    let questionNumber : Int
-    let question : String?
-    
-    let listSelections : [String]?
-    let selections : [String]
+//    let testNumber : Int
+//    let test : String?
+//    let testYear : Int?
+//
+//    let questionNumber : Int
+//    let question : String?
+//    
+//    let listSelections : [String]?
+//    let selections : [String]
 }

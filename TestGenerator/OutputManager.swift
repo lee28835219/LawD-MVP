@@ -70,11 +70,9 @@ class OutputManager {
         
         //선택지
         for (index,selCont) in selectionsContent.enumerated() {
-            print("  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting2(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
+            print("  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
         }
         print()
-        
-        
         
         //정답
         if showAnswer {
@@ -85,12 +83,12 @@ class OutputManager {
                     return
             }
             print("  " + questionAnswer.roundInt + "  " +
-                _getSelectionStringForPrinting2(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
+                _getSelectionStringForPrinting(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
         }
         print()
     }
     
-    private func _getSelectionStringForPrinting2(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
+    private func _getSelectionStringForPrinting(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
         var selectionStr = ""
         if showOrigSel {
             selectionStr = selectionStr + "[" + originalSelectionNumber + "] "

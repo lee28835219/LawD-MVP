@@ -10,7 +10,6 @@ import Foundation
 
 class QShufflingManager {
     
-//    let question : Question
     let qShuffled : QuestionShuffled
     
     init(qShuffled: QuestionShuffled) {
@@ -79,7 +78,7 @@ class QShufflingManager {
             
             questionNumber: qShuffled.question.number,
             questionContent: questionModifed.content,  // 셔플하면 변경
-            questionContentNote: qShuffled.question.testQuestionNote,
+            questionContentNote: qShuffled.question.contentNote,
             questionType: qShuffled.question.questionType,
             questionOX: questionModifed.questionOX ,   // 셔플하면 변경
             
