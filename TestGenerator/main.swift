@@ -41,14 +41,14 @@ repeat {
     
     var queS = QuestionShuffled(question: que)
     
-    QShufflingManager(question: que, qShuffled: queS).publish()
+    QShufflingManager(qShuffled: queS!).publish()
     
     que = testDB.tests[0].questions[1]
     que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
     
     queS = QuestionShuffled(question: que)
     
-    QShufflingManager(question: que, qShuffled: queS).publish()
+    QShufflingManager(qShuffled: queS!).publish()
     
 //    let que1 = testDB.tests[0].questions[1]
 //    que1.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)

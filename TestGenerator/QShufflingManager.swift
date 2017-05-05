@@ -10,15 +10,11 @@ import Foundation
 
 class QShufflingManager {
     
-    let question : Question
-    let qShuffled : QuestionShuffled?
+//    let question : Question
+    let qShuffled : QuestionShuffled
     
-    init(question: Question, qShuffled: QuestionShuffled?) {
-        self.question = question
+    init(qShuffled: QuestionShuffled) {
         self.qShuffled = qShuffled
-        if qShuffled == nil {
-            print("\(question.key) 변형문제는 존재하지 않음")
-        }
     }
     
     func publish(showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
@@ -28,19 +24,14 @@ class QShufflingManager {
         oManager.showAttribute = showAttribute
         oManager.showOrigSel = showOrigSel
         
-        guard let qShuWrapped = qShuffled else {
-            question.publish(showAttribute: showAttribute, showAnswer: showAnswer, showTitle: showTitle, showOrigSel: showOrigSel)
-            return
-        }
-        
         var listsContent = [String]()
         var listsIscOrrect = [Bool?]()
         var listsIsAnswer = [Bool?]()
         var listsNumberString = [String]()
         var origialListsNumberString = [String]()
         
-        for (index, list) in qShuWrapped.lists.enumerated() {
-            let listResult = qShuWrapped.getModfiedStatement(statement: list)
+        for (index, list) in qShuffled.lists.enumerated() {
+            let listResult = qShuffled.getModfiedStatementOfCommonStatement(statement: list)
             listsContent.append(listResult.content)
             listsIscOrrect.append(listResult.iscOrrect)
             listsIsAnswer.append(listResult.isAnswer)
@@ -55,10 +46,11 @@ class QShufflingManager {
         var selsIsAnswer = [Bool?]()
         var originalSelectionsNumber = [String]()
         
-        
-        
-        for sel in qShuWrapped.selections {
-            let selResult = qShuWrapped.getModfiedStatement(statement: sel)
+        for sel in qShuffled.selections {
+            var selResult = qShuffled.getModfiedStatementOfCommonStatement(statement: sel)
+            if qShuffled.question.questionType == QuestionType.Find {
+                selResult = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+            }
             selectionsContent.append(selResult.content)
             selsIscOrrect.append(selResult.iscOrrect)
             selsIsAnswer.append(selResult.isAnswer)
@@ -66,20 +58,23 @@ class QShufflingManager {
         }
         
         
-        let questionModifed = qShuWrapped.getModifedQuestion()
-        let ansSel = qShuWrapped.getModfiedStatement(statement: qShuWrapped.answerSelectionModifed)
+        let questionModifed = qShuffled.getModifedQuestion()
+        var ansSel = qShuffled.getModfiedStatementOfCommonStatement(statement: qShuffled.answerSelectionModifed)
+        if qShuffled.question.questionType == .Find {
+            ansSel = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuffled.answerSelectionModifed)
+        }
         
         
         oManager.questionPublish(
-            testCategroy: question.test.category,
-            testNumber: question.test.number,
-            testSubject: question.test.subject,
+            testCategroy: qShuffled.question.test.category,
+            testNumber: qShuffled.question.test.number,
+            testSubject: qShuffled.question.test.subject,
             isPublished: false, // 변형한 문제이므로 false로 항상 입력
             
-            questionNumber: question.number,
+            questionNumber: qShuffled.question.number,
             questionContent: questionModifed.content,  // 셔플하면 변경
-            questionContentNote: question.testQuestionNote,
-            questionType: question.questionType,
+            questionContentNote: qShuffled.question.testQuestionNote,
+            questionType: qShuffled.question.questionType,
             questionOX: questionModifed.questionOX ,   // 셔플하면 변경
             
             listsContents : listsContent, // 셔플하면 변경
@@ -95,8 +90,8 @@ class QShufflingManager {
             ansSelContent: ansSel.content,  // 셔플하면 변경
             ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: ansSel.isAnswer,  // 셔플하면 변경
-            questionAnswer: (qShuWrapped.getAnswerNumber() + 1),
-            originalAnsSelectionNumber: qShuWrapped.answerSelectionModifed.selectNumber.roundInt // 셔플하면 변경
+            questionAnswer: (qShuffled.getAnswerNumber() + 1),
+            originalAnsSelectionNumber: qShuffled.answerSelectionModifed.selectNumber.roundInt // 셔플하면 변경
         )
     }
 }

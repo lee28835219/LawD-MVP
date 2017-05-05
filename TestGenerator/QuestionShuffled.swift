@@ -59,10 +59,20 @@ class QuestionShuffled {
         case .Select:
             _ = changeSelectTypeQuestion()
         case .Unknown:
-            _ = changeSelectTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
+            _ = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
         
     }
+    
+//    func getModifiedStatement(statement: Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
+//        
+//        switch question.questionType {
+//        case .Find:
+//            getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: statement)
+//        default:
+//            <#code#>
+//        }
+//    }
     
     // 공통 변경사항
     func changeCommonTypeQuestion() {
@@ -99,7 +109,8 @@ class QuestionShuffled {
 //        return getModfiedStatement(statement : selection)
 //    }
     
-    func getModfiedStatement(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
+    // Find유형의 선택지를 제외한 모든 Statement를 출력하는 함수
+    func getModfiedStatementOfCommonStatement(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         
         // 1. 기본
         var selectionContentShuffled = statement.content
@@ -148,7 +159,7 @@ class QuestionShuffled {
     
     // getModfiedStatement에서 사용하는 statement가 정답인지 아닌지를 확인하는 함수
     // 하나라도 있기만 하면 true반환이니 병렬적으로 체크하나 좀 찝찝하긴 하나 크게 상관 없을 듯
-    func statementIsAnswer(_ statement: Statement) -> Bool {
+    private func statementIsAnswer(_ statement: Statement) -> Bool {
         var isSame = false
         
         if answerSelectionModifed === statement {
@@ -161,7 +172,7 @@ class QuestionShuffled {
         return isSame
     }
     
-    func _toggleIsCorrect(iscOrrectShuffled : Bool?) -> Bool?{
+    private func _toggleIsCorrect(iscOrrectShuffled : Bool?) -> Bool?{
         if let iscOr = iscOrrectShuffled {
             if iscOr {
                 return false
@@ -174,14 +185,64 @@ class QuestionShuffled {
         
     }
     
-    func _toggleStatementContent(selectionContentShuffled : String, selection : Statement) -> String {
-        if selectionContentShuffled == selection.contentControversal  {
+    private func _toggleStatementContent(selectionContentShuffled : String, selection : Statement) -> String {
+        guard let statementCont = selection.contentControversal else {
+            return selection.content
+        }
+        if selectionContentShuffled == statementCont  {
             return selection.content
         } else {
-            return selection.contentControversal!
+            return statementCont
         }
     }
     
+    private func changeSelectTypeQuestion() {
+        
+        changeCommonTypeQuestion()
+        
+        // 2,3-1. 정오변경 지문이 문제에 있는지 확인
+        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
+        
+        // 2,3-2. 정오변경 지문이 선택지에 모두 있는지 확인
+        var isAllSelectionControversalExist = true
+        for sel in question.selections {
+            if sel.contentControversal == nil {
+                isAllSelectionControversalExist = false
+            }
+        }
+        // 2,3-3. OX를 변경할 문제유형인지 확인
+        var isGonnaOXConvert = false
+        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X {
+            isGonnaOXConvert = true
+        }
+        
+        // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
+        if isOppositeQuestionExist, isAllSelectionControversalExist,
+            isGonnaOXConvert {
+            
+            // 2. 문제와 지문 OX변경을 실행
+            if Bool.random() {
+                isOXChanged = true
+                print("2. 문제와 선택지 OX 변경함")
+            } else {
+                print("2. 문제와 선택지 OX 변경안함")
+            }
+            
+            // 3. 임의로 답변을 변경
+            // 3-1. 랜덤답안의 포인터를 선정
+            
+            isAnswerChanged = true
+            let _randomSelectionNumber = Int(arc4random_uniform(UInt32(selections.count)))
+            answerSelectionModifed = selections[_randomSelectionNumber]
+            //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
+            //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
+            guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
+                print("\(question.key) 변형문제의 정답찾기 실패")
+                return
+            }
+            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+        }
+    }
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
     func getAnswerNumber() -> Int {
         //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
@@ -192,7 +253,87 @@ class QuestionShuffled {
         return ansNumber
     }
     
-    func getListContent(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
+    private func changeFindTypeQuestion() {
+        
+        changeCommonTypeQuestion()
+        
+        lists.shuffle()
+        print("1-1. 목록 순서 변경함")
+        
+        // 2,3-1. 정오변경 지문이 문제에 있는지 확인
+        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
+        
+        // 2,3-2. 정오변경 지문이 목록에 모두 있는지 확인
+        var isAllSelectionListControversalExist = true
+        for sel in question.lists {
+            if sel.contentControversal == nil {
+                isAllSelectionListControversalExist = false
+            }
+        }
+        
+        // 2,3-3. OX를 변경할 문제유형인지 확인
+        var isGonnaOXConvert = false
+        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
+            isGonnaOXConvert = true
+        }
+        
+        // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
+        if isOppositeQuestionExist, isAllSelectionListControversalExist,
+            isGonnaOXConvert {
+            
+            // 2. 문제와 지문 OX변경을 실행
+            if Bool.random() {
+                isOXChanged = true
+                print("2. 문제와 목록선택지 OX 변경함")
+            } else {
+                print("2. 문제와 목록선택지 OX 변경안함")
+            }
+            
+            // 3. 임의로 답변을 변경
+            let numberOfListSel = lists.count //5
+            let numberOfAnsListSel = question.answerListSelections.count //3
+            
+            for index in 0...numberOfAnsListSel-1 {
+                var cont = true
+                while cont {
+                    let randomNumber = Int(arc4random_uniform(UInt32(numberOfListSel)))
+                    let randomListSel = lists[randomNumber]
+                    if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
+                    } else {
+                        answerListSelectionModifed.append(randomListSel)
+                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
+                        cont = false
+                    }
+                }
+            }
+            
+            var tempListSelections = question.lists
+            var tempListSelectionsShuffled = lists
+            for ansSel in question.answerListSelections {
+                if let ix = tempListSelections.index(where: {$0 === ansSel}) {
+                    tempListSelections.remove(at: ix)
+                }
+            }
+            for ansSel in answerListSelectionModifed {
+                if let ix = tempListSelectionsShuffled.index(where: {$0 === ansSel}) {
+                    tempListSelectionsShuffled.remove(at: ix)
+                }
+            }
+            for index in 0...tempListSelectionsShuffled.count-1 {
+                originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
+            }
+            print("3. 목록선택지 정답을 아래와 같이 변경")
+            for (oriSel, shuSel) in originalShuffleMap {
+                print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
+            }
+            isAnswerChanged = true
+            // 3. 임의로 답변을 변경 끝
+            // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
+        }
+    }
+    
+    // Find유형의 문제의 선택지를 출력하는 함수
+    func getModifedListContentStatementInSelectionOfFindTypeQuestion(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
         // 1. 기본
         var selectionContentShuffled = ""
         var selectionContentShuffledArray = [String]()
@@ -246,139 +387,6 @@ extension MutableCollection where Indices.Iterator.Element == Index {
             guard d != 0 else { continue }
             let i = index(firstUnshuffled, offsetBy: d)
             swap(&self[firstUnshuffled], &self[i])
-        }
-    }
-}
-
-//Select 유형 문제에서 사용하는 함수
-extension QuestionShuffled {
-    func changeSelectTypeQuestion() {
-        
-        changeCommonTypeQuestion()
-        
-        // 2,3-1. 정오변경 지문이 문제에 있는지 확인
-        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
-        
-        // 2,3-2. 정오변경 지문이 선택지에 모두 있는지 확인
-        var isAllSelectionControversalExist = true
-        for sel in question.selections {
-            if sel.contentControversal == nil {
-                isAllSelectionControversalExist = false
-            }
-        }
-        // 2,3-3. OX를 변경할 문제유형인지 확인
-        var isGonnaOXConvert = false
-        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X {
-            isGonnaOXConvert = true
-        }
-        
-        // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
-        if isOppositeQuestionExist, isAllSelectionControversalExist,
-            isGonnaOXConvert {
-            
-            // 2. 문제와 지문 OX변경을 실행
-            if Bool.random() {
-                isOXChanged = true
-                print("2. 문제와 선택지 OX 변경함")
-            } else {
-                print("2. 문제와 선택지 OX 변경안함")
-            }
-            
-            // 3. 임의로 답변을 변경
-            // 3-1. 랜덤답안의 포인터를 선정
-            
-            isAnswerChanged = true
-            let _randomSelectionNumber = Int(arc4random_uniform(UInt32(selections.count)))
-            answerSelectionModifed = selections[_randomSelectionNumber]
-            //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
-            //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
-            guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
-                print("\(question.key) 변형문제의 정답찾기 실패")
-                return
-            }
-            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
-        }
-    }
-}
-
-// Find유형에서 사용하는 함수
-extension QuestionShuffled {
-    func changeFindTypeQuestion() {
-        
-        changeCommonTypeQuestion()
-        
-        lists.shuffle()
-        print("1-1. 목록 순서 변경함")
-        
-        // 2,3-1. 정오변경 지문이 문제에 있는지 확인
-        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
-        
-        // 2,3-2. 정오변경 지문이 목록선택지에 모두 있는지 확인
-        var isAllSelectionListControversalExist = true
-        for sel in question.lists {
-            if sel.contentControversal == nil {
-                isAllSelectionListControversalExist = false
-            }
-        }
-        
-        // 2,3-3. OX를 변경할 문제유형인지 확인
-        var isGonnaOXConvert = false
-        if question.questionOX == QuestionOX.O || question.questionOX == QuestionOX.X  {
-            isGonnaOXConvert = true
-        }
-        
-        // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
-        if isOppositeQuestionExist, isAllSelectionListControversalExist,
-            isGonnaOXConvert {
-            
-            // 2. 문제와 지문 OX변경을 실행
-            if Bool.random() {
-                isOXChanged = true
-                print("2. 문제와 목록선택지 OX 변경함")
-            } else {
-                print("2. 문제와 목록선택지 OX 변경안함")
-            }
-            
-//            // 3. 임의로 답변을 변경
-//            let numberOfListSel = lists.count //5
-//            let numberOfAnsListSel = question.answerListSelections.count //3
-//            
-//            for index in 0...numberOfAnsListSel-1 {
-//                var cont = true
-//                while cont {
-//                    let randomNumber = Int(arc4random_uniform(UInt32(numberOfListSel)))
-//                    let randomListSel = lists[randomNumber]
-//                    if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
-//                    } else {
-//                        answerListSelectionModifed.append(randomListSel)
-//                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
-//                        cont = false
-//                    }
-//                }
-//            }
-//            
-//            var tempListSelections = question.lists
-//            var tempListSelectionsShuffled = lists
-//            for ansSel in question.answerListSelections {
-//                if let ix = tempListSelections.index(where: {$0 === ansSel}) {
-//                    tempListSelections.remove(at: ix)
-//                }
-//            }
-//            for ansSel in answerListSelectionModifed {
-//                if let ix = tempListSelectionsShuffled.index(where: {$0 === ansSel}) {
-//                    tempListSelectionsShuffled.remove(at: ix)
-//                }
-//            }
-//            for index in 0...tempListSelectionsShuffled.count-1 {
-//                originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
-//            }
-//            print("3. 목록선택지 정답을 아래와 같이 변경")
-//            for (oriSel, shuSel) in originalShuffleMap {
-//                print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
-//            }
-//            isAnswerChanged = true
-//            // 3. 임의로 답변을 변경 끝
-//            // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
         }
     }
 }
