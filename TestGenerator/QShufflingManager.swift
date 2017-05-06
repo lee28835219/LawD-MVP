@@ -72,6 +72,7 @@ class QShufflingManager {
         
         oManager.questionPublish(
             testCategroy: qShuffled.question.test.category,
+            testCategoryHelper: qShuffled.question.test.catHelper,
             testNumber: qShuffled.question.test.number,
             testSubject: qShuffled.question.test.subject,
             isPublished: false, // 변형한 문제이므로 false로 항상 입력

@@ -127,7 +127,7 @@ class DataConverter: NSObject {
         // newTest 초기화에 대해서 고민해봐야 함 (+) 2017. 5. 5.
             let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
             newTest.description = testHeader
-            newTest.string = testString
+            newTest.raw = testString
             시험들.append(newTest)
             print("---시험 파싱완료")
             return
@@ -141,7 +141,7 @@ class DataConverter: NSObject {
             let testString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
             newTest.description = _testHeader!
-            newTest.string = testString
+            newTest.raw = testString
             시험들.append(newTest)
         } else {
             print("---시험파싱중")
@@ -183,7 +183,7 @@ class DataConverter: NSObject {
             let questionString = residualString
             
             let newQuestion = Question(test: test,number: getTestNumber(testHeader: header), questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
-            newQuestion.string = questionString
+            newQuestion.raw = questionString
             print("---문제 파싱완료")
             return
         }
@@ -195,7 +195,7 @@ class DataConverter: NSObject {
         if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
             let questionString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             let newQuestion = Question(test: test,number: getTestNumber(testHeader: _testHeader!),  questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "", answer: 0)
-            newQuestion.string = questionString
+            newQuestion.raw = questionString
         } else {
             print("---시험파싱중")
         }

@@ -14,13 +14,13 @@ class Question {
     let key : String //Primary key, 원본
     
 ////나의 속성은 무었인지
-    var string = ""
-    var description : String? = nil
+    var modifiedDate : Date = Date()
+    var description	: String = ""
     
-    // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29.
+    // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29. => json으로 변환을 생각한다면 기본데이터형으로 놔두는게 오히려 더 편리함
     var number : Int //문제번호, 원본
-    var testQuestionNote : String? //유니온문제번호 등 기타 정보, 원본
-    var testSubjectDetail : String? //민법, 원본
+    var subjectDetail : String? //민법, 원본
+    var note : String? //유니온문제번호 등 기타 정보, 원본
     
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
@@ -33,8 +33,11 @@ class Question {
     //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요(+) 2017. 4.29.
     var answer: Int
     
-    var selectionsString : String? = nil
-    var listsString : String? = nil
+    var raw : String = ""
+    var rawSelections : String = ""
+    var rawLists : String = ""
+    
+    
     
     
 ////내 식구들은 누구인지
@@ -44,7 +47,7 @@ class Question {
 ////식구들이 정해지면 내가 찾아야 하는 존재
     //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
     weak var answerSelection: Selection?
-    var answerListSelections = [List]()
+    var answerLists = [List]()
     
     init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
@@ -74,6 +77,7 @@ class Question {
         guard let ans = self.answerSelection else {
             fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
         }
+        
         switch self.questionType {
         case .Find:
             switch self.questionOX {
@@ -84,7 +88,7 @@ class Question {
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = true
                         listSel.isAnswer = true
-                        self.answerListSelections.append(listSel)
+                        self.answerLists.append(listSel)
                     } else {
                         listSel.iscOrrect = false
                         listSel.isAnswer = false
@@ -99,7 +103,7 @@ class Question {
                     if ans.content.range(of: listSelString) != nil {
                         listSel.iscOrrect = false
                         listSel.isAnswer = true
-                        self.answerListSelections.append(listSel)
+                        self.answerLists.append(listSel)
                     } else {
                         listSel.iscOrrect = true
                         listSel.isAnswer = false
@@ -111,8 +115,7 @@ class Question {
                 print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
                 return false
             }
-        default:
-            print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+        default: // 정답을 찾는 대상이 아님
             return false
         }
     }
@@ -163,6 +166,7 @@ class Question {
         
         oManager.questionPublish(
             testCategroy: test.category,
+            testCategoryHelper : test.catHelper,
             testNumber: test.number,
             testSubject: test.subject,
             isPublished: test.isPublished,
@@ -292,7 +296,7 @@ class Question {
         let questionType = ["label":self.questionType.rawValue, "Attribute":JsonAttributes().questionTypeNotNullableAttribute] as [String : Any]
         let testSubject = ["label":self.test.subject, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
         let testCategory = ["label":self.test.category, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testDate = ["label":self.test.date, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
+        let testDate = ["label":self.test.date ?? testDB, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
         let isPublished = ["label":self.test.isPublished, "Attribute":JsonAttributes().boolNotNullableAttribute] as [String : Any]
         
         // 최종 question infromation

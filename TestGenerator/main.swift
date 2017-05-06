@@ -92,6 +92,8 @@ repeat {
         }
     }
     
+    print(testDB.createJsonObjectNew()!)
+    
     
     //명령어
     print(">>>>", terminator : "")

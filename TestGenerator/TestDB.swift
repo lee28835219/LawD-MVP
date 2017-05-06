@@ -8,12 +8,22 @@
 
 import Foundation
 class TestDB {
-    var name = "default"
+    let key : String
+    
+    // How do I format JSON Date String with Swift?
+    // http://stackoverflow.com/questions/28748162/how-do-i-format-json-date-string-with-swift
+
+    let createDate	: Date = Date()
+    var modifiedDate : Date = Date()
+    var description : String = ""
+    
     var tests : [Test] = []
     
-    init() {
+    init(key: String = "default") {
+        self.key = key
+        
         //기본 문제생성, 법인 아닌 사단 SO
-        let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험", subject: "민사법", number: 1, numHelper: 2017)
+        let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험",catHelper: "샘플1", subject: "민사법", number: 1, numHelper: 2017)
         test변호사시험민사법샘플.description = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
         
         let test공인중개사1차샘플2 = Test(testDB: self, isPublished: true, category: "공인중개사", subject: "1차", number: 25, numHelper: nil)
@@ -217,6 +227,31 @@ class TestDB {
         }
         
         //json data형식의 문자열을 반환
+        return String(data: data, encoding: .utf8)
+        
+    }
+    
+    func createJsonObjectNew() -> String? {
+        let data : Data
+        
+        var object = [String : Any]()
+        
+        
+        
+        
+        for test in tests {
+            object[test.key] = test.category
+        }
+        
+        do {
+            data = try JSONSerialization.data(
+                withJSONObject: ["tests":object],
+                options: .prettyPrinted
+            )
+        } catch  {
+            return nil
+        }
+        
         return String(data: data, encoding: .utf8)
     }
 }

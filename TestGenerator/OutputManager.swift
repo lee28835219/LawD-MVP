@@ -19,7 +19,7 @@ class OutputManager {
     
     func questionPublish(
             //시험
-            testCategroy : String, testNumber : Int, testSubject : String, isPublished : Bool,
+            testCategroy : String,testCategoryHelper : String?, testNumber : Int, testSubject : String, isPublished : Bool,
             //질문
             questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
             //목록
@@ -33,8 +33,9 @@ class OutputManager {
         //문제
         print("")
         if showTitle {
-            let queTitle = "[\(testCategroy) \(testNumber)회 \(testSubject) "+(isPublished ? "기출]" : "변형]")
-            print(queTitle)
+            let catHelp = testCategoryHelper ?? ""
+            let testTitle = (isPublished ? "[기출] " : "[변형] ") + testCategroy + catHelp + "\(testNumber)회 \(testSubject) "
+            print(testTitle)
         }
         
         print("문 "+questionNumber.description+". ")

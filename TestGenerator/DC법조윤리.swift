@@ -10,9 +10,6 @@ import Cocoa
 
 class DC법조윤리: DataConverter {
     
-//    var object = [questionKey : Int, answer : Int)]()
-    // testname : ( questionNumber, answer)
-    
     //    Read JSON file with Swift 3
     //    http://stackoverflow.com/questions/40438784/read-json-file-with-swift-3
 
@@ -63,7 +60,7 @@ class DC법조윤리: DataConverter {
         sliceTestString(regexPattern: "=-=변호사윤리 시험기출 \\d회 \\d{3}.+=-=", string: wholeTestString)
         
         for test in 시험들 {
-            sliceQuestionString(regexPattern: "문\\s{0,}\\d+.", residualString: test.string!, test: test, headerUn: nil)
+            sliceQuestionString(regexPattern: "문\\s{0,}\\d+.", residualString: test.raw, test: test, headerUn: nil)
         }
         
         
@@ -84,7 +81,7 @@ class DC법조윤리: DataConverter {
         // 문제를 분설
         for test in 시험들 {
             for que in test.questions {
-                var queStr = que.string
+                var queStr = que.raw
                 let queCutSelectionRange = queStr.range(of: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}", options: .regularExpression)
                 if queCutSelectionRange == nil {
                     fatalError("문제 파싱 중 문제의 선택지를 찾을 수 없음")
@@ -108,32 +105,29 @@ class DC법조윤리: DataConverter {
                 
                 que.content = queStr.trimmingCharacters(in: .whitespacesAndNewlines)
                 
-                que.selectionsString = queCutSelection.trimmingCharacters(in: .whitespacesAndNewlines)
-                sliceSelectionString(regexPattern: "①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩", residualString: que.selectionsString!, question: que, headerUn: nil)
+                que.rawSelections = queCutSelection.trimmingCharacters(in: .whitespacesAndNewlines)
+                sliceSelectionString(regexPattern: "①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩", residualString: que.rawSelections, question: que, headerUn: nil)
                 if queCutListSelWord != nil && queCutListSelLetter != nil {
                     fatalError("문제 파싱중에 목록선택지의 구조가 이상하게 파싱되었음")
                 }
                 if queCutListSelLetter != nil {
-                    que.listsString = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    sliceListSelectionString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", residualString: que.listsString!, question: que, headerUn: nil)
+                    que.rawLists = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
+                    sliceListSelectionString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", residualString: que.rawLists, question: que, headerUn: nil)
                     print(que.findAnswer(),"answer")
                 }
                 if queCutListSelWord != nil {
-                    que.listsString = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    sliceListSelectionString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", residualString: que.listsString!, question: que, headerUn: nil)
+                    que.rawLists = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
+                    sliceListSelectionString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", residualString: que.rawLists, question: que, headerUn: nil)
                     print(que.findAnswer(),"answer")
                 }
             }
         }
-        
-        
-        
 //        (가(\..+\n{0,}\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\..+\n{0,}\s{0,})){1,14}
 //
 //        ((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\..+\n{0,}\s{0,})){1,14}
 //        
 //        (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\n){1,9}
-        
+//
 //        for test in 시험들 {
 //            for (index,que) in test.questions.enumerated() {
 //                print("oooooooo ",test.category,test.subject,test.number,que.number!)

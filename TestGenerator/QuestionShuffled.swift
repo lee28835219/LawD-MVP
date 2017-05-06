@@ -51,7 +51,7 @@ class QuestionShuffled {
         
         // 추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
 
-        print("\(question.key) 문제 변경을 시작함")
+        print("-\(question.key) 문제 변경을 시작함")
         // 문제를 섞는 가장 중요한 함수
         switch question.questionType {
         case .Find:
@@ -61,15 +61,14 @@ class QuestionShuffled {
         case .Unknown:
             _ = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
-        print("\(question.key) 문제 변경성공")
+        print("-\(question.key) 문제 변경성공")
     }
     
     // 공통 변경사항
     func changeCommonTypeQuestion() {
         // 1. 선택지의 순서를 변경
         selections.shuffle()
-        print("")
-        print("1. 선택지 순서 변경함")
+        print("--1. 선택지 순서 변경함")
     }
     
     // 문제를 논리에 맞게 변경하여 반환
@@ -213,9 +212,9 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                print("2. 문제와 선택지 OX 변경함")
+                print("--2. 문제와 선택지 OX 변경함")
             } else {
-                print("2. 문제와 선택지 OX 변경안함")
+                print("--2. 문제와 선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
@@ -227,10 +226,10 @@ class QuestionShuffled {
             //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
             //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
             guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
-                print("\(question.key) 변형문제의 정답찾기 실패")
+                print("--\(question.key) 변형문제의 정답찾기 실패")
                 return
             }
-            print("3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+            print("--3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
         }
     }
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
@@ -248,7 +247,7 @@ class QuestionShuffled {
         changeCommonTypeQuestion()
         
         lists.shuffle()
-        print("1. 목록 순서 변경함")
+        print("--1. 목록 순서 변경함")
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -274,14 +273,14 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                print("2. 문제와 목록선택지 OX 변경함")
+                print("--2. 문제와 목록선택지 OX 변경함")
             } else {
-                print("2. 문제와 목록선택지 OX 변경안함")
+                print("--2. 문제와 목록선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
             let numberOfListSel = lists.count //5
-            let numberOfAnsListSel = question.answerListSelections.count //3
+            let numberOfAnsListSel = question.answerLists.count //3
             
             for index in 0...numberOfAnsListSel-1 {
                 var cont = true
@@ -291,7 +290,7 @@ class QuestionShuffled {
                     if let _ = answerListSelectionModifed.index(where: {$0 === randomListSel}) {
                     } else {
                         answerListSelectionModifed.append(randomListSel)
-                        originalShuffleMap.append((question.answerListSelections[index], randomListSel))
+                        originalShuffleMap.append((question.answerLists[index], randomListSel))
                         cont = false
                     }
                 }
@@ -299,7 +298,7 @@ class QuestionShuffled {
             
             var tempListSelections = question.lists
             var tempListSelectionsShuffled = lists
-            for ansSel in question.answerListSelections {
+            for ansSel in question.answerLists {
                 if let ix = tempListSelections.index(where: {$0 === ansSel}) {
                     tempListSelections.remove(at: ix)
                 }
@@ -312,9 +311,9 @@ class QuestionShuffled {
             for index in 0...tempListSelectionsShuffled.count-1 {
                 originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
             }
-            print("3. 목록선택지 정답을 아래와 같이 변경")
+            print("--3. 목록선택지 정답을 아래와 같이 변경")
             for (oriSel, shuSel) in originalShuffleMap {
-                print("    원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
+                print("      원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
             }
             isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝

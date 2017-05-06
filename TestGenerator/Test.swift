@@ -13,17 +13,19 @@ class Test {
     var key : String
     
     //나의 속성은 어떤지
+    let createDate : Date = Date()
+    var modifiedDate : Date = Date()
+    var description	: String = ""
+    
     var isPublished : Bool //기출, 원본
     let category : String //변호사시험
     let catHelper : String? = nil //모의
     let subject : String //민사법
     let number : Int
     var numHelper : Int? = nil
+    var date : Date? //1701, 원본
     
-    var description : String? = nil
-    var string : String? = nil
-    
-    var date : Date //1701, 원본
+    var raw : String = ""
     
     //내 식구들은 누구인지
     var questions = [Question]()
@@ -38,10 +40,15 @@ class Test {
         
         // 변호사시험.민사법.2017-001
         var str : String = ""
-        if let catHelperWrapped = catHelper {
-            str = self.category + "." + self.subject + "-" + catHelperWrapped
+        if isPublished {
+            str = str + "[기출]"
         } else {
-            str = self.category + "." + self.subject
+            str = str + "[변형]"
+        }
+        if let catHelperWrapped = catHelper {
+            str = str + self.category + "-" + catHelperWrapped + "." + self.subject
+        } else {
+            str = str + self.category + "." + self.subject
         }
         if let numHeplerWrapped = numHelper {
             str = str + "." + String(format: "%04d",numHeplerWrapped) + "-" + String(format: "%03d", self.number)
@@ -53,7 +60,7 @@ class Test {
         
         if testDB != nil {
             if !testDB!.tests.filter({$0.key == str}).isEmpty {
-                fatalError("잘못된 시험key 입력 : 이미 \(testDB!.name)에 \(str)이 존재함")
+                fatalError("잘못된 시험key 입력 : 이미 \(testDB!.key)에 \(str)이 존재함")
             }
             testDB!.tests.append(self)
         }
