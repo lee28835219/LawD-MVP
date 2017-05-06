@@ -18,63 +18,185 @@ class InputManager {
     
     func execute(input : String) -> Bool {
         
+        if input.caseInsensitiveCompare("save") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷ" {
+            let data = testDB.createJsonObject()
+            if let dataWrapped = data {
+                _ = outputManager.saveFile(fileName: "testDB-\(testDB.key).json", data: dataWrapped)
+            } else {
+                print("TestDB \(testDB.key) JSON DATA 생성실패")
+            }
+            return true
+        }
+        
+        
         if input.caseInsensitiveCompare("sq") ==  ComparisonResult.orderedSame || input == "ㄴㅂ" {
             //http://stackoverflow.com/questions/30532728/how-to-compare-two-strings-ignoring-case-in-swift-language
             createQuestion()
+            
+            return true
         }
         
-        // 100개의 문제를 만듬
-        if input.caseInsensitiveCompare("ts") ==  ComparisonResult.orderedSame  || input == "ㅅㄴ" {
-            
-            print("출력할 문제번호(0~)>", terminator : "")
-            let input = readLine()
-            
-            if Int(input!)! < testDB.tests[0].questions.count {
-                
-                //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(+)
-                let question = selectQuestion(number : Int(input!)!)
-                question.publish()
-                
-                solveShuffledQuestion(question : question)
-            } else {
-                print("선택한 문제가 없음")
+        // 시험을 선택하여 문제당 5개의 변형문제를 진행
+        if input.caseInsensitiveCompare("st") ==  ComparisonResult.orderedSame  || input == "ㄴㅅ" {
+            let selectedTest = selectTest()
+            guard let selectedTestWrapped = selectedTest else {
+                print("선택한 시험을 찾을 수 없었음")
+                return false
             }
+            
+            let selectedQuestions = selectedTestWrapped.questions
+            
+            if selectedQuestions.count == 0 {
+                print("\(selectedTestWrapped) 시험에 문제가 없음")
+                return false
+            }
+            
+            for que in selectedQuestions {
+                que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+                print()
+                print("[변형]" + que.key)
+                for _ in 1...5 {
+                    if !solveShuffledQuestion(question: que) {
+                        continue
+                    }
+                }
+            }
+            return true
         }
         
+        // 문제를 선택하여 10개의 변형문제를 진행
+        if input.caseInsensitiveCompare("sq") ==  ComparisonResult.orderedSame  || input == "sq" {
+            
+            let selectedTest = selectTest()
+            guard let selectedTestWrapped = selectedTest else { return false }
+            
+            let selectedQuestion = selectQuestion(test: selectedTestWrapped)
+            guard let selectedQuestionWrapped = selectedQuestion else { return false }
+            
+            selectedQuestionWrapped.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+            for _ in 1...10 {
+                if !solveShuffledQuestion(question: selectedQuestionWrapped) {
+                    break
+                }
+            }
+            return true
+        }
+
+        return false
+    }
+    
+    private func solveShuffledQuestion(question : Question) -> Bool {
+        var quetionShuffled : QuestionShuffled?
+        
+        quetionShuffled = QuestionShuffled(question: question, showLog: false)
+        
+        guard let qShuWrapped = quetionShuffled else {
+            print("\(question.key) 문제는 변형할 수 없음")
+            return false
+        }
+        
+        QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: false, showOrigSel: false)
+        
+        print("정답은?>>", terminator : "")
+        input = readLine()
+        if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
+            print("정답!", terminator: "")
+            input = readLine()
+        } else {
+            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
+            print("오답임...정답은")
+            print("\(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
+            print("확인?(노트추가 : n)>>", terminator: "")
+            input = readLine()
+        }
         return true
     }
     
-    func selectQuestion(number : Int) -> Question {
-        let question = testDB.tests[0].questions[number] as Question
-        return question
+    private func selectTest() -> Test? {
+        
+        for (index,test) in testDB.tests.enumerated() {
+            print("(\(index+1)) : \(test.key)")
+        }
+        
+        let testCount = testDB.tests.count
+        if testCount == 0 {
+            print("TestDB \(testDB.key)에 시험이 없음")
+            return nil
+        }
+        
+        //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)
+        //노가다 및 Int(String)으로 완성 2017. 5. 6.
+        
+        var selectedTest : Int = -1
+        var goon = true
+        while goon {
+            print("출력할 시험번호(1~\(testCount + 1))>", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print("올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let testNumber = Int(inputWrapped)
+            if testNumber == nil {
+                print("숫자를 입력하세요")
+                continue
+            }
+            
+            if testNumber! - 1 < 0 && testNumber! - 1 > testCount {
+                print("숫자를 입력하세요")
+                continue
+            }
+            
+            goon = false
+            selectedTest = testNumber!
+        }
+        
+        print("\(testDB.tests[selectedTest-1].key)")
+        
+        return testDB.tests[selectedTest-1]
     }
     
-    func solveShuffledQuestion(question : Question, rep: Int = 20) {
-//        var quetionShuffled : QuestionShuffled?
-//        
-//        for index in 1...rep {
-//            if question.questionType == QuestionType.Find {
-////                quetionShuffled = QuestionFindTypeShuffled(question: question)
-//            } else {
-//                quetionShuffled = QuestionShuffled(question: question)
-//            }
-//            print("")
-//            print("------\(index)------")
-//            quetionShuffled?.publish()
-//            print("정답은?>>", terminator : "")
-//            input = readLine()
-//            if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
-//                print("정답!")
-//            } else {
-//                //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
-//                print("오답...정답은 \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(quetionShuffled?.getModfiedStatement(statement: (quetionShuffled?.answerSelectionModifed)!).content)")
-//                input = readLine()
-//            }
-//            print("다음문제~")
-//        }
+    private func selectQuestion(test: Test) -> Question? {
+        var selectedQuestions = test.questions
+        if selectedQuestions.count == 0 {
+            print("\(test.key)에 문제가 하나도 없음")
+            return nil
+        }
+        
+        for question in selectedQuestions {
+            print("(\(question.number)) : \(question.key)")
+        }
+        
+        
+        var goon = true
+        while goon {
+            print("출력할 문제번호>", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print("올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let questionNumber = Int(inputWrapped)
+            if questionNumber == nil {
+                print("숫자를 입력하세요")
+                continue
+            }
+            selectedQuestions = selectedQuestions.filter({$0.number == questionNumber})
+            if selectedQuestions.isEmpty {
+                print("숫자를 입력하세요")
+                continue
+            }
+            goon = false
+        }
+        
+        return selectedQuestions[0]
     }
     
-    func createQuestion() {
+    private func createQuestion() {
     /*
         print("문제코드 입력>", terminator : "")
         let questionKey = readLine()!

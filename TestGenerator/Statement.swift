@@ -44,36 +44,16 @@ class Statement : DataStructure {
 // 숫자 스트링 -> 라운드 숫자 스트링 변환, 뭔가 더 고급스러운 방법은 없는가? 2017. 4. 9.
 extension Int {
     var roundInt : String {
-        if self == 1 {
-            return "①"
-        }
-        if self == 2 {
-            return "②"
-        }
-        if self == 3 {
-            return "③"
-        }
-        if self == 4 {
-            return "④"
-        }
-        if self == 5 {
-            return "⑤"
-        }
-        if self == 6 {
-            return "⑥"
-        }
-        if self == 7 {
-            return "⑦"
-        }
-        if self == 8 {
-            return "⑧"
-        }
-        if self == 9 {
-            return "⑨"
-        }
-        if self == 10 {
-            return "⑩"
-        }
+        if self == 1 {return "①"}
+        if self == 2 {return "②"}
+        if self == 3 {return "③"}
+        if self == 4 {return "④"}
+        if self == 5 {return "⑤"}
+        if self == 6 {return "⑥"}
+        if self == 7 {return "⑦"}
+        if self == 8 {return "⑧"}
+        if self == 9 {return "⑨"}
+        if self == 10 {return "⑩"}
         return self.description
     }
 }

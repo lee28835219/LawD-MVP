@@ -8,12 +8,20 @@
 
 import Foundation
 
-//print("Hello!TextGenerator Starts!")
+print("Hello!TestGenerator Starts!")
 var input : String?
 var testDB = TestDB()
 var inputManger = InputManager(testDB : testDB)
-//print("Intialization Complete")
+let outputManager = OutputManager()
+print("Intialization Complete")
 print("")
+
+print("시작", Date().description)
+
+let 법조윤리 = DC법조윤리()
+testDB.tests.append(contentsOf: 법조윤리.시험들)
+print("--법조윤리 파싱 complete")
+
 
 
 //무한루프 시작
@@ -62,23 +70,6 @@ repeat {
     
     
     
-    // db를 json으로 출력
-//    print(database.createJsonObject() != nil ? database.createJsonObject()! : "")
-//    guard let str = database.createJsonObject() else {
-//        continue
-//    }
-//    for que in database.questions {
-//        que.publish()
-//        inputManger.solveShuffledQuestion(question: que, rep: 3)
-//    }
-//    let sampleQuestion = database.questions[3]
-//    sampleQuestion.publish()
-//    inputManger.solveShuffledQuestion(question: sampleQuestion)
-    
-//    let 법조윤리 = DC법조윤리()
-//    testDB.tests.append(contentsOf: 법조윤리.시험들)
-//    print("--법조윤리 파싱 complete")
-    
     
 //    for test in testDB.tests {
 //        for que in test.questions {
@@ -92,18 +83,22 @@ repeat {
 //        }
 //    }
     
-    print(testDB.createJsonObjectNew() ?? "JSON DATA 생성실패")
     
     
     //명령어
-//    print(">>>>", terminator : "")
+    print(">", terminator : "")
     input = readLine()
     
-    guard let inp = input else {
+    guard let inputWrapped = input else {
         print("유효하지 않은 입력")
         continue
     }
-    let re = inputManger.execute(input: inp)
+    let result = inputManger.execute(input: inputWrapped)
+    if result {
+        print("\(inputWrapped) 명령실행 성공!")
+    } else {
+        print("\(inputWrapped) 명령실행 실패")
+    }
     
 } while input != "exit"
 //무한루프 끝 exit 입력 시 종료

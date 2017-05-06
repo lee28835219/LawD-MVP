@@ -9,19 +9,18 @@
 import Foundation
 
 class QShufflingManager : Publishable {
-    
     let qShuffled : QuestionShuffled
     
-    init(qShuffled: QuestionShuffled) {
+    init(outputManager: OutputManager, qShuffled: QuestionShuffled) {
         self.qShuffled = qShuffled
     }
     
     func publish(showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
-        let oManager = OutputManager()
-        oManager.showAnswer = showAnswer
-        oManager.showTitle = showTitle
-        oManager.showAttribute = showAttribute
-        oManager.showOrigSel = showOrigSel
+        let outputManager = OutputManager()
+        outputManager.showAnswer = showAnswer
+        outputManager.showTitle = showTitle
+        outputManager.showAttribute = showAttribute
+        outputManager.showOrigSel = showOrigSel
         
         //질문
         let questionModifed = qShuffled.getModifedQuestion()  // (questionOX: QuestionOX, content: String)
@@ -70,7 +69,7 @@ class QShufflingManager : Publishable {
         }
         
         
-        oManager.questionPublish(
+        outputManager.questionPublish(
             testCategroy: qShuffled.question.test.category,
             testCategoryHelper: qShuffled.question.test.catHelper,
             testNumber: qShuffled.question.test.number,

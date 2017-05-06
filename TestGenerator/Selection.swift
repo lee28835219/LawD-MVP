@@ -55,23 +55,3 @@ class Selection: Statement {
         //find 유형 문제에는 의미있는 OX 질문이 없을 것이므로 필요없을 것임, 차리리 Select.Defference를 추가하는게 나을듯 2017. 5. 5.
     }
 }
-
-
-extension Selection {
-    func createJsonDataTypeStructure() -> [String:Any]? {
-        //ContentControversal, nullabe, String
-        let contentControversalString = self.contentControversal != nil ? self.contentControversal! : ""
-        let contentControversal = ["label":contentControversalString, "Attribute":JsonAttributes().stringNullableAttribute] as [String : Any]
-        
-        //nullabe이 아니므로 간단하게 정의가능
-        let content = ["label":self.content, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let selectNumber = ["label":self.selectNumber, "Attribute":JsonAttributes().intNotNullableAttribute] as [String : Any]
-        
-        let selection = ["label":self.key, "Attribute":["selectNumber":selectNumber, "content":content, "contentControversal":contentControversal]] as [String : Any]
-        
-        guard JSONSerialization.isValidJSONObject(selection) else {
-            return nil
-        }
-        return selection
-    }
-}

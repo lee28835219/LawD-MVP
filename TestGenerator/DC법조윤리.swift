@@ -113,12 +113,12 @@ class DC법조윤리: DataConverter {
                 if queCutListSelLetter != nil {
                     que.rawLists = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
                     sliceListSelectionString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", residualString: que.rawLists, question: que, headerUn: nil)
-                    print(que.findAnswer(),"answer")
+                    print(que.findAnswer(),"\(que.key) 정답을 찾을 수 없음")
                 }
                 if queCutListSelWord != nil {
                     que.rawLists = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
                     sliceListSelectionString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", residualString: que.rawLists, question: que, headerUn: nil)
-                    print(que.findAnswer(),"answer")
+                    print(que.findAnswer(),"\(que.key) 정답을 찾을 수 없음")
                 }
             }
         }

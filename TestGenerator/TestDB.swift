@@ -7,7 +7,7 @@
 //
 
 import Foundation
-class TestDB : DataStructure {
+class TestDB : DataStructure, JSONoutable {
     
     // How do I format JSON Date String with Swift?
     // http://stackoverflow.com/questions/28748162/how-do-i-format-json-date-string-with-swift
@@ -16,6 +16,7 @@ class TestDB : DataStructure {
     var tests : [Test] = []
     
     init(key: String = "default") {
+        
         super.init(key)
         
         //기본 문제생성, 법인 아닌 사단 SO
@@ -193,45 +194,12 @@ class TestDB : DataStructure {
             _ = que.findAnswer()
         }
     }
-    
-    
-    func createJsonObject() -> String? {
-        
-        //json 형식의 배열
-        var questions = [[String:Any]]()
-        
-        //db에 있는 질문들을 questions 배열에 저장
-        // 이를 db에 있는 시험들로 변경해야 함 !!!!중요 2017. 5. 5. (+)
-        //만약 데이터 처리에 오류가 잇으면 nil을 반환
-        for que in self.tests[0].questions {
-            guard let queJsonObject = que.createJsonDataTypeStructure() else {
-                return nil
-            }
-            questions.append(queJsonObject)
-        }
-        
-        // questions라는 json data 배열을 담은 json object를 생성
-        // 여기에 questions에 관한 정보들을 다양하게 담을 수 잇을 것임
-        let data : Data
-        do {
-            data = try JSONSerialization.data(
-                withJSONObject: ["questions":questions],
-                options: .prettyPrinted
-            )
-        } catch  {
-            return nil
-        }
-        
-        //json data형식의 문자열을 반환
-        return String(data: data, encoding: .utf8)
-        
-    }
-    
-    func createJsonObjectNew() -> String? {
+}
+
+extension TestDB {
+    func createJsonObject() -> Data? {
         let key = "key"
         let attribute = "attribute"
-        
-        let data : Data
         
         var testArray = [Any]()
         for test in tests {
@@ -314,7 +282,7 @@ class TestDB : DataStructure {
         
         var testDB_attribute = [String : Any]()
         testDB_attribute["specification"] = self.specification
-        testDB_attribute["modifiedDate"] = self.modifiedDate.description
+        testDB_attribute["modifiedDate"] = Date().description
         testDB_attribute["tags"] = self.tags
         testDB_attribute["createDate"] = self.createDate.description
         
@@ -322,6 +290,7 @@ class TestDB : DataStructure {
         testDB[attribute] = testDB_attribute
         testDB["test"] = testArray
         
+        let data : Data
         do {
             if !JSONSerialization.isValidJSONObject(testDB) {
                 return nil
@@ -331,11 +300,17 @@ class TestDB : DataStructure {
                 options: .prettyPrinted
             )
         } catch  {
-            fatalError("유효하지 않은 \(self.key) testDB Json생성")
+            fatalError("유효하지 않은 \(self.key) testDB Json생성 WHY?")
+            // 치명적 에러 발생하는 이유를 확인해야 함 2017. 5. 6. (+)
         }
         
-        return String(data: data, encoding: .utf8)
+        // 문자로 반환하는 것과 data로 반환하는 것, 어느것이 더 좋은가?
+        // return String(data: data, encoding: .utf8)
+        
+        return data
     }
 }
+
+
 
 

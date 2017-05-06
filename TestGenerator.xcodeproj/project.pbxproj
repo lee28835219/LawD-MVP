@@ -53,7 +53,6 @@
 /* Begin PBXFileReference section */
 		3903139D1EB98F7F006FE79A /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		3903139E1EB9BC8B006FE79A /* Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
-		390805211EBCEFE200BD3FDB /* Application.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Application.xib; sourceTree = "<group>"; };
 		395BF6CF1E82BA36004BE198 /* TestGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		395BF6D21E82BA36004BE198 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		396291AD1EBC41CC00FADC4C /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
@@ -109,10 +108,10 @@
 			isa = PBXGroup;
 			children = (
 				395BF6D21E82BA36004BE198 /* main.swift */,
+				39E7E2B01EBB889E00087D73 /* IO */,
 				397631AE1EB6E7A90040CE01 /* TestData */,
 				39E7E2AF1EBB274F00087D73 /* DataStructure */,
-				39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */,
-				39E7E2B01EBB889E00087D73 /* IO */,
+				39DF734E1EAFB820005AD7D7 /* ProcessingData */,
 				3903139D1EB98F7F006FE79A /* MyPlayground.playground */,
 			);
 			path = TestGenerator;
@@ -159,7 +158,6 @@
 			isa = PBXGroup;
 			children = (
 				397631B21EB6F08D0040CE01 /* DataConverter.swift */,
-				390805211EBCEFE200BD3FDB /* Application.xib */,
 				39E84BFB1EB7436700E3790F /* 정답.swift */,
 				397631AF1EB6E7BC0040CE01 /* 법조윤리 */,
 			);
@@ -176,13 +174,13 @@
 			name = "법조윤리";
 			sourceTree = "<group>";
 		};
-		39DF734E1EAFB820005AD7D7 /* ProcessingQuestion */ = {
+		39DF734E1EAFB820005AD7D7 /* ProcessingData */ = {
 			isa = PBXGroup;
 			children = (
 				39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */,
 				39633DDE1E9B134B00F9FD4D /* QuestionShuffled.swift */,
 			);
-			name = ProcessingQuestion;
+			name = ProcessingData;
 			sourceTree = "<group>";
 		};
 		39E7E2AF1EBB274F00087D73 /* DataStructure */ = {

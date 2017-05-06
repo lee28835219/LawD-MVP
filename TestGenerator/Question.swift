@@ -131,7 +131,9 @@ class Question : DataStructure, Publishable {
             }
         }
     }
-    
+}
+
+extension Question {
     func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
         let oManager = OutputManager()
         oManager.showAnswer = showAnswer
@@ -193,134 +195,6 @@ class Question : DataStructure, Publishable {
             originalAnsSelectionNumber: answerSelection!.selectNumber.roundInt
         )
     }
-    
-    
-    
-    /*
-    //문제와 선택지를 출판하는 함수
-    func publish(showAttribute : Bool = false, showAnswer : Bool = false, showTitle : Bool = true) {
-        
-        //문제
-        print("")
-        if showTitle {
-            let queTitle = "[\(test.category) \(test.number)회 \(test.subject) "+(test.isPublished ? "기출]" : "변형]")
-            print(queTitle)
-        }
-        
-        print("문 "+number.description+". ")
-        var queCont = content
-        if let contNote = contentNote {
-            queCont = queCont + " " + contNote
-        }
-        if showAttribute {
-            queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
-        }
-        print("  "+queCont.spacing(2))
-        print()
-        
-        
-        //목록
-        if listSelections.count > 0 {
-            for (index,sel) in listSelections.enumerated() {
-                var selectionStr = sel.content
-                if showAttribute {
-                    if let OX = sel.iscOrrect {
-                        selectionStr = selectionStr + (OX ? " (O)" : " (X)")
-                    } else {
-                        selectionStr = selectionStr + " (O?,X?)"
-                    }
-                }
-                print(" "+sel.getListString(int : index+1)+". "+selectionStr.spacing(4))
-            }
-            print()
-        }
-        
-        //선택지
-        for (index,sel) in selections.enumerated() {
-            print("  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(sel : sel, showAttribute : showAttribute).spacing(5))
-        }
-        print()
-        
-        //정답
-        if showAnswer {
-            print("<정답>")
-            guard let ansS = answerSelection
-                else {
-                    print("  정답이 입력되지 않음")
-                    return
-            }
-            print("  " + answer.roundInt + "  " + _getSelectionStringForPrinting(sel : ansS, showAttribute : showAttribute).spacing(5))
-        }
-        print()
-    }
-    private func _getSelectionStringForPrinting(sel : Selection, showAttribute : Bool) -> String {
-        var selectionStr = sel.content
-        if showAttribute {
-            if let OX = sel.iscOrrect {
-                selectionStr = selectionStr+(OX ? " (O)" : " (X)")
-            } else {
-                if questionType != .Select {
-                    if sel.isAnswer {
-                        selectionStr = selectionStr+" (O)"
-                    } else {
-                        selectionStr = selectionStr+" (X)"
-                    }
-                } else {
-                    selectionStr = selectionStr+" (O,X)?"
-                }
-            }
-        }
-        return selectionStr
-    }
-    */
-
-    
-    func createJsonDataTypeStructure() -> [String:Any]? {
-
-        //// 1. 1Question의 information을 정리함
-        
-        //ContentNot, nullabe, String
-        //contentNote가 비었는지 확인하고, labeld에 저장함
-        let contentNoteString = self.contentNote != nil ? self.contentNote! : "" as String
-        let contentNote = ["label":contentNoteString, "Attribute":JsonAttributes().stringNullableAttribute] as [String : Any]
-        
-        //ContentControversal, nullabe, String
-        //값이 비었는지 확인하고, label에 저장함
-        let contentControversalString = self.contentControversal != nil ? self.contentControversal! : "" as String
-        let contentControversal = ["label":contentControversalString, "Attribute":JsonAttributes().stringNullableAttribute] as [String : Any]
-        
-        //nullabel이 아닌 정보들 저장, 자신있는 label에 대한 저장
-        let content = ["label":self.content, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let questionOX = ["label":self.questionOX.rawValue, "Attribute":JsonAttributes().questionOXNotNullableAttribute] as [String : Any]
-        let questionType = ["label":self.questionType.rawValue, "Attribute":JsonAttributes().questionTypeNotNullableAttribute] as [String : Any]
-        let testSubject = ["label":self.test.subject, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testCategory = ["label":self.test.category, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testDate = ["label":self.test.date ?? "" , "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let isPublished = ["label":self.test.isPublished, "Attribute":JsonAttributes().boolNotNullableAttribute] as [String : Any]
-        
-        // 최종 question infromation
-        let questionInfromation = ["isPublished":isPublished, "testDate":testDate, "testCategory":testCategory, "testSubject":testSubject, "questionType":questionType, "questionOX":questionOX, "content":content, "contentControversal":contentControversal, "contentNote":contentNote]
-        
-        //// 3. Selection들을 저장, Array
-        var selections = [Any]()
-        for sel in self.selections {
-            guard let selUnwrapped = sel.createJsonDataTypeStructure() else {
-                print("Creating Selection JSON Error While dealing with \(sel.question.key)-\(sel.selectNumber)")
-                continue
-            }
-            selections.append(selUnwrapped)
-        }
-        
-        //// 3. question의 완성 = label + question inforation + selections
-        let question = ["label":self.key, "information":questionInfromation, "Selections":selections] as [String : Any]
-        
-        //// 4. json 형식인지 확인해서 그러하면 question json type structure 반환 아니면, nil
-        guard JSONSerialization.isValidJSONObject(question) else {
-            print("Creating Question JSON Error While dealing with \(self.key)")
-            return nil
-        }
-        return question
-    }
 }
 
 enum QuestionOX : String {
@@ -339,7 +213,8 @@ enum QuestionType : String {
 
 
 // 변수타입을 정의
-// enum을 이용해서 멋잇게 저장하는 법을 고민해봐야 한다. 2017. 4. 29.
+// enum을 이용해서 멋잇게 저장하는 법을 고민해봐야 한다. 2017. 4. 29. (-)
+// 2017. 5. 6. json완성한 지금은 별 필요없다. 향후 쓸일이 있을까???
 struct JsonAttributes {
     let stringNullableAttribute = ["Type":"String", "Nullable":"true"]
     let stringNotNullableAttribute = ["Type":"String", "Nullable":"false"]

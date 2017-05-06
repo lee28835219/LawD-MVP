@@ -13,6 +13,15 @@ class OutputManager {
     var showAnswer : Bool = false
     var showTitle : Bool = true
     var showOrigSel : Bool = false
+    var path : URL? {
+        let path : URL?
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            path = dir.appendingPathComponent("Test").appendingPathComponent("TestGeneratorStorage")
+        } else {
+            path = nil
+        }
+        return path
+    }
     
     init() {
     }
@@ -89,6 +98,37 @@ class OutputManager {
         print()
     }
     
+    // How to check if a file exists in the Documents directory in Swift?
+    // http://stackoverflow.com/questions/24181699/how-to-check-if-a-file-exists-in-the-documents-directory-in-swift
+    // How to save an array as a json file in Swift?
+    // http://stackoverflow.com/questions/28768015/how-to-save-an-array-as-a-json-file-in-swift
+    func saveFile(fileName: String, data: Data) -> Bool {
+        let savePath = self.path?.appendingPathComponent(fileName)
+        guard let savePathWrapped = savePath else {
+            print("저장할 디렉토리를 찾치 못해서 \(fileName)을 저장하는데 실패하였음)")
+            return false
+        }
+        
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: savePathWrapped.path) {
+            print("\(fileName)이 \(savePathWrapped)에 존재함 계속진행?(y)>", terminator : "")
+            let input = readLine()
+            if input != "y" && input != "Y" && input != "ㅛ" {
+                print("\(fileName) 저장 안하고 종료")
+                return false
+            }
+        }
+        
+        do {
+            try data.write(to: savePathWrapped)
+            print("\(fileName) 저장 성공")
+            return true
+        } catch {
+            print("\(fileName)을 저장하는데 실패하였음 - \(error)")
+            return false
+        }
+    }
+    
     private func _getSelectionStringForPrinting(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
         var selectionStr = ""
         if showOrigSel {
@@ -119,4 +159,8 @@ class OutputManager {
 
 protocol Publishable {
     func publish(showAttribute: Bool, showAnswer: Bool, showTitle: Bool, showOrigSel : Bool)
+}
+
+protocol JSONoutable {
+    func createJsonObject() -> Data?
 }

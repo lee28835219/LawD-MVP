@@ -9,6 +9,7 @@
 import Foundation
 
 class QuestionShuffled {
+    var showLog = true
     
     let question : Question
     
@@ -25,7 +26,9 @@ class QuestionShuffled {
     var originalShuffleMap = [(original : List, shuffled : List)]()
     var answerListSelectionModifed = [List]()
     
-    init?(question : Question) {
+    init?(question : Question, showLog: Bool = true) {
+        self.showLog = showLog
+        
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
         //http://stackoverflow.com/questions/31038759/conditional-binding-if-let-error-initializer-for-conditional-binding-must-hav
@@ -51,7 +54,9 @@ class QuestionShuffled {
         
         // 추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
 
-        print("-\(question.key) 문제 변경을 시작함")
+        if showLog {
+            print("-\(question.key) 문제 변경을 시작함")
+        }
         // 문제를 섞는 가장 중요한 함수
         switch question.questionType {
         case .Find:
@@ -61,14 +66,18 @@ class QuestionShuffled {
         case .Unknown:
             _ = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
-        print("-\(question.key) 문제 변경성공")
+        if showLog {
+            print("-\(question.key) 문제 변경성공")
+        }
     }
     
     // 공통 변경사항
     func changeCommonTypeQuestion() {
         // 1. 선택지의 순서를 변경
         selections.shuffle()
-        print("--1. 선택지 순서 변경함")
+        if showLog {
+            print("--1. 선택지 순서 변경함")
+        }
     }
     
     // 문제를 논리에 맞게 변경하여 반환
@@ -90,13 +99,6 @@ class QuestionShuffled {
     
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(isOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
-    
-//    func getModfiedStatement(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
-//        guard let selection = statement as? Selection else {
-//            fatalError("\(statement.question.key) 문제는 선택지 내용을 변환할 수 없기 때문에 섞을 수 없음")
-//        }
-//        return getModfiedStatement(statement : selection)
-//    }
     
     // Find유형의 선택지를 제외한 모든 Statement를 출력하는 함수
     func getModfiedStatementOfCommonStatement(statement : Statement) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
@@ -212,9 +214,13 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                print("--2. 문제와 선택지 OX 변경함")
+                if showLog {
+                    print("--2. 문제와 선택지 OX 변경함")
+                }
             } else {
-                print("--2. 문제와 선택지 OX 변경안함")
+                if showLog {
+                    print("--2. 문제와 선택지 OX 변경안함")
+                }
             }
             
             // 3. 임의로 답변을 변경
@@ -229,7 +235,9 @@ class QuestionShuffled {
                 print("--\(question.key) 변형문제의 정답찾기 실패")
                 return
             }
-            print("--3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+           if showLog {
+                print("--3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+            }
         }
     }
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
@@ -247,7 +255,9 @@ class QuestionShuffled {
         changeCommonTypeQuestion()
         
         lists.shuffle()
-        print("--1. 목록 순서 변경함")
+        if showLog {
+            print("--1. 목록 순서 변경함")
+        }
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -273,9 +283,13 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                print("--2. 문제와 목록선택지 OX 변경함")
+                if showLog {
+                    print("--2. 문제와 목록선택지 OX 변경함")
+                }
             } else {
-                print("--2. 문제와 목록선택지 OX 변경안함")
+                if showLog {
+                    print("--2. 문제와 목록선택지 OX 변경안함")
+                }
             }
             
             // 3. 임의로 답변을 변경
@@ -311,9 +325,13 @@ class QuestionShuffled {
             for index in 0...tempListSelectionsShuffled.count-1 {
                 originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
             }
-            print("--3. 목록선택지 정답을 아래와 같이 변경")
+            if showLog {
+                print("--3. 목록선택지 정답을 아래와 같이 변경")
+            }
             for (oriSel, shuSel) in originalShuffleMap {
-                print("      원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
+                if showLog {
+                    print("      원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
+                }
             }
             isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
