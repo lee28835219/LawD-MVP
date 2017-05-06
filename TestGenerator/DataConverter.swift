@@ -126,7 +126,7 @@ class DataConverter: NSObject {
             let testString = residualString
         // newTest 초기화에 대해서 고민해봐야 함 (+) 2017. 5. 5.
             let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
-            newTest.description = testHeader
+            newTest.specification = testHeader
             newTest.raw = testString
             시험들.append(newTest)
             print("---시험 파싱완료")
@@ -140,7 +140,7 @@ class DataConverter: NSObject {
         if _testHeader != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
             let testString = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
             let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
-            newTest.description = _testHeader!
+            newTest.specification = _testHeader!
             newTest.raw = testString
             시험들.append(newTest)
         } else {

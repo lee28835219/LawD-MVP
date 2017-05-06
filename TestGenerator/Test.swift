@@ -7,15 +7,12 @@
 //
 import Foundation
 
-class Test {
+class Test : DataStructure {
     //내가 무엇인지
     let testDB : TestDB?
-    var key : String
     
     //나의 속성은 어떤지
     let createDate : Date = Date()
-    var modifiedDate : Date = Date()
-    var description	: String = ""
     
     var isPublished : Bool //기출, 원본
     let category : String //변호사시험
@@ -56,7 +53,7 @@ class Test {
             str = str + "." + String(format: "%03d", self.number)
         }
         
-        self.key = str
+        super.init(str)
         
         if testDB != nil {
             if !testDB!.tests.filter({$0.key == str}).isEmpty {
@@ -64,7 +61,6 @@ class Test {
             }
             testDB!.tests.append(self)
         }
-        
     }
 }
 

@@ -116,3 +116,7 @@ class OutputManager {
     }
 
 }
+
+protocol Publishable {
+    func publish(showAttribute: Bool, showAnswer: Bool, showTitle: Bool, showOrigSel : Bool)
+}

@@ -9,26 +9,21 @@
 import Foundation
 
 //선택지
-class Statement {
+class Statement : DataStructure {
     let question : Question
+    
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
-    
     var contentControversal : String?
-    var codes : Array<Codes>?
-    var cases : Array<Cases>?
-    var keywords : Array<Keyword>?
-    var notes : Array<Note>?
-    var iscOrrect : Bool?
     
+    var iscOrrect : Bool?
     var isAnswer : Bool? = false
     
-    init(question : Question, content : String) {
+    
+    init(key : String, question : Question, content : String) {
         
         //(+)문제와 선택지가 상호참조에 따른 문제점이 없는지 시간내서 확인 2017. 4. 26
         
         self.question = question
-//        self.selectNumber = selectNumber
-        
         //(+)동일한 선택지 번호가 이미 있으면 에러발생하도록 수정하면 좋을 것 2017. 4. 26.
         
         //지문이 올바른것/틀린것을 확인한 선택지가 가르키는 ㄱ,ㄴ,ㄷ을 선택지에서 추출하고, 선택지 주소를 각각 찾아내서 그 ㄱ,ㄴ,ㄷ 선택지의 iscOrrect를 수정하면 될 것임
@@ -39,6 +34,10 @@ class Statement {
         //문제에 있는 정답 정보를 이용하여 선택지가 정답인지를 확인하는 매우 중요한 함수
         // 확인되지 않을경우 치명적 에러
         self.content = content
+        
+        // Statement는 오로지 key가 있어야만 존재할 수 있긴한데
+        // 이를 OX문제로 향후에 변경하도록 수정할 때를 대비해서 key 관리방안을 고민해야되긴 한다 2017. 5. 6,
+        super.init(key)
     }
 }
 

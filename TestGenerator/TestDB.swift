@@ -7,32 +7,28 @@
 //
 
 import Foundation
-class TestDB {
-    let key : String
+class TestDB : DataStructure {
     
     // How do I format JSON Date String with Swift?
     // http://stackoverflow.com/questions/28748162/how-do-i-format-json-date-string-with-swift
-
     let createDate	: Date = Date()
-    var modifiedDate : Date = Date()
-    var description : String = ""
     
     var tests : [Test] = []
     
     init(key: String = "default") {
-        self.key = key
+        super.init(key)
         
         //기본 문제생성, 법인 아닌 사단 SO
         let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험",catHelper: "샘플1", subject: "민사법", number: 1, numHelper: 2017)
-        test변호사시험민사법샘플.description = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
+        test변호사시험민사법샘플.specification = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
         
         let test공인중개사1차샘플2 = Test(testDB: self, isPublished: true, category: "공인중개사", subject: "1차", number: 25, numHelper: nil)
-        test공인중개사1차샘플2.description = "데이터 검사목적으로 Database 객체에서 생성한 공인중개사 시험문제들의 집합"
+        test공인중개사1차샘플2.specification = "데이터 검사목적으로 Database 객체에서 생성한 공인중개사 시험문제들의 집합"
         
         let question0 = Question(test : test변호사시험민사법샘플, number : 1, questionType: QuestionType.Select, questionOX : QuestionOX.X , content : "법인 아닌 사단에 관한 설명 중 옳지 않은 것은?", answer : 5)
         question0.contentControversal = "법인 아닌 사단에 관한 설명 중 옳은 것은?"
         question0.contentNote = "(다툼이 있는 경우 판례에 의함)"
-        question0.description = "변시 민사법 32번 문제 SX, 샘플1"
+        question0.specification = "변시 민사법 32번 문제 SX, 샘플1"
         
         // 1번, 옳은 지문
         let selectionVeryFirst1 = Selection(question: question0, selectNumber: 1, content: "법인 아닌 사단의 사원이 존재하지 않게 된 경우에도 그 법인 아닌 사단은 청산사무가 완료될 때까지 청산의 목적범위 내에서 권리의무의 주체가 된다.")
@@ -60,7 +56,7 @@ class TestDB {
         let question1 = Question(test : test변호사시험민사법샘플, number : 2, questionType: QuestionType.Select, questionOX : QuestionOX.O , content : "매도인의 담보책임에 관한 설명 중 옳은 것은?", answer : 5)
         question1.contentControversal = "매도인의 담보책임에 관한 설명 중 옳지 않은 것은?"
         question1.contentNote = "(다툼이 있는 경우 판례에 의함)"
-        question1.description = "변시 민사법 32번 문제 SX, 샘플1"
+        question1.specification = "변시 민사법 32번 문제 SX, 샘플1"
     
         // 1번, 옳은 지문
         let selectionVeryFirst11 = Selection(question: question1, selectNumber: 1, content: "甲은 자기 소유 17필지의 토지에 대하여 일괄하여 매매대금을 정하고 乙에게 매도하였으나 그 중 2필지가 타인 소유로 밝혀진 경우 매도인 甲이 그 2필지만에 대하여 매매계약을 해제할 수 있다.")
@@ -232,26 +228,114 @@ class TestDB {
     }
     
     func createJsonObjectNew() -> String? {
+        let key = "key"
+        let attribute = "attribute"
+        
         let data : Data
         
-        var object = [String : Any]()
-        
-        
-        
-        
+        var testArray = [Any]()
         for test in tests {
-            object[test.key] = test.category
+            var testDB__test_attribute = [String : Any]()
+            testDB__test_attribute["specification"] = test.specification
+            testDB__test_attribute["modifiedDate"] = test.modifiedDate.description
+            testDB__test_attribute["tags"] = test.tags
+            testDB__test_attribute["createDate"] = test.createDate.description
+            testDB__test_attribute["isPublished"] = test.isPublished
+            testDB__test_attribute["category"] = test.category
+            testDB__test_attribute["catHelper"] = test.catHelper
+            testDB__test_attribute["subject"] = test.subject
+            testDB__test_attribute["number"] = test.number
+            testDB__test_attribute["numHelper"] = test.numHelper
+            testDB__test_attribute["date"] = test.date?.description
+            testDB__test_attribute["raw"] = test.raw
+            var questionArray = [Any]()
+            for question in test.questions {
+                var testDB__test__question_attribute = [String : Any]()
+                testDB__test__question_attribute["specification"] = question.specification
+                testDB__test__question_attribute["modifiedDate"] = question.modifiedDate.description
+                testDB__test__question_attribute["tags"] = question.tags
+                testDB__test__question_attribute["number"] = question.number
+                testDB__test__question_attribute["subjectDetails"] = question.subjectDetails
+                testDB__test__question_attribute["questionType"] = question.questionType.rawValue
+                testDB__test__question_attribute["questionOX"] = question.questionOX.rawValue
+                testDB__test__question_attribute["content"] = question.content
+                testDB__test__question_attribute["contentControversal"] = question.contentControversal
+                testDB__test__question_attribute["contentPrefix"] = question.contentPrefix
+                testDB__test__question_attribute["contentNote"] = question.contentNote
+                testDB__test__question_attribute["passage"] = question.passage
+                testDB__test__question_attribute["contentSuffix"] = question.contentSuffix
+                testDB__test__question_attribute["answer"] = question.answer
+                testDB__test__question_attribute["raw"] = question.raw
+                testDB__test__question_attribute["rawSelections"] = question.rawSelections
+                testDB__test__question_attribute["rawLists"] = question.rawLists
+                var selectionArray = [Any]()
+                for selection in question.selections {
+                    var testDB__test__question__selection_attribute = [String : Any]()
+                    testDB__test__question__selection_attribute["specification"] = selection.specification
+                    testDB__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.description
+                    testDB__test__question__selection_attribute["tags"] = selection.tags
+                    testDB__test__question__selection_attribute["content"] = selection.content
+                    testDB__test__question__selection_attribute["contentControversal"] = selection.contentControversal
+                    testDB__test__question__selection_attribute["iscOrrect"] = selection.iscOrrect
+                    testDB__test__question__selection_attribute["isAnswer"] = selection.isAnswer
+                    var testDB__test__question__selection = [String : Any]()
+                    testDB__test__question__selection[key] = selection.key
+                    testDB__test__question__selection[attribute] = testDB__test__question__selection_attribute
+                    selectionArray.append(testDB__test__question__selection)
+                }
+                var listArray = [Any]()
+                for list in question.lists {
+                    var testDB__test__question__list_attribute = [String : Any]()
+                    testDB__test__question__list_attribute["specification"] = list.specification
+                    testDB__test__question__list_attribute["modifiedDate"] = list.modifiedDate.description
+                    testDB__test__question__list_attribute["tags"] = list.tags
+                    testDB__test__question__list_attribute["content"] = list.content
+                    testDB__test__question__list_attribute["contentControversal"] = list.contentControversal
+                    testDB__test__question__list_attribute["iscOrrect"] = list.iscOrrect
+                    testDB__test__question__list_attribute["isAnswer"] = list.isAnswer
+                    var testDB__test__question__list = [String : Any]()
+                    testDB__test__question__list[key] = list.key
+                    testDB__test__question__list[attribute] = testDB__test__question__list_attribute
+                    listArray.append(testDB__test__question__list)
+                }
+                var testDB__test__question = [String : Any]()
+                testDB__test__question[key] = question.key
+                testDB__test__question[attribute] = testDB__test__question_attribute
+                testDB__test__question["selection"] = selectionArray
+                testDB__test__question["list"] = listArray
+                questionArray.append(testDB__test__question)
+            }
+            var testDB__test = [String : Any]()
+            testDB__test[key] = test.key
+            testDB__test[attribute] = testDB__test_attribute
+            testDB__test["question"] = questionArray
+            testArray.append(testDB__test)
         }
         
+        var testDB_attribute = [String : Any]()
+        testDB_attribute["specification"] = self.specification
+        testDB_attribute["modifiedDate"] = self.modifiedDate.description
+        testDB_attribute["tags"] = self.tags
+        testDB_attribute["createDate"] = self.createDate.description
+        
+        var testDB = [String : Any]()
+        testDB[attribute] = testDB_attribute
+        testDB["test"] = testArray
+        
         do {
+            if !JSONSerialization.isValidJSONObject(testDB) {
+                return nil
+            }
             data = try JSONSerialization.data(
-                withJSONObject: ["tests":object],
+                withJSONObject: [self.key:testDB],
                 options: .prettyPrinted
             )
         } catch  {
-            return nil
+            fatalError("유효하지 않은 \(self.key) testDB Json생성")
         }
         
         return String(data: data, encoding: .utf8)
     }
 }
+
+

@@ -10,5 +10,11 @@ import Foundation
 
 class Note {
     let key : String = "1"
+    let date : Date = Date()
     let content : String = "1"
+    
+//    var fKey : String
+//    var fObject : Any
+    
+    
 }

@@ -9,8 +9,7 @@
 import Cocoa
 
 class Selection: Statement {
-    // 답선택지이면 SN접두어, ㄱ,ㄴ,ㄷ이면 KC접두어, 가,나,다이면 KL접두어
-    let key : String
+    // key 부여방식 답선택지이면 SN접두어, ㄱ,ㄴ,ㄷ이면 KC접두어, 가,나,다이면 KL접두어
     
     let selectNumber : Int
     var listInContentOfSelection = [List]()
@@ -18,9 +17,9 @@ class Selection: Statement {
     init(question: Question, selectNumber: Int, content: String) {
         
         self.selectNumber = selectNumber
-        self.key = question.key + "=S" + String(format: "%02d",selectNumber)
+        let key = question.key + "=S" + String(format: "%02d",selectNumber)
         
-        super.init(question: question, content: content)
+        super.init(key: key, question: question, content: content)
         
         self.question.selections.append(self)
         

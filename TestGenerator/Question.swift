@@ -8,26 +8,26 @@
 
 import Foundation
 
-class Question {
+class Question : DataStructure, Publishable {
 ////내가 무엇인지
     let test : Test
-    let key : String //Primary key, 원본
     
 ////나의 속성은 무었인지
-    var modifiedDate : Date = Date()
-    var description	: String = ""
     
     // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29. => json으로 변환을 생각한다면 기본데이터형으로 놔두는게 오히려 더 편리함
     var number : Int //문제번호, 원본
-    var subjectDetail : String? //민법, 원본
-    var note : String? //유니온문제번호 등 기타 정보, 원본
+    var subjectDetails = [String]() //민법, 원본
     
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
     
     var content: String //원본
     var contentControversal : String? //원본
+    
+    var contentPrefix : String?
     var contentNote: String? //원본
+    var passage : String?
+    var contentSuffix : String?
     
     //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
     //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요(+) 2017. 4.29.
@@ -37,17 +37,16 @@ class Question {
     var rawSelections : String = ""
     var rawLists : String = ""
     
-    
+    ////식구들이 정해지면 내가 찾아야 하는 존재
+    //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
+    weak var answerSelection: Selection?
+    var answerLists = [List]()
     
     
 ////내 식구들은 누구인지
     var selections = [Selection]() //원본
     var lists = [List]() //원본
     
-////식구들이 정해지면 내가 찾아야 하는 존재
-    //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
-    weak var answerSelection: Selection?
-    var answerLists = [List]()
     
     init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
@@ -59,12 +58,12 @@ class Question {
         self.answer = answer
         self.number = number
         
-        let str = self.test.key + "=" + String(format: "%04d", self.number)
+        let key = self.test.key + "=" + String(format: "%04d", self.number)
         
-        if !test.questions.filter({$0.key == str}).isEmpty {
-            fatalError("잘못된 문제key 입력 이미 \(str)이 존재함")
+        if !test.questions.filter({$0.key == key}).isEmpty {
+            fatalError("잘못된 문제key 입력 이미 \(key)이 존재함")
         }
-        self.key = str
+        super.init(key)
         
         self.test.questions.append(self)
     }
@@ -296,7 +295,7 @@ class Question {
         let questionType = ["label":self.questionType.rawValue, "Attribute":JsonAttributes().questionTypeNotNullableAttribute] as [String : Any]
         let testSubject = ["label":self.test.subject, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
         let testCategory = ["label":self.test.category, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
-        let testDate = ["label":self.test.date ?? testDB, "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
+        let testDate = ["label":self.test.date ?? "" , "Attribute":JsonAttributes().stringNotNullableAttribute] as [String : Any]
         let isPublished = ["label":self.test.isPublished, "Attribute":JsonAttributes().boolNotNullableAttribute] as [String : Any]
         
         // 최종 question infromation

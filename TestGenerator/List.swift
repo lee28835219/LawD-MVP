@@ -9,8 +9,7 @@
 import Foundation
 
 class List: Statement {
-    // 답선택지이면 S접두어, ㄱ,ㄴ,ㄷ, 가,나,다이면 L접두어
-    let key : String
+    // key가 선택지이면 S접두어, ㄱ,ㄴ,ㄷ, 가,나,다이면 L접두어
     
     var listStringType : SelectStringType = .koreanCharcter
     var number : Int = 0
@@ -32,9 +31,9 @@ class List: Statement {
             fatalError("잘못된 목록의 번호입력으로 진행할 수 없음 : \(selectString))")
         }
         
-        self.key = question.key + "=L" + String(format: "%02d",number)
+        let key = question.key + "=L" + String(format: "%02d",number)
         
-        super.init(question: question, content: content)
+        super.init(key: key, question: question, content: content)
         self.question.lists.append(self)
     }
     

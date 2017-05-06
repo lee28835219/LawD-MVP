@@ -8,11 +8,11 @@
 
 import Foundation
 
-print("Hello!TextGenerator Starts!")
+//print("Hello!TextGenerator Starts!")
 var input : String?
 var testDB = TestDB()
 var inputManger = InputManager(testDB : testDB)
-print("Intialization Complete")
+//print("Intialization Complete")
 print("")
 
 
@@ -31,7 +31,7 @@ repeat {
 //            }
 //        }
 //    }
-//    
+//
 //    for que in testDB.tests[0].questions {
 //        que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: true)
 //        let queS = QuestionShuffled(question: que)
@@ -75,28 +75,28 @@ repeat {
 //    sampleQuestion.publish()
 //    inputManger.solveShuffledQuestion(question: sampleQuestion)
     
-    let 법조윤리 = DC법조윤리()
-    testDB.tests.append(contentsOf: 법조윤리.시험들)
-    print("--법조윤리 파싱 complete")
+//    let 법조윤리 = DC법조윤리()
+//    testDB.tests.append(contentsOf: 법조윤리.시험들)
+//    print("--법조윤리 파싱 complete")
     
     
-    for test in testDB.tests {
-        for que in test.questions {
-            que.publish(showAttribute: false, showAnswer: false, showTitle: false, showOrigSel: false)
-            let queS = QuestionShuffled(question: que)
-            guard let qs = queS else {
-                print("\(que.key) 문제를 변경할 수 없음")
-                continue
-            }
-            QShufflingManager(qShuffled: qs).publish()
-        }
-    }
+//    for test in testDB.tests {
+//        for que in test.questions {
+//            que.publish(showAttribute: false, showAnswer: false, showTitle: false, showOrigSel: false)
+//            let queS = QuestionShuffled(question: que)
+//            guard let qs = queS else {
+//                print("\(que.key) 문제를 변경할 수 없음")
+//                continue
+//            }
+//            QShufflingManager(qShuffled: qs).publish()
+//        }
+//    }
     
-    print(testDB.createJsonObjectNew()!)
+    print(testDB.createJsonObjectNew() ?? "JSON DATA 생성실패")
     
     
     //명령어
-    print(">>>>", terminator : "")
+//    print(">>>>", terminator : "")
     input = readLine()
     
     guard let inp = input else {
