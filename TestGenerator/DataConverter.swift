@@ -21,7 +21,7 @@ class DataConverter: NSObject {
     let testCategory : String
     let testSubject : String
     
-    var tests = [Test]()
+    var 문제들 = [Test]()
     var 정답들 = [정답]()
     
     init(testCategory : String, testSubject : String, answerFilename: String, questionFilename : String) {
