@@ -13,8 +13,8 @@ class DC법조윤리: DataConverter {
     //    Read JSON file with Swift 3
     //    http://stackoverflow.com/questions/40438784/read-json-file-with-swift-3
 
-    convenience init() {
-        self.init(testCategory: "변호사윤리시험", testSubject: "법조윤리", answerFilename: "변호사윤리시험-1회~7회-법조윤리-정답.json", questionFilename: "변호사윤리시험-1회~7회-법조윤리-문제.txt")
+    convenience init?(_ testDB : TestDB) {
+        self.init(testDB: testDB, testCategory: "변호사윤리시험", answerFilename: "변호사윤리시험-1회~7회-법조윤리-정답.json", questionFilename: "변호사윤리시험-1회~7회-법조윤리-문제.txt")
         // 정답을 파싱
         do {
             if let path = self.answerPath {
@@ -56,7 +56,7 @@ class DC법조윤리: DataConverter {
         
         print("--법조윤리 문제 파싱시작")
         
-        let wholeTestString = getText(path: self.questionPath)
+        let wholeTestString = getText(path: self.questionPath!)
         sliceTestString(regexPattern: "=-=변호사윤리 시험기출 \\d회 \\d{3}.+=-=", string: wholeTestString)
         
         for test in 시험들 {

@@ -205,22 +205,22 @@ extension TestDB {
         for test in tests {
             var testDB__test_attribute = [String : Any]()
             testDB__test_attribute["specification"] = test.specification
-            testDB__test_attribute["modifiedDate"] = test.modifiedDate.description
+            testDB__test_attribute["modifiedDate"] = test.modifiedDate.jsonFormat
             testDB__test_attribute["tags"] = test.tags
-            testDB__test_attribute["createDate"] = test.createDate.description
+            testDB__test_attribute["createDate"] = test.createDate.jsonFormat
             testDB__test_attribute["isPublished"] = test.isPublished
             testDB__test_attribute["category"] = test.category
             testDB__test_attribute["catHelper"] = test.catHelper
             testDB__test_attribute["subject"] = test.subject
             testDB__test_attribute["number"] = test.number
             testDB__test_attribute["numHelper"] = test.numHelper
-            testDB__test_attribute["date"] = test.date?.description
+            testDB__test_attribute["date"] = test.date?.jsonFormat
             testDB__test_attribute["raw"] = test.raw
             var questionArray = [Any]()
             for question in test.questions {
                 var testDB__test__question_attribute = [String : Any]()
                 testDB__test__question_attribute["specification"] = question.specification
-                testDB__test__question_attribute["modifiedDate"] = question.modifiedDate.description
+                testDB__test__question_attribute["modifiedDate"] = question.modifiedDate.jsonFormat
                 testDB__test__question_attribute["tags"] = question.tags
                 testDB__test__question_attribute["number"] = question.number
                 testDB__test__question_attribute["subjectDetails"] = question.subjectDetails
@@ -240,7 +240,7 @@ extension TestDB {
                 for selection in question.selections {
                     var testDB__test__question__selection_attribute = [String : Any]()
                     testDB__test__question__selection_attribute["specification"] = selection.specification
-                    testDB__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.description
+                    testDB__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.jsonFormat
                     testDB__test__question__selection_attribute["tags"] = selection.tags
                     testDB__test__question__selection_attribute["content"] = selection.content
                     testDB__test__question__selection_attribute["contentControversal"] = selection.contentControversal
@@ -255,7 +255,7 @@ extension TestDB {
                 for list in question.lists {
                     var testDB__test__question__list_attribute = [String : Any]()
                     testDB__test__question__list_attribute["specification"] = list.specification
-                    testDB__test__question__list_attribute["modifiedDate"] = list.modifiedDate.description
+                    testDB__test__question__list_attribute["modifiedDate"] = list.modifiedDate.jsonFormat
                     testDB__test__question__list_attribute["tags"] = list.tags
                     testDB__test__question__list_attribute["content"] = list.content
                     testDB__test__question__list_attribute["contentControversal"] = list.contentControversal
@@ -282,9 +282,9 @@ extension TestDB {
         
         var testDB_attribute = [String : Any]()
         testDB_attribute["specification"] = self.specification
-        testDB_attribute["modifiedDate"] = Date().description
+        testDB_attribute["modifiedDate"] = Date().jsonFormat
         testDB_attribute["tags"] = self.tags
-        testDB_attribute["createDate"] = self.createDate.description
+        testDB_attribute["createDate"] = self.createDate.jsonFormat
         
         var testDB = [String : Any]()
         testDB[attribute] = testDB_attribute

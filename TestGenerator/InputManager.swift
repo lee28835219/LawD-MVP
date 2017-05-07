@@ -317,3 +317,28 @@ class InputManager {
         }
     }
 }
+
+extension Date {
+    var yyyymmdd : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd."
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    var hhmmss : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd. a hh:mm:ss"
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    
+    var jsonFormat : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+}
+

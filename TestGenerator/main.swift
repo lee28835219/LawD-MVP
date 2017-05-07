@@ -15,13 +15,22 @@ var testDB = TestDB()
 var inputManger = InputManager(testDB : testDB)
 let outputManager = OutputManager()
 
-print("시작 -", Date().description)
+print("시작 -", Date().hhmmss)
+
+let barExam = DC변호사시험민사법(testDB)
+
+//    for test in barExam!.tests {
+//        print("시험", test.category, test.number)
+//        for ans in test.answers {
+//            print(ans.questionNumber, " : ", ans.number)
+//        }
+//    }
+
+
+
 
 //무한루프 시작
 repeat {
-    let dd = DC변호사시험민사법()
-    
-    
     //명령어
     print(">", terminator : "")
     input = inputManger.getInput()
