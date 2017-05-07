@@ -14,7 +14,6 @@ import Cocoa
 //Read and write data from text file
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
-    
     var answerFilename : String
     let answerPath : URL?
     var questionFilename : String
@@ -22,7 +21,7 @@ class DataConverter: NSObject {
     let testCategory : String
     let testSubject : String
     
-    var 시험들 = [Test]()
+    var tests = [Test]()
     var 정답들 = [정답]()
     
     init(testCategory : String, testSubject : String, answerFilename: String, questionFilename : String) {

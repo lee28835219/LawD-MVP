@@ -15,15 +15,15 @@ class TestDB : DataStructure, JSONoutable {
     
     var tests : [Test] = []
     
-    init(key: String = "default") {
+    init(key: String = "test database default") {
         
         super.init(key)
         
         //기본 문제생성, 법인 아닌 사단 SO
-        let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험",catHelper: "샘플1", subject: "민사법", number: 1, numHelper: 2017)
+        let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험샘플", subject: "민사법", number: 1, numHelper: 2017)
         test변호사시험민사법샘플.specification = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
         
-        let test공인중개사1차샘플2 = Test(testDB: self, isPublished: true, category: "공인중개사", subject: "1차", number: 25, numHelper: nil)
+        let test공인중개사1차샘플2 = Test(testDB: self, isPublished: true, category: "공인중개사샘플", subject: "1차", number: 25, numHelper: nil)
         test공인중개사1차샘플2.specification = "데이터 검사목적으로 Database 객체에서 생성한 공인중개사 시험문제들의 집합"
         
         let question0 = Question(test : test변호사시험민사법샘플, number : 1, questionType: QuestionType.Select, questionOX : QuestionOX.X , content : "법인 아닌 사단에 관한 설명 중 옳지 않은 것은?", answer : 5)

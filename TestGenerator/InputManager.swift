@@ -9,14 +9,57 @@
 import Foundation
 
 class InputManager {
+    var isDBChanged : Bool = false
+    
     let testDB : TestDB
-//    var testSelectionTemp : TestSelctions
     
     init(testDB : TestDB) {
         self.testDB = testDB
     }
     
-    func execute(input : String) -> Bool {
+    func execute(input : String) -> Bool? {
+        
+        if input == "" {
+            return nil
+        }
+        
+        if input.caseInsensitiveCompare("exit") == ComparisonResult.orderedSame || input == "ㄷㅌㅑㅅ" {
+            return true
+        }
+        
+        if input.caseInsensitiveCompare("queall") == ComparisonResult.orderedSame || input == "ㅂㅕㄷㅁㅣㅣ" {
+            print("\(testDB.key)의 key를 모두출력")
+            for test in testDB.tests {
+                print("------------",test.key)
+                for que in test.questions {
+                    print("-------", que.key)
+                    for sel in que.lists {
+                        print("---",sel.key)
+                    }
+                    for sel in que.selections {
+                        print("---",sel.key)
+                    }
+                }
+            }
+            return true
+        }
+        
+        if input.caseInsensitiveCompare("keyall") == ComparisonResult.orderedSame || input == "ㅏㄷㅛㅁㅣㅣ" {
+            print("\(testDB.key)의 key를 모두출력")
+            for test in testDB.tests {
+                print("------------",test.key)
+                for que in test.questions {
+                    print("-------", que.key)
+                    for sel in que.lists {
+                        print("---",sel.key)
+                    }
+                    for sel in que.selections {
+                        print("---",sel.key)
+                    }
+                }
+            }
+            return true
+        }
         
         if input.caseInsensitiveCompare("save") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷ" {
             let data = testDB.createJsonObject()
@@ -29,7 +72,7 @@ class InputManager {
         }
         
         
-        if input.caseInsensitiveCompare("sq") ==  ComparisonResult.orderedSame || input == "ㄴㅂ" {
+        if input.caseInsensitiveCompare("cq") ==  ComparisonResult.orderedSame || input == "ㅊㅂ" {
             //http://stackoverflow.com/questions/30532728/how-to-compare-two-strings-ignoring-case-in-swift-language
             createQuestion()
             
@@ -37,8 +80,9 @@ class InputManager {
         }
         
         // 시험을 선택하여 문제당 5개의 변형문제를 진행
-        if input.caseInsensitiveCompare("st") ==  ComparisonResult.orderedSame  || input == "ㄴㅅ" {
+        if input.caseInsensitiveCompare("shufflet") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㅅ" {
             let selectedTest = selectTest()
+            
             guard let selectedTestWrapped = selectedTest else {
                 print("선택한 시험을 찾을 수 없었음")
                 return false
@@ -47,7 +91,7 @@ class InputManager {
             let selectedQuestions = selectedTestWrapped.questions
             
             if selectedQuestions.count == 0 {
-                print("\(selectedTestWrapped) 시험에 문제가 없음")
+                print("\(selectedTestWrapped.key) 시험에 문제가 없음")
                 return false
             }
             
@@ -57,7 +101,7 @@ class InputManager {
                 print("[변형]" + que.key)
                 for _ in 1...5 {
                     if !solveShuffledQuestion(question: que) {
-                        continue
+                        return false
                     }
                 }
             }
@@ -65,7 +109,7 @@ class InputManager {
         }
         
         // 문제를 선택하여 10개의 변형문제를 진행
-        if input.caseInsensitiveCompare("sq") ==  ComparisonResult.orderedSame  || input == "sq" {
+        if input.caseInsensitiveCompare("shuffleq") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㄷㅂ" {
             
             let selectedTest = selectTest()
             guard let selectedTestWrapped = selectedTest else { return false }
@@ -76,7 +120,7 @@ class InputManager {
             selectedQuestionWrapped.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
             for _ in 1...10 {
                 if !solveShuffledQuestion(question: selectedQuestionWrapped) {
-                    break
+                    return false
                 }
             }
             return true
@@ -85,6 +129,9 @@ class InputManager {
         return false
     }
     
+    // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
+    // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
+    // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
     private func solveShuffledQuestion(question : Question) -> Bool {
         var quetionShuffled : QuestionShuffled?
         
@@ -98,20 +145,32 @@ class InputManager {
         QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: false, showOrigSel: false)
         
         print("정답은?>>", terminator : "")
-        input = readLine()
-        if Int(input!) == (quetionShuffled?.getAnswerNumber())! + 1 {
+        input = getInput()
+        if Int(input) == (quetionShuffled?.getAnswerNumber())! + 1 {
             print("정답!", terminator: "")
-            input = readLine()
         } else {
             //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
             print("오답임...정답은")
             print("\(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
-            print("확인?(노트추가 : n)>>", terminator: "")
-            input = readLine()
+            print("확인??", terminator: "")
+        }
+        print("-노트추가(n),태그(t),중단(s)>", terminator: "")
+        input = getInput()
+        if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
+            print("노트를 입력하세요>", terminator: "")
+            input = getInput()
+        } else if input.caseInsensitiveCompare("t") == ComparisonResult.orderedSame || input == "t" {
+            print("태그를 입력하세요>", terminator: "")
+            // 데이터 추가 필요 2017. 5. 6. (+)
+        } else if input.caseInsensitiveCompare("s") == ComparisonResult.orderedSame || input == "ㄴ" {
+            print(question.key, "문제 변형을 중단함")
+            return false
         }
         return true
     }
     
+    // 사용자로부터 입력을 받아서 데이터베이스 안의 시험을 선택하는 함수
+    // 시험이 하나도 없을 경우 nil반환
     private func selectTest() -> Test? {
         
         for (index,test) in testDB.tests.enumerated() {
@@ -130,7 +189,7 @@ class InputManager {
         var selectedTest : Int = -1
         var goon = true
         while goon {
-            print("출력할 시험번호(1~\(testCount + 1))>", terminator : "")
+            print("출력할 시험번호(1~\(testCount))>", terminator : "")
             let input = readLine()
             
             guard let inputWrapped = input else {
@@ -144,17 +203,14 @@ class InputManager {
                 continue
             }
             
-            if testNumber! - 1 < 0 && testNumber! - 1 > testCount {
-                print("숫자를 입력하세요")
+            if testNumber! - 1 < 0 || testNumber! - 1 >= testCount {
+                print("시험번호 범위에 맞는 숫자를 입력하세요")
                 continue
             }
             
             goon = false
             selectedTest = testNumber!
         }
-        
-        print("\(testDB.tests[selectedTest-1].key)")
-        
         return testDB.tests[selectedTest-1]
     }
     
@@ -245,5 +301,19 @@ class InputManager {
         }
         print(database.testSelctions)
     */
+    }
+    
+    func getInput() -> String {
+        var goon = true
+        while goon {
+            let input = readLine()
+        
+            guard let inputWrapped = input else {
+                print(" 유효하지 않은 입력")
+                continue
+            }
+            goon = false
+            return inputWrapped
+        }
     }
 }

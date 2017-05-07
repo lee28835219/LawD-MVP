@@ -111,20 +111,20 @@ class OutputManager {
         
         let fileManager = FileManager.default
         if fileManager.fileExists(atPath: savePathWrapped.path) {
-            print("\(fileName)이 \(savePathWrapped)에 존재함 계속진행?(y)>", terminator : "")
+            print("\(fileName)이 \(savePathWrapped)에 존재함 계속진행?(y)>".spacing(1), terminator : "")
             let input = readLine()
             if input != "y" && input != "Y" && input != "ㅛ" {
-                print("\(fileName) 저장 안하고 종료")
+                print("\(fileName) 저장 안하고 종료".spacing(1))
                 return false
             }
         }
         
         do {
             try data.write(to: savePathWrapped)
-            print("\(fileName) 저장 성공")
+            print("\(fileName) 저장 성공".spacing(1))
             return true
         } catch {
-            print("\(fileName)을 저장하는데 실패하였음 - \(error)")
+            print("\(fileName)을 저장하는데 실패하였음 - \(error)".spacing(1))
             return false
         }
     }
