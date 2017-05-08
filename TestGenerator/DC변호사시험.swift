@@ -30,15 +30,11 @@ class DC변호사시험민사법 : DataConverter {
                                 , numberOfSelections: 5
                                 )
         
+        
+        
         _ = saveTests()
         
         print(log)
         
-//        for test in self.tests {
-//            print(test.category, test.subject, test.number)
-//            for question in test.questions {
-//                print(question.number, question.answer, question.selections.count, question.answer, question.lists.count)
-//            }
-//        }
     }
 }

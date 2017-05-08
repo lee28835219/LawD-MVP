@@ -58,7 +58,7 @@ class InputManager {
         if input.caseInsensitiveCompare("save") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷ" {
             let data = testDB.createJsonObject()
             if let dataWrapped = data {
-                _ = outputManager.saveFile(fileName: "testDB-\(testDB.key).json", data: dataWrapped)
+                _ = outputManager.saveFile(fileName: "testDB-\(testDB.key)-\(Date().hhmmss).json", data: dataWrapped)
             } else {
                 print("TestDB \(testDB.key) JSON DATA 생성실패")
             }
@@ -72,6 +72,77 @@ class InputManager {
             
             return true
         }
+        
+        if input.caseInsensitiveCompare("selta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅㅁ"
+            || input.caseInsensitiveCompare("selt") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅ" {
+            
+            var showAnswer = false
+            if input.caseInsensitiveCompare("selectta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㄷㅊㅅㅅㅁ" {
+                showAnswer = true
+            }
+            
+            guard let selectedTest = selectTest() else {
+                print("선택한 시험을 찾을 수 없었음")
+                return false
+            }
+            
+            for (index, question) in selectedTest.questions.enumerated() {
+                if index == 0 {
+                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
+                }
+                question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
+            }
+            
+            return true
+        }
+        
+        if input.caseInsensitiveCompare("selta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅㅁ"
+            || input.caseInsensitiveCompare("selt") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅ" {
+            
+            var showAnswer = false
+            if input.caseInsensitiveCompare("selta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅㅁ" {
+                showAnswer = true
+            }
+            
+            guard let selectedTest = selectTest() else {
+                print("선택한 시험을 찾을 수 없었음")
+                return false
+            }
+            
+            for (index, question) in selectedTest.questions.enumerated() {
+                if index == 0 {
+                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
+                }
+                question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
+            }
+            
+            return true
+        }
+        
+        
+        if input.caseInsensitiveCompare("selqa") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂㅁ"
+            || input.caseInsensitiveCompare("seqt") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂ" {
+            
+            var showAnswer = false
+            if input.caseInsensitiveCompare("selqa") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂㅁ" {
+                showAnswer = true
+            }
+            
+            guard let selectedTest = selectTest() else {
+                print(">선택한 시험을 찾을 수 없었음")
+                return false
+            }
+            
+            guard let selectedQuestion = selectQuestion(test: selectedTest) else {
+                print(">선택한 문제를 찾을 수 없었음")
+                return false
+            }
+            
+            selectedQuestion.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
+            
+            return true
+        }
+        
         
         // 시험을 선택하여 문제당 5개의 변형문제를 진행
         if input.caseInsensitiveCompare("shufflet") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㅅ" {
@@ -145,7 +216,7 @@ class InputManager {
         } else {
             //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
             print("오답임...정답은")
-            print("\(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
+            print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
             print("확인??", terminator: "")
         }
         print("-노트추가(n),태그(t),중단(s)>", terminator: "")
@@ -187,18 +258,18 @@ class InputManager {
             let input = readLine()
             
             guard let inputWrapped = input else {
-                print("올바르지 않은 입력, 재입력하세요.")
+                print(">올바르지 않은 입력, 재입력하세요.")
                 continue
             }
             
             let testNumber = Int(inputWrapped)
             if testNumber == nil {
-                print("숫자를 입력하세요")
+                print(">숫자를 입력하세요")
                 continue
             }
             
             if testNumber! - 1 < 0 || testNumber! - 1 >= testCount {
-                print("시험번호 범위에 맞는 숫자를 입력하세요")
+                print(">시험번호 범위에 맞는 숫자를 입력하세요")
                 continue
             }
             
@@ -303,7 +374,8 @@ class InputManager {
             let input = readLine()
         
             guard let inputWrapped = input else {
-                print(" 유효하지 않은 입력")
+                print(" 유효하지 않은 입력\n")
+                print("$ ", terminator: "")
                 continue
             }
             goon = false

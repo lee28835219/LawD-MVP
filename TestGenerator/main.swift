@@ -17,24 +17,25 @@ let outputManager = OutputManager()
 
 print("시작 -", Date().hhmmss)
 
+let dddd = DCDD(testDB)
+
 let barExam = DC변호사시험민사법(testDB)
 let firstBarExam = DC법조윤리(testDB)
-
 
 
 //무한루프 시작
 repeat {
     //명령어
-    print(">", terminator : "")
+    print("$ ", terminator : "")
     input = inputManger.getInput()
     let result = inputManger.execute(input: input)
     
     
     switch result {
     case .some(true) :
-        print("<\(input) 명령실행 성공!>")
+        print(">>\(input) 명령실행 성공!")
     case .some(false) :
-        print("<\(input) 명령실행 실패>")
+        print(">>\(input) 명령실행 실패")
     default :
         continue
     }

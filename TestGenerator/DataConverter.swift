@@ -30,6 +30,10 @@ class DataConverter: NSObject {
     private var _headerAndResidualStrings : [String : String] = [:]
     
     
+    
+    
+    
+    
     init(testDB : TestDB, testCategory : String, answerFilename: String, questionFilename : String) {
         
         self.testDB = testDB
@@ -54,6 +58,11 @@ class DataConverter: NSObject {
             fatalError("파일을 파싱해서 저장하려는 Document 폴더가 존재하지 않음")
         }
     }
+    
+    
+    
+    
+    
     
     // json 파일에 있는 시험과 정답정보를 가져오는 매우 중요한 함수
     func parseAnswerAndTestFromJsonFormat(testSeperator: String) {
@@ -131,6 +140,11 @@ class DataConverter: NSObject {
     
     
     
+    
+    
+    
+    
+    
     // 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
     func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
         
@@ -187,7 +201,7 @@ class DataConverter: NSObject {
                     var newSelection = Templet.Selection()
                     newSelection.content = selection.value.trimmingCharacters(in: .whitespacesAndNewlines)
                     newSelection.contentControversal = nil
-                    newSelection.selectNumber = selection.key.roundInt
+                    newSelection.number = selection.key.roundInt
                     
                     newQuestion.selections.append(newSelection)
                     
@@ -311,7 +325,34 @@ class DataConverter: NSObject {
     }
     
     
+    
+    
+    
+    // 파싱한 시험과 질문데이터를 소팅해주는 함수
+    // 저장전에 불러주면 좋을 듯
+    func sortTestAndQuestion() {
+        
+        // How do you sort an array of structs in swift
+        // http://stackoverflow.com/questions/24781027/how-do-you-sort-an-array-of-structs-in-swift
+        
+        tests.sort{$0.number < $1.number}
+        
+        for (index, test) in tests.enumerated() {
+            tests[index].questions.sort{$0.number < $1.number}
+            
+            for (jdex, _) in test.questions.enumerated() {
+                tests[index].questions[jdex].selections.sort{$0.number < $1.number}
+                tests[index].questions[jdex].lists.sort{$0.number < $1.number}
+            }
+        }
+        
+    }
+    
+    
     func saveTests() -> Bool {
+        
+        sortTestAndQuestion()
+        
         for test in tests {
             let newTest = Test(testDB: testDB, isPublished: true, category: test.category, catHelper: test.catHelper, subject: test.subject, number: test.number, numHelper: test.numHelper)
             for question in test.questions {
@@ -328,7 +369,7 @@ class DataConverter: NSObject {
                 newQuestion.rawSelections =  question.rawSelections
                 
                 for selection in question.selections {
-                    let newSelection = Selection(question: newQuestion, number: selection.selectNumber, content: selection.content)
+                    let newSelection = Selection(question: newQuestion, number: selection.number, content: selection.content)
                     newSelection.contentControversal = selection.contentControversal
                     newSelection.specification = selection.specification
                 }
@@ -350,6 +391,13 @@ class DataConverter: NSObject {
         }
         return true
     }
+    
+    
+    
+    
+    
+    
+    
     
     
     // http://kandelvijaya.com/2016/10/11/swiftstringrange/
@@ -397,6 +445,8 @@ class DataConverter: NSObject {
         _headerAndResidualStrings = [:]  // 전역변수이므로 초기화가 매우 중요, 리컬시브 함수에서 파라미터를 포인터로 전달하는 방법은 없을까? 예가 구조체라서 불가능할려나 2017. 5. 7.
         return _sliceString(regexPattern : regexPattern, residualString : string, headerUn : nil)
     }
+    
+
     
     private func _sliceString(regexPattern : String, residualString : String, headerUn : String?) -> [String : String] {
         let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
