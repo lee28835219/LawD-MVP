@@ -11,20 +11,20 @@ import Cocoa
 class Selection: Statement {
     // key 부여방식 답선택지이면 SN접두어, ㄱ,ㄴ,ㄷ이면 KC접두어, 가,나,다이면 KL접두어
     
-    let selectNumber : Int
+    let number : Int
     var listInContentOfSelection = [List]()
     
-    init(question: Question, selectNumber: Int, content: String) {
+    init(question: Question, number: Int, content: String) {
         
-        self.selectNumber = selectNumber
-        let key = question.key + "=S" + String(format: "%02d",selectNumber)
+        self.number = number
+        let key = question.key + "=S" + String(format: "%02d",number)
         
         super.init(key: key, question: question, content: content)
         
         self.question.selections.append(self)
         
         isAnswer = false
-        if self.selectNumber == question.answer {
+        if self.number == question.answer {
             question.answerSelection = self
             isAnswer = true
         }

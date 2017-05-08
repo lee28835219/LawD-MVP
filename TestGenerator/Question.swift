@@ -150,7 +150,7 @@ extension Question {
             selectionsContent.append(sel.content)
             selsIscOrrect.append(sel.iscOrrect)
             selsIsAnswer.append(sel.isAnswer)
-            originalSelectionsNumber.append(sel.selectNumber.roundInt)
+            originalSelectionsNumber.append(sel.number.roundInt)
         }
         
         var listSelectionsContent = [String]()
@@ -192,7 +192,7 @@ extension Question {
             ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
             questionAnswer: answer,  // 셔플하면 변경
-            originalAnsSelectionNumber: answerSelection!.selectNumber.roundInt
+            originalAnsSelectionNumber: answerSelection!.number.roundInt
         )
     }
 }

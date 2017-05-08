@@ -30,15 +30,9 @@ class InputManager {
         if input.caseInsensitiveCompare("queall") == ComparisonResult.orderedSame || input == "ㅂㅕㄷㅁㅣㅣ" {
             print("\(testDB.key)의 key를 모두출력")
             for test in testDB.tests {
-                print("------------",test.key)
+                print("--",test.key)
                 for que in test.questions {
-                    print("-------", que.key)
-                    for sel in que.lists {
-                        print("---",sel.key)
-                    }
-                    for sel in que.selections {
-                        print("---",sel.key)
-                    }
+                    print("----", que.key)
                 }
             }
             return true
@@ -47,14 +41,14 @@ class InputManager {
         if input.caseInsensitiveCompare("keyall") == ComparisonResult.orderedSame || input == "ㅏㄷㅛㅁㅣㅣ" {
             print("\(testDB.key)의 key를 모두출력")
             for test in testDB.tests {
-                print("------------",test.key)
+                print("--",test.key)
                 for que in test.questions {
-                    print("-------", que.key)
+                    print("----", que.key)
                     for sel in que.lists {
-                        print("---",sel.key)
+                        print("------",sel.key)
                     }
                     for sel in que.selections {
-                        print("---",sel.key)
+                        print("------",sel.key)
                     }
                 }
             }

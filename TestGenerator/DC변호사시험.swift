@@ -21,7 +21,7 @@ class DC변호사시험민사법 : DataConverter {
                   answerFilename: "변호사시험 1~6회 민사법 정답.json",
                   questionFilename: "변호사시험-1~6회-민사법.txt")
         
-        let testSeperator = "=변호사시험=\\d회=.+법=선택형="
+        let testSeperator = "=변호사시험=\\d+회=.+법=선택형="
         
         parseAnswerAndTestFromJsonFormat(testSeperator: testSeperator)
         parseQustionsFromTextFile(testSeperator: testSeperator
@@ -30,7 +30,7 @@ class DC변호사시험민사법 : DataConverter {
                                 , numberOfSelections: 5
                                 )
         
-//        saveTests()
+        _ = saveTests()
         
         print(log)
         

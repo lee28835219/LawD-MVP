@@ -236,7 +236,7 @@ class QuestionShuffled {
                 return
             }
            if showLog {
-                print("--3. 정답을 \(answerSelectionModifed.selectNumber)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+                print("--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
             }
         }
     }

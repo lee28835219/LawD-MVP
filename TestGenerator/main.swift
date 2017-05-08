@@ -18,14 +18,7 @@ let outputManager = OutputManager()
 print("시작 -", Date().hhmmss)
 
 let barExam = DC변호사시험민사법(testDB)
-
-//    for test in barExam!.tests {
-//        print("시험", test.category, test.number)
-//        for ans in test.answers {
-//            print(ans.questionNumber, " : ", ans.number)
-//        }
-//    }
-
+let firstBarExam = DC법조윤리(testDB)
 
 
 

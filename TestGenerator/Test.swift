@@ -63,6 +63,13 @@ class Test : DataStructure {
             str = str + "." + String(format: "%03d", self.number)
         }
         
+        for test in testDB.tests {
+            if test.key == str && isPublished {
+                fatalError("\(str)과 똑같은 시험이 이미 testDB \(testDB.key)에 있음")
+            }
+        }
+        
         super.init(str)
+        testDB.tests.append(self)
     }
 }

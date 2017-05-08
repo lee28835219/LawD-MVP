@@ -58,7 +58,7 @@ class QShufflingManager : Publishable {
             selectionsContent.append(selResult.content)
             selsIscOrrect.append(selResult.iscOrrect)
             selsIsAnswer.append(selResult.isAnswer)
-            originalSelectionsNumber.append(sel.selectNumber.roundInt)
+            originalSelectionsNumber.append(sel.number.roundInt)
         }
         
         //정답
@@ -96,7 +96,7 @@ class QShufflingManager : Publishable {
             ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: ansSel.isAnswer,  // 셔플하면 변경
             questionAnswer: (qShuffled.getAnswerNumber() + 1),
-            originalAnsSelectionNumber: qShuffled.answerSelectionModifed.selectNumber.roundInt // 셔플하면 변경
+            originalAnsSelectionNumber: qShuffled.answerSelectionModifed.number.roundInt // 셔플하면 변경
         )
     }
 }
