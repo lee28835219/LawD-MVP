@@ -11,13 +11,43 @@ import Foundation
 class InputManager {
     var isDBChanged : Bool = false
     
-    let testDB : TestDB
+    let testDatabase : TestDatabase
+    let outputManager : OutputManager
     
-    init(testDB : TestDB) {
-        self.testDB = testDB
+    init(testDatabase : TestDatabase, outputManager : OutputManager) {
+        self.testDatabase = testDatabase
+        self.outputManager = outputManager
     }
     
-    func execute(input : String) -> Bool? {
+    func execute(_ input : String) -> Bool? {
+        
+        if input.caseInsensitiveCompare("dir") == ComparisonResult.orderedSame || input == "ㅇㅑㄱ" {
+            
+            outputManager.showDirectory(outputManager.url)
+            
+            return true
+        }
+        
+        
+        // exit
+        
+        // 조회명령
+        // tcatall
+        // tsuball
+        // testall
+        // queall
+        // keyall
+        
+        // 저장명령
+        // savet
+        
+        // 출력명령
+        // selta, selt
+        // selqa, selq
+        
+        // 문제 섞어 출력
+        // shufflet
+        // shuffleq
         
         if input == "" {
             return nil
@@ -27,41 +57,126 @@ class InputManager {
             return true
         }
         
-        if input.caseInsensitiveCompare("queall") == ComparisonResult.orderedSame || input == "ㅂㅕㄷㅁㅣㅣ" {
-            print("\(testDB.key)의 key를 모두출력")
-            for test in testDB.tests {
-                print("--",test.key)
-                for que in test.questions {
-                    print("----", que.key)
+        
+        
+        
+        if input.caseInsensitiveCompare("tcatall") == ComparisonResult.orderedSame || input == "ㅅㅊㅁㅅㅁㅣㅣ" {
+            print("\(testDatabase.key)의 시험카테고리 모두출력")
+            
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+            }
+            return true
+        }
+        
+        
+        if input.caseInsensitiveCompare("tsuball") == ComparisonResult.orderedSame || input == "ㅅㄴㅕㅠㅁㅣㅣ" {
+            print("\(testDatabase.key)의 시험카테고리 모두출력")
+            
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
                 }
             }
             return true
         }
+        
+        
+        
+        if input.caseInsensitiveCompare("testall") == ComparisonResult.orderedSame || input == "ㅅㄷㄴㅅㅁㅣㅣ" {
+            print("\(testDatabase.key)의 시험을 모두출력")
+            
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
+                    for test in testSubject.tests {
+                        print("   |",test.key)
+                    }
+                }
+            }
+            return true
+        }
+        
+        
+        
+        if input.caseInsensitiveCompare("queall") == ComparisonResult.orderedSame || input == "ㅂㅕㄷㅁㅣㅣ" {
+            print("\(testDatabase.key)의 문제를 모두출력")
+            
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
+                    for test in testSubject.tests {
+                        print("   |",test.key)
+                        for que in test.questions {
+                            print("    |", que.key)
+                        }
+                    }
+                }
+            }
+            return true        }
         
         if input.caseInsensitiveCompare("keyall") == ComparisonResult.orderedSame || input == "ㅏㄷㅛㅁㅣㅣ" {
-            print("\(testDB.key)의 key를 모두출력")
-            for test in testDB.tests {
-                print("--",test.key)
-                for que in test.questions {
-                    print("----", que.key)
-                    for sel in que.lists {
-                        print("------",sel.key)
-                    }
-                    for sel in que.selections {
-                        print("------",sel.key)
+            print("\(testDatabase.key)의 키를 모두출력")
+            
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
+                    for test in testSubject.tests {
+                        print("   |",test.key)
+                        for que in test.questions {
+                            print("    |", que.key)
+                            for sel in que.lists {
+                                print("     |",sel.key)
+                            }
+                            for sel in que.selections {
+                                print("     |",sel.key)
+                            }
+                        }
                     }
                 }
             }
             return true
         }
         
-        if input.caseInsensitiveCompare("save") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷ" {
-            let data = testDB.createJsonObject()
-            if let dataWrapped = data {
-                _ = outputManager.saveFile(fileName: "testDB-\(testDB.key)-\(Date().hhmmss).json", data: dataWrapped)
-            } else {
-                print("TestDB \(testDB.key) JSON DATA 생성실패")
+        if input.caseInsensitiveCompare("savet") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷㅅ" {
+            
+            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
+            
+            guard let selectedTestWrapped = selectedTest else {
+                print("선택한 시험이 없어 시험저장 실패")
+                return false
             }
+            
+            if outputManager.saveTest(selectedTestWrapped) {
+                return true
+            } else {
+                return false
+            }
+            
+            
+        }
+        
+        if input.caseInsensitiveCompare("saveall") == ComparisonResult.orderedSame || input == "ㄴㅁㅍㄷㅁㅣㅣ" {
+            
+            for testCategory in testDatabase.categories {
+                for testSubject in testCategory.testSubjects {
+                    for test in testSubject.tests {
+                        
+                        if self.outputManager.saveTest(test) {
+                            //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장성공")
+                            //outputManager.saveFile()에 에러 로그가 있어 여기서 처리할 필요없음.
+                        } else {
+                            //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장실패")
+                            // 정밀한 에러 핸들링 필요 2017. 5. 9. (+)
+                        }
+                    }
+                }
+            }
+            
             return true
         }
         
@@ -81,59 +196,41 @@ class InputManager {
                 showAnswer = true
             }
             
-            guard let selectedTest = selectTest() else {
+            guard let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase))) else {
                 print("선택한 시험을 찾을 수 없었음")
+                return false
+            }
+            
+            if selectedTest.questions.count == 0 {
+                print(">\(selectedTest.key)에 문제가 하나도 없음")
                 return false
             }
             
             for (index, question) in selectedTest.questions.enumerated() {
                 if index == 0 {
                     question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
+                } else {
+                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
                 }
-                question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
             }
             
             return true
         }
         
-        if input.caseInsensitiveCompare("selta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅㅁ"
-            || input.caseInsensitiveCompare("selt") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅ" {
-            
-            var showAnswer = false
-            if input.caseInsensitiveCompare("selta") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅅㅁ" {
-                showAnswer = true
-            }
-            
-            guard let selectedTest = selectTest() else {
-                print("선택한 시험을 찾을 수 없었음")
-                return false
-            }
-            
-            for (index, question) in selectedTest.questions.enumerated() {
-                if index == 0 {
-                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
-                }
-                question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
-            }
-            
-            return true
-        }
+        
         
         
         if input.caseInsensitiveCompare("selqa") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂㅁ"
-            || input.caseInsensitiveCompare("seqt") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂ" {
+            || input.caseInsensitiveCompare("selq") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂ" {
             
             var showAnswer = false
             if input.caseInsensitiveCompare("selqa") ==  ComparisonResult.orderedSame  || input == "ㄴㄷㅣㅂㅁ" {
                 showAnswer = true
             }
             
-            guard let selectedTest = selectTest() else {
-                print(">선택한 시험을 찾을 수 없었음")
-                return false
-            }
+            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
             
-            guard let selectedQuestion = selectQuestion(test: selectedTest) else {
+            guard let selectedQuestion = selectQuestion(selectedTest) else {
                 print(">선택한 문제를 찾을 수 없었음")
                 return false
             }
@@ -146,7 +243,7 @@ class InputManager {
         
         // 시험을 선택하여 문제당 5개의 변형문제를 진행
         if input.caseInsensitiveCompare("shufflet") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㅅ" {
-            let selectedTest = selectTest()
+            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
             
             guard let selectedTestWrapped = selectedTest else {
                 print("선택한 시험을 찾을 수 없었음")
@@ -156,7 +253,7 @@ class InputManager {
             let selectedQuestions = selectedTestWrapped.questions
             
             if selectedQuestions.count == 0 {
-                print("\(selectedTestWrapped.key) 시험에 문제가 없음")
+                print(">\(selectedTestWrapped.key)에 문제가 하나도 없음")
                 return false
             }
             
@@ -164,7 +261,7 @@ class InputManager {
                 que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
                 print()
                 print("[변형]" + que.key)
-                for _ in 1...5 {
+                for _ in 1...1 {
                     if !solveShuffledQuestion(question: que) {
                         return false
                     }
@@ -176,14 +273,13 @@ class InputManager {
         // 문제를 선택하여 10개의 변형문제를 진행
         if input.caseInsensitiveCompare("shuffleq") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㄷㅂ" {
             
-            let selectedTest = selectTest()
-            guard let selectedTestWrapped = selectedTest else { return false }
-            
-            let selectedQuestion = selectQuestion(test: selectedTestWrapped)
+            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
+    
+            let selectedQuestion = selectQuestion(selectedTest)
             guard let selectedQuestionWrapped = selectedQuestion else { return false }
             
             selectedQuestionWrapped.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-            for _ in 1...10 {
+            for _ in 1...1 {
                 if !solveShuffledQuestion(question: selectedQuestionWrapped) {
                     return false
                 }
@@ -193,6 +289,7 @@ class InputManager {
 
         return false
     }
+    
     
     // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
     // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
@@ -207,19 +304,19 @@ class InputManager {
             return false
         }
         
-        QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: false, showOrigSel: false)
+        QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: true, showAnswer: true, showTitle: false, showOrigSel: true)
         
-        print("정답은?>>", terminator : "")
+        print("정답은? $ ", terminator : "")
         input = getInput()
         if Int(input) == (quetionShuffled?.getAnswerNumber())! + 1 {
             print("정답!", terminator: "")
         } else {
-            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29.
+            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
             print("오답임...정답은")
             print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
             print("확인??", terminator: "")
         }
-        print("-노트추가(n),태그(t),중단(s)>", terminator: "")
+        print("-계속(),노트(n),태그(t),중단(s) $ ", terminator: "")
         input = getInput()
         if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
             print("노트를 입력하세요>", terminator: "")
@@ -234,19 +331,114 @@ class InputManager {
         return true
     }
     
-    // 사용자로부터 입력을 받아서 데이터베이스 안의 시험을 선택하는 함수
-    // 시험이 하나도 없을 경우 nil반환
-    private func selectTest() -> Test? {
+    func selectTestCategory(_ database : TestDatabase) -> TestCategory? {
         
-        for (index,test) in testDB.tests.enumerated() {
+        let categoryCount = testDatabase.categories.count
+        
+        if categoryCount == 0 {
+            print("\(database.key)에 아무 시험이 없음")
+            return nil
+        }
+        
+        for (index,testCategory) in database.categories.enumerated() {
+            print("[\(index+1)] : \(testCategory.key)")
+        }
+        
+        var selectedCategoryIndex : Int = -1
+        var goon = true
+        while goon {
+            print("시험명 선택(1~\(categoryCount))$ ", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print(">올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let number = Int(inputWrapped)
+            if number == nil {
+                print(">숫자를 입력하세요")
+                continue
+            }
+            
+            if number! - 1 < 0 || number! - 1 >= categoryCount {
+                print(">시험 과목번호 범위에 맞는 숫자를 입력하세요")
+                continue
+            }
+            
+            goon = false
+            selectedCategoryIndex = number!
+        }
+        
+        
+        return database.categories[selectedCategoryIndex-1]
+    }
+    
+    func selectTestSubject(_ selectedCategoryUnwrapped : TestCategory?) -> TestSubject? {
+        
+        guard let selectedCategory = selectedCategoryUnwrapped else {
+            return nil
+        }
+        
+        let subjectCount = selectedCategory.testSubjects.count
+        
+        if subjectCount == 0 {
+            print(">\(selectedCategory.key)에 시험과목이 하나도 없음")
+            return nil
+        }
+        
+        for (index,test) in selectedCategory.testSubjects.enumerated() {
             print("(\(index+1)) : \(test.key)")
         }
         
-        let testCount = testDB.tests.count
-        if testCount == 0 {
-            print("TestDB \(testDB.key)에 시험이 없음")
+        var selectedSubjectIndex : Int = -1
+        var goon = true
+        while goon {
+            print("시험과목 선택(1~\(subjectCount))$ ", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print(">올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let number = Int(inputWrapped)
+            if number == nil {
+                print(">숫자를 입력하세요")
+                continue
+            }
+            
+            if number! - 1 < 0 || number! - 1 >= subjectCount {
+                print(">시험 과목번호 범위에 맞는 숫자를 입력하세요")
+                continue
+            }
+            
+            goon = false
+            selectedSubjectIndex = number!
+        }
+        
+        return selectedCategory.testSubjects[selectedSubjectIndex-1]
+    }
+    
+    // 사용자로부터 입력을 받아서 데이터베이스 안의 시험을 선택하는 함수
+    // 시험이 하나도 없을 경우 nil반환
+    private func selectTest(_ selectedSubjectUnwrapped : TestSubject?) -> Test? {
+        
+        guard let selectedSubject = selectedSubjectUnwrapped else {
             return nil
         }
+        
+        let testCount = selectedSubject.tests.count
+        
+        if testCount == 0 {
+            print(">\(selectedSubject.key)에 시험이 하나도 없음")
+            return nil
+        }
+        
+        for (index,test) in selectedSubject.tests.enumerated() {
+            print("[\(index+1)] : \(test.key)")
+        }
+        
         
         //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)
         //노가다 및 Int(String)으로 완성 2017. 5. 6.
@@ -254,7 +446,7 @@ class InputManager {
         var selectedTest : Int = -1
         var goon = true
         while goon {
-            print("출력할 시험번호(1~\(testCount))>", terminator : "")
+            print("시험회차 선택(1~\(testCount))$ ", terminator : "")
             let input = readLine()
             
             guard let inputWrapped = input else {
@@ -276,24 +468,29 @@ class InputManager {
             goon = false
             selectedTest = testNumber!
         }
-        return testDB.tests[selectedTest-1]
+        return selectedSubject.tests[selectedTest-1]
     }
     
-    private func selectQuestion(test: Test) -> Question? {
-        var selectedQuestions = test.questions
+    private func selectQuestion(_ selectedTestUnwrapped: Test?) -> Question? {
+
+        guard let selectedTest = selectedTestUnwrapped else {
+            return nil
+        }
+        
+        var selectedQuestions = selectedTest.questions
         if selectedQuestions.count == 0 {
-            print("\(test.key)에 문제가 하나도 없음")
+            print("\(selectedTest.key)에 문제가 하나도 없음")
             return nil
         }
         
         for question in selectedQuestions {
-            print("(\(question.number)) : \(question.key)")
+            print("[\(question.number)] : \(question.key)")
         }
         
         
         var goon = true
         while goon {
-            print("출력할 문제번호>", terminator : "")
+            print("문제번호 선택 $ ", terminator : "")
             let input = readLine()
             
             guard let inputWrapped = input else {
@@ -371,40 +568,20 @@ class InputManager {
     func getInput() -> String {
         var goon = true
         while goon {
-            let input = readLine()
-        
-            guard let inputWrapped = input else {
-                print(" 유효하지 않은 입력\n")
-                print("$ ", terminator: "")
+            let inputRaw = readLine()
+            
+            
+            guard let inputRawWrapped = inputRaw else {
+                print(">유효하지 않은 입력\n")
                 continue
             }
+            
+            input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
+            
             goon = false
-            return inputWrapped
+            return input
         }
     }
 }
 
-extension Date {
-    var yyyymmdd : String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy. MM. dd."
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
-        let dateString = dateFormatter.string(from: self)
-        return dateString
-    }
-    var hhmmss : String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy. MM. dd. a hh:mm:ss"
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
-        let dateString = dateFormatter.string(from: self)
-        return dateString
-    }
-    
-    var jsonFormat : String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        let dateString = dateFormatter.string(from: self)
-        return dateString
-    }
-}
 

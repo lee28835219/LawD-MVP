@@ -14,10 +14,12 @@ class DC변호사시험민사법 : DataConverter {
     //    Read JSON file with Swift 3
     //    http://stackoverflow.com/questions/40438784/read-json-file-with-swift-3
     
-    convenience init?(_ testDB : TestDB) {
+    convenience init?(_ testDatabase : TestDatabase) {
         
-        self.init(testDB : testDB,
+        self.init(testDatabase : testDatabase,
                   testCategory: "변호사시험",
+                  catHelper : nil,
+                  subject : "민사법",
                   answerFilename: "변호사시험 1~6회 민사법 정답.json",
                   questionFilename: "변호사시험-1~6회-민사법.txt")
         
@@ -34,6 +36,7 @@ class DC변호사시험민사법 : DataConverter {
         
         _ = saveTests()
         
+        log = log + "Data Converter Log 종료 \(Date().HHmmss)"
         print(log)
         
     }

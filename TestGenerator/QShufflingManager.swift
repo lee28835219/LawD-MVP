@@ -70,11 +70,14 @@ class QShufflingManager : Publishable {
         
         
         outputManager.questionPublish(
-            testCategroy: qShuffled.question.test.category,
-            testCategoryHelper: qShuffled.question.test.catHelper,
-            testNumber: qShuffled.question.test.number,
-            testSubject: qShuffled.question.test.subject,
+//            testCategroy: qShuffled.question.test.testSubject.testCategory.category,
+//            testCategoryHelper: qShuffled.question.test.testSubject.testCategory.catHelper,
+//            testSubject: qShuffled.question.test.testSubject.subject,
             isPublished: false, // 변형한 문제이므로 false로 항상 입력
+            
+            testKey: qShuffled.question.test.key,
+            
+//            testNumber: qShuffled.question.test.number,
             
             questionNumber: qShuffled.question.number,
             questionContent: questionModifed.content,  // 셔플하면 변경

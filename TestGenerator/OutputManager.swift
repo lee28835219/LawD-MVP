@@ -9,11 +9,14 @@
 import Foundation
 
 class OutputManager {
+    
+    let fileManager = FileManager.default
+    
     var showAttribute : Bool = false
     var showAnswer : Bool = false
     var showTitle : Bool = true
     var showOrigSel : Bool = false
-    var path : URL? {
+    var url : URL? {
         let path : URL?
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             path = dir.appendingPathComponent("Test").appendingPathComponent("TestGeneratorStorage")
@@ -26,9 +29,12 @@ class OutputManager {
     init() {
     }
     
+    
     func questionPublish(
-            //시험
-            testCategroy : String,testCategoryHelper : String?, testNumber : Int, testSubject : String, isPublished : Bool,
+            isPublished : Bool,
+            
+            //시험키
+            testKey : String,
             //질문
             questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
             //목록
@@ -42,8 +48,7 @@ class OutputManager {
         //문제
         print("")
         if showTitle {
-            let catHelp = testCategoryHelper ?? ""
-            let testTitle = (isPublished ? "[기출] " : "[변형] ") + testCategroy + catHelp + "\(testNumber)회 \(testSubject) "
+            let testTitle = (isPublished ? "[기출] " : "[변형] ") + testKey
             print(testTitle)
         }
         
@@ -102,29 +107,84 @@ class OutputManager {
     // http://stackoverflow.com/questions/24181699/how-to-check-if-a-file-exists-in-the-documents-directory-in-swift
     // How to save an array as a json file in Swift?
     // http://stackoverflow.com/questions/28768015/how-to-save-an-array-as-a-json-file-in-swift
-    func saveFile(fileName: String, data: Data) -> Bool {
-        let savePath = self.path?.appendingPathComponent(fileName)
-        guard let savePathWrapped = savePath else {
-            print("저장할 디렉토리를 찾치 못해서 \(fileName)을 저장하는데 실패하였음)")
+    
+    private func _saveFile(fileDirectories: [String], fileName: String, data: Data) -> Bool {
+        
+        guard let doucmentPathWrapped = url else {
+            
+            print("저장할 디렉토리를 찾지 못해서 \(fileName)을 저장하는데 실패하였음")
             return false
         }
         
-        let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: savePathWrapped.path) {
-            print("\(fileName)이 \(savePathWrapped)에 존재함 계속진행?(y)>".spacing(1), terminator : "")
+        var isDir : ObjCBool = false
+        var savePath = doucmentPathWrapped
+        
+        for fileDirectory in fileDirectories {
+            savePath = savePath.appendingPathComponent(fileDirectory)
+            
+            // NSFileManager fileExistsAtPath:isDirectory and swift
+            // http://stackoverflow.com/questions/24696044/nsfilemanager-fileexistsatpathisdirectory-and-swift
+            
+            if fileManager.fileExists(atPath: savePath.path, isDirectory: &isDir) {
+                if isDir.boolValue {
+                    //print("\(savePath.path) 디렉토리가 존재함.. 계속진행")
+                    continue
+                } else {
+                    //fatalError("\(savePath.path) 디렉토리가 존재하지 않는데 filepath가 존재함 뭐지?")
+                }
+            } else {
+                //print("\(savePath.path) 디렉토리가 존재하지 않음 어떻게 할까?")
+                do {
+                    try fileManager.createDirectory(at: savePath, withIntermediateDirectories: false, attributes: nil)
+                    //print("\(savePath.path) 디렉토리를 생성함")
+                } catch let error as NSError {
+                    print(error)
+                }
+            }
+        }
+        
+        savePath = savePath.appendingPathComponent(fileName)
+        
+        if fileManager.fileExists(atPath: savePath.path) {
+            print("\(fileName)이 \(savePath)에 존재함 계속진행?(y)>", terminator : "")
             let input = readLine()
             if input != "y" && input != "Y" && input != "ㅛ" {
-                print("\(fileName) 저장 안하고 종료".spacing(1))
+                print("\(fileName) 저장 안하고 종료")
                 return false
             }
         }
         
         do {
-            try data.write(to: savePathWrapped)
-            print("\(fileName) 저장 성공".spacing(1))
+            try data.write(to: savePath)
+            print("\(fileName) 저장 성공")
             return true
         } catch {
-            print("\(fileName)을 저장하는데 실패하였음 - \(error)".spacing(1))
+            print("\(fileName)을 저장하는데 실패하였음 - \(error)")
+            return false
+        }
+    }
+    
+    func saveTest(_ test : Test) -> Bool {
+        
+        let data = test.createJsonObject()
+        
+        var testNumber : String = ""
+        if let numHeplerWrapped = test.numHelper {
+            testNumber = testNumber + String(format: "%04d",numHeplerWrapped) + "-" + String(format: "%03d", test.number)
+        } else {
+            testNumber = testNumber + String(format: "%03d", test.number)
+        }
+        
+        if outputManager._saveFile(
+            fileDirectories: [test.testSubject.testCategory.testDatabase.key,  //DB
+                test.testSubject.testCategory.category,    //시험명
+                test.testSubject.subject,   //과목
+                testNumber //회차
+            ],
+            fileName: "[\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json",
+            data: data) {
+            return true
+        } else {
             return false
         }
     }
@@ -164,3 +224,28 @@ protocol Publishable {
 protocol JSONoutable {
     func createJsonObject() -> Data?
 }
+
+extension Date {
+    var yyyymmdd : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd."
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    var HHmmss : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd. HH시mm분ss초"
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    
+    var jsonFormat : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+}
+

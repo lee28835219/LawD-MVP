@@ -11,24 +11,29 @@ import Foundation
 print("Hello!TestGenerator Starts!")
 var input : String
 
-var testDB = TestDB()
-var inputManger = InputManager(testDB : testDB)
+var testDatabase = TestDatabase()
+var testCategory = TestCategory(testDatabase: testDatabase, category: "변호사 시험 샘플(모의고사, 기출)")
+var testSubject = TestSubject(testCategory: testCategory, subject: "민사법")
+
+testSubject.setSampleTest()
+
 let outputManager = OutputManager()
+var inputManger = InputManager(testDatabase : testDatabase, outputManager : outputManager)
 
-print("시작 -", Date().hhmmss)
+print("시작 -", Date().HHmmss)
 
-let dddd = DCDD(testDB)
+let dddd = DCDD(testDatabase)
 
-let barExam = DC변호사시험민사법(testDB)
-let firstBarExam = DC법조윤리(testDB)
-
+let barExam = DC변호사시험민사법(testDatabase)
+let firstBarExam = DC법조윤리(testDatabase)
 
 //무한루프 시작
 repeat {
     //명령어
     print("$ ", terminator : "")
+    
     input = inputManger.getInput()
-    let result = inputManger.execute(input: input)
+    let result = inputManger.execute(input)
     
     
     switch result {

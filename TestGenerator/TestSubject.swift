@@ -1,5 +1,5 @@
 //
-//  TestDB
+//  testSubject
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 3. 22..
@@ -7,7 +7,10 @@
 //
 
 import Foundation
-class TestDB : DataStructure, JSONoutable {
+class TestSubject : DataStructure {
+    let testCategory : TestCategory
+    
+    let subject : String //민사법
     
     // How do I format JSON Date String with Swift?
     // http://stackoverflow.com/questions/28748162/how-do-i-format-json-date-string-with-swift
@@ -15,16 +18,26 @@ class TestDB : DataStructure, JSONoutable {
     
     var tests : [Test] = []
     
-    init(key: String = "test database default") {
+    init(testCategory: TestCategory, subject: String) {
+        
+        self.testCategory = testCategory
+        
+        self.subject = subject
+        
+        
+        let key : String = testCategory.key + "=" + self.subject
         
         super.init(key)
+        self.testCategory.testSubjects.append(self)
+    }
+    
+    
+    
+    func setSampleTest() {
         
         //기본 문제생성, 법인 아닌 사단 SO
-        let test변호사시험민사법샘플 = Test(testDB: self, isPublished: true, category: "변호사시험샘플", subject: "민사법", number: 1, numHelper: 2017)
+        let test변호사시험민사법샘플 = Test(testSubject: self, isPublished: true, number: 1, numHelper: 2017)
         test변호사시험민사법샘플.specification = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
-        
-        let test공인중개사1차샘플2 = Test(testDB: self, isPublished: true, category: "공인중개사샘플", subject: "1차", number: 25, numHelper: nil)
-        test공인중개사1차샘플2.specification = "데이터 검사목적으로 Database 객체에서 생성한 공인중개사 시험문제들의 집합"
         
         let question0 = Question(test : test변호사시험민사법샘플, number : 1, questionType: QuestionType.Select, questionOX : QuestionOX.X , content : "법인 아닌 사단에 관한 설명 중 옳지 않은 것은?", answer : 5)
         question0.contentControversal = "법인 아닌 사단에 관한 설명 중 옳은 것은?"
@@ -58,7 +71,7 @@ class TestDB : DataStructure, JSONoutable {
         question1.contentControversal = "매도인의 담보책임에 관한 설명 중 옳지 않은 것은?"
         question1.contentNote = "(다툼이 있는 경우 판례에 의함)"
         question1.specification = "변시 민사법 32번 문제 SX, 샘플1"
-    
+        
         // 1번, 옳은 지문
         let selectionVeryFirst11 = Selection(question: question1, number: 1, content: "甲은 자기 소유 17필지의 토지에 대하여 일괄하여 매매대금을 정하고 乙에게 매도하였으나 그 중 2필지가 타인 소유로 밝혀진 경우 매도인 甲이 그 2필지만에 대하여 매매계약을 해제할 수 있다.")
         // 2번, 옳은 지문
@@ -193,124 +206,11 @@ class TestDB : DataStructure, JSONoutable {
         for que in test변호사시험민사법샘플.questions {
             _ = que.findAnswer()
         }
+        
     }
-}
+    
 
-extension TestDB {
-    func createJsonObject() -> Data? {
-        let key = "key"
-        let attribute = "attribute"
-        
-        var testArray = [Any]()
-        for test in tests {
-            var testDB__test_attribute = [String : Any]()
-            testDB__test_attribute["specification"] = test.specification
-            testDB__test_attribute["modifiedDate"] = test.modifiedDate.jsonFormat
-            testDB__test_attribute["tags"] = test.tags
-            testDB__test_attribute["createDate"] = test.createDate.jsonFormat
-            testDB__test_attribute["isPublished"] = test.isPublished
-            testDB__test_attribute["category"] = test.category
-            testDB__test_attribute["catHelper"] = test.catHelper
-            testDB__test_attribute["subject"] = test.subject
-            testDB__test_attribute["number"] = test.number
-            testDB__test_attribute["numHelper"] = test.numHelper
-            testDB__test_attribute["date"] = test.date?.jsonFormat
-            testDB__test_attribute["raw"] = test.raw
-            var questionArray = [Any]()
-            for question in test.questions {
-                var testDB__test__question_attribute = [String : Any]()
-                testDB__test__question_attribute["specification"] = question.specification
-                testDB__test__question_attribute["modifiedDate"] = question.modifiedDate.jsonFormat
-                testDB__test__question_attribute["tags"] = question.tags
-                testDB__test__question_attribute["number"] = question.number
-                testDB__test__question_attribute["subjectDetails"] = question.subjectDetails
-                testDB__test__question_attribute["questionType"] = question.questionType.rawValue
-                testDB__test__question_attribute["questionOX"] = question.questionOX.rawValue
-                testDB__test__question_attribute["content"] = question.content
-                testDB__test__question_attribute["contentControversal"] = question.contentControversal
-                testDB__test__question_attribute["contentPrefix"] = question.contentPrefix
-                testDB__test__question_attribute["contentNote"] = question.contentNote
-                testDB__test__question_attribute["passage"] = question.passage
-                testDB__test__question_attribute["contentSuffix"] = question.contentSuffix
-                testDB__test__question_attribute["answer"] = question.answer
-                testDB__test__question_attribute["raw"] = question.raw
-                testDB__test__question_attribute["rawSelections"] = question.rawSelections
-                testDB__test__question_attribute["rawLists"] = question.rawLists
-                var selectionArray = [Any]()
-                for selection in question.selections {
-                    var testDB__test__question__selection_attribute = [String : Any]()
-                    testDB__test__question__selection_attribute["specification"] = selection.specification
-                    testDB__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.jsonFormat
-                    testDB__test__question__selection_attribute["tags"] = selection.tags
-                    testDB__test__question__selection_attribute["content"] = selection.content
-                    testDB__test__question__selection_attribute["contentControversal"] = selection.contentControversal
-                    testDB__test__question__selection_attribute["iscOrrect"] = selection.iscOrrect
-                    testDB__test__question__selection_attribute["isAnswer"] = selection.isAnswer
-                    testDB__test__question__selection_attribute["number"] = selection.number
-                    var testDB__test__question__selection = [String : Any]()
-                    testDB__test__question__selection[key] = selection.key
-                    testDB__test__question__selection[attribute] = testDB__test__question__selection_attribute
-                    selectionArray.append(testDB__test__question__selection)
-                }
-                var listArray = [Any]()
-                for list in question.lists {
-                    var testDB__test__question__list_attribute = [String : Any]()
-                    testDB__test__question__list_attribute["specification"] = list.specification
-                    testDB__test__question__list_attribute["modifiedDate"] = list.modifiedDate.jsonFormat
-                    testDB__test__question__list_attribute["tags"] = list.tags
-                    testDB__test__question__list_attribute["content"] = list.content
-                    testDB__test__question__list_attribute["contentControversal"] = list.contentControversal
-                    testDB__test__question__list_attribute["iscOrrect"] = list.iscOrrect
-                    testDB__test__question__list_attribute["isAnswer"] = list.isAnswer
-                    testDB__test__question__list_attribute["number"] = list.number
-                    var testDB__test__question__list = [String : Any]()
-                    testDB__test__question__list[key] = list.key
-                    testDB__test__question__list[attribute] = testDB__test__question__list_attribute
-                    listArray.append(testDB__test__question__list)
-                }
-                var testDB__test__question = [String : Any]()
-                testDB__test__question[key] = question.key
-                testDB__test__question[attribute] = testDB__test__question_attribute
-                testDB__test__question["selection"] = selectionArray
-                testDB__test__question["list"] = listArray
-                questionArray.append(testDB__test__question)
-            }
-            var testDB__test = [String : Any]()
-            testDB__test[key] = test.key
-            testDB__test[attribute] = testDB__test_attribute
-            testDB__test["question"] = questionArray
-            testArray.append(testDB__test)
-        }
-        
-        var testDB_attribute = [String : Any]()
-        testDB_attribute["specification"] = self.specification
-        testDB_attribute["modifiedDate"] = Date().jsonFormat
-        testDB_attribute["tags"] = self.tags
-        testDB_attribute["createDate"] = self.createDate.jsonFormat
-        
-        var testDB = [String : Any]()
-        testDB[attribute] = testDB_attribute
-        testDB["test"] = testArray
-        
-        let data : Data
-        do {
-            if !JSONSerialization.isValidJSONObject(testDB) {
-                return nil
-            }
-            data = try JSONSerialization.data(
-                withJSONObject: [self.key:testDB],
-                options: .prettyPrinted
-            )
-        } catch  {
-            fatalError("유효하지 않은 \(self.key) testDB Json생성 WHY?")
-            // 치명적 에러 발생하는 이유를 확인해야 함 2017. 5. 6. (+)
-        }
-        
-        // 문자로 반환하는 것과 data로 반환하는 것, 어느것이 더 좋은가?
-        // return String(data: data, encoding: .utf8)
-        
-        return data
-    }
+    
 }
 
 

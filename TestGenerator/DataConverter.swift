@@ -14,9 +14,9 @@ import Foundation
 //Read and write data from text file
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
-    var log : String = "Data Converter Log 시작 \(Date().hhmmss)\n"
+    var log : String = "Data Converter Log 시작 \(Date().HHmmss)\n"
     
-    var testDB : TestDB
+    var testDatabase : TestDatabase
     
     var tests : [Templet.Test] = []
     
@@ -26,6 +26,8 @@ class DataConverter: NSObject {
     let questionPath : URL?
     
     let testCategory : String
+    var catHelper : String? = nil
+    let subject : String
     
     private var _headerAndResidualStrings : [String : String] = [:]
     
@@ -34,11 +36,14 @@ class DataConverter: NSObject {
     
     
     
-    init(testDB : TestDB, testCategory : String, answerFilename: String, questionFilename : String) {
+    init(testDatabase : TestDatabase, testCategory : String, catHelper : String?, subject : String, answerFilename: String, questionFilename : String) {
         
-        self.testDB = testDB
+        self.testDatabase = testDatabase
         
         self.testCategory = testCategory
+        self.catHelper = catHelper
+        self.subject = subject
+        
         self.answerFilename = answerFilename
         self.questionFilename = questionFilename
         
@@ -58,7 +63,6 @@ class DataConverter: NSObject {
             fatalError("파일을 파싱해서 저장하려는 Document 폴더가 존재하지 않음")
         }
     }
-    
     
     
     
@@ -103,7 +107,6 @@ class DataConverter: NSObject {
                         // 문제해결을 위해 초기화 필요없고 간단하게 사용가능한 Templet를 만들어서 사용할 것임
                         // 모두 정의되면 이를 test단위로 save할 수 있도록 할 것임
                         var newTest = Templet.Test()
-                        newTest.category = self.testCategory
                         newTest.number = testNumber
                         newTest.raw = test.key
                         
@@ -132,8 +135,8 @@ class DataConverter: NSObject {
             fatalError("법조윤리 정답 파싱 error")
         }
         
-        log = log + "  \(Date().hhmmss) : \(path.path) 정답 입력 완료\n"
-        log = log + "  \(Date().hhmmss) : \(testParsedCounter)개의 시험에서 총 \(answerParsedCounter)개의 문제를 찾아서 작업함\n"
+        log = log + "  \(Date().HHmmss) : \(path.path) 정답 입력 완료\n"
+        log = log + "  \(Date().HHmmss) : \(testParsedCounter)개의 시험에서 총 \(answerParsedCounter)개의 문제를 찾아서 작업함\n"
     }
     
     
@@ -158,7 +161,7 @@ class DataConverter: NSObject {
         
         // 시험별로 쪼개고
         let testStrings = sliceString(regexPattern: testSeperator, string: wholeTestString)
-        log = log + "  \(Date().hhmmss) : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
+        log = log + "  \(Date().HHmmss) : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
         
         
         
@@ -167,7 +170,7 @@ class DataConverter: NSObject {
             
             // 문제별로 쪼개었음
             let questionStrings = sliceString(regexPattern: questionSeperator, string: testString.value)
-            log = log + "  \(Date().hhmmss) : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누는데 성공\n"
+            log = log + "  \(Date().HHmmss) : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누는데 성공\n"
             
             
             
@@ -253,7 +256,7 @@ class DataConverter: NSObject {
                         newList.specification = ""
                         newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
                         newList.contentControversal = nil
-                        newList.listStringType = .koreanLetter
+                        newList.listStringType = .koreanCharcter  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
                         newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt
                         
                         newQuestion.lists.append(newList)
@@ -353,8 +356,13 @@ class DataConverter: NSObject {
         
         sortTestAndQuestion()
         
+        let newTestCategory = TestCategory(testDatabase: testDatabase, category: self.testCategory, catHelper: nil)
+        let newTestSubject = TestSubject(testCategory: newTestCategory, subject: self.subject)
+        
         for test in tests {
-            let newTest = Test(testDB: testDB, isPublished: true, category: test.category, catHelper: test.catHelper, subject: test.subject, number: test.number, numHelper: test.numHelper)
+            
+            let newTest = Test(testSubject: newTestSubject, isPublished: true, number: test.number, numHelper: test.numHelper)
+            
             for question in test.questions {
                 let newQuestion = Question(test: newTest, number: question.number, questionType: question.questionType, questionOX: question.questionOX, content: question.content, answer: question.answer)
                 
@@ -387,6 +395,10 @@ class DataConverter: NSObject {
                     newList.contentControversal = list.contentControversal
                     newList.specification = list.specification
                 }
+                
+                // 이것을 안하니 .Find형식의 문제에서는 섞은 문제가 정답을 찾지 못하는 문제가 발생했다.
+                // 빼먹어도 문제없도록 자동실행 방안을 찾으면 좋겠다. 2017. 5. 9.
+                _ = newQuestion.findAnswer()
             }
         }
         return true

@@ -73,9 +73,17 @@ class Question : DataStructure, Publishable {
     //정답이 제대로 입력 안되있으면 못찼음
     //현재 FO와 FX만 구현됨, FC는 못찾음
     public func findAnswer() -> Bool {
+        
         guard let ans = self.answerSelection else {
             fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
         }
+        
+        _setlistInContentOfSelection()
+        
+        if self.key == "변호사윤리시험=법조윤리=007=0039" {
+            
+        }
+        
         
         switch self.questionType {
         case .Find:
@@ -93,7 +101,6 @@ class Question : DataStructure, Publishable {
                         listSel.isAnswer = false
                     }
                 }
-                _setlistInContentOfSelection()
                 return true
             // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
@@ -108,26 +115,37 @@ class Question : DataStructure, Publishable {
                         listSel.isAnswer = false
                     }
                 }
-                _setlistInContentOfSelection()
                 return true
             default:
-                print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+                //print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
                 return false
             }
         default: // 정답을 찾는 대상이 아님
             return false
         }
+        
     }
     
     // 객체 밖에서 함수가 들어나지 않도록 정의하는 방법은 무었인가 (+) 2017. 4. 30.
     // 다시 체크할 수 있도록 수정필요 (+) 2017. 5. 5.
     
     func _setlistInContentOfSelection() {
+        
         for selection in selections {
+            // 혹시몰라서 초기화 시켜두었음
+            // selection.listInContentOfSelection = []
+            
+            // 초기화보다는 잘못된 함수호출인 셈이니 치명적 에러를 발생시킴이 맞을 듯 2017. 5. 9.
+            if selection.listInContentOfSelection != [] {
+                fatalError("잘못된 함수호출 _setlistInContentOfSelection(), 선택지의 내용안에 있는 목록지가 초기화되지 않은 상태에서 호출됨")
+            }
+            
             for list in lists {
+                // 선택지에 문제의 목록 문자가 존재하는지 확인하는 분기
                 if selection.content.range(of: list.getListString()) != nil {
                     selection.listInContentOfSelection.append(list)
                 }
+                
             }
         }
     }
@@ -166,13 +184,16 @@ extension Question {
         }
         
         oManager.questionPublish(
-            testCategroy: test.category,
-            testCategoryHelper : test.catHelper,
-            testNumber: test.number,
-            testSubject: test.subject,
+//            testCategroy: test.testSubject.testCategory.category,
+//            testCategoryHelper : test.testSubject.testCategory.catHelper,
+//            testSubject: test.testSubject.subject,
             isPublished: test.isPublished,
             
+//            testNumber: test.number,
+            testKey: test.key,
+            
             questionNumber: number,
+            
             questionContent: content,  // 셔플하면 변경
             questionContentNote: contentNote,
             questionType: questionType,

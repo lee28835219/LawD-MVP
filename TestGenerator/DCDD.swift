@@ -17,10 +17,12 @@ import Cocoa
 
 class DCDD : DataConverter {
     
-    convenience init?(_ testDB : TestDB) {
+    convenience init?(_ testDatabase : TestDatabase) {
         
-        self.init(testDB : testDB,
+        self.init(testDatabase : testDatabase,
                   testCategory: "변호사시험 모의시험",
+                  catHelper : nil,
+                  subject : "민사법",
                   answerFilename: "TestAnswer.json",
                   questionFilename: "Test.txt")
         
@@ -35,6 +37,7 @@ class DCDD : DataConverter {
         
         _ = saveTests()
         
+        log = log + "Data Converter Log 종료 \(Date().HHmmss)"
         print(log)
     }
 }

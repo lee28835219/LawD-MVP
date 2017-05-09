@@ -48,6 +48,10 @@ class Selection: Statement {
             default:
                 iscOrrect = nil
             }
+            
+        // case .Find:
+        // 여기에 두고 싶지만 Find 유형의 경우에는 모든 목록이
+            
         default:
             iscOrrect = nil
         }

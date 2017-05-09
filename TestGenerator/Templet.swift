@@ -9,12 +9,22 @@
 import Foundation
 
 struct Templet {
-    struct Test {
+    struct TestCategory {
         var specification : String = ""
         
         var category : String = ""
         var catHelper : String? = nil
         var subject : String = ""
+        
+        var raw : String = ""
+    }
+    
+    struct Test {
+        var specification : String = ""
+        
+//        var category : String = ""
+//        var catHelper : String? = nil
+//        var subject : String = ""
         var number : Int = 0
         var numHelper : Int? = nil
         var date : Date?

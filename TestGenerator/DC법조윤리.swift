@@ -13,8 +13,14 @@ class DC법조윤리: DataConverter {
     //    Read JSON file with Swift 3
     //    http://stackoverflow.com/questions/40438784/read-json-file-with-swift-3
 
-    convenience init?(_ testDB : TestDB) {
-        self.init(testDB: testDB, testCategory: "변호사윤리시험", answerFilename: "변호사윤리시험-1회~7회-법조윤리-정답.json", questionFilename: "변호사윤리시험-1회~7회-법조윤리-문제.txt")
+    convenience init?(_ testDatabase : TestDatabase) {
+        self.init(testDatabase: testDatabase,
+                  testCategory: "변호사윤리시험",
+                  catHelper : nil,
+                  subject : "법조윤리",
+                  answerFilename: "변호사윤리시험-1회~7회-법조윤리-정답.json",
+                  questionFilename: "변호사윤리시험-1회~7회-법조윤리-문제.txt"
+        )
         
         
 
@@ -29,6 +35,7 @@ class DC법조윤리: DataConverter {
         
         _ = saveTests()
         
+        log = log + "Data Converter Log 종료 \(Date().HHmmss)"
         print(log)
 
         
