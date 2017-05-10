@@ -214,12 +214,11 @@ class DataConverter: NSObject {
         
         
         
+        
         for testString in testStrings {
-            
             
             // 문제별로 쪼개었음
             let questionStrings = sliceString(regexPattern: questionSeperator, string: testString.value)
-            log = log + "  \(Date().HHmmss) : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누는데 성공\n"
             
             
             // 시험정보에 대해서 matchingStrings 함수의 regex를 이용해서 분석한뒤 이 시험의 위치가 testCategories의 어디인지 밝혀내는 소중한 함수
@@ -230,10 +229,10 @@ class DataConverter: NSObject {
             let testInfo = testInfoArray[0]
             
             guard let index = testCategories.index(where: {$0.category == testInfo[1]}) else {
-                fatalError("이상한 시험정보 입력 \(testSeperator)")
+                fatalError("정답파일에서 추출한 시험명이 없는 이상한 시험정보 입력 \(testSeperator)")
             }
             guard let jndex = testCategories[index].testSubjects.index(where: {$0.subject == testInfo[2]}) else {
-                fatalError("이상한 시험정보 입력 \(testSeperator)")
+                fatalError("정답파일에서 추출한 과목명이 없는 이상한 시험정보 입력 \(testSeperator)")
             }
             
             
@@ -354,13 +353,15 @@ class DataConverter: NSObject {
                 if queCutListSelWordRange != nil {
                     queCutListSelWord = contentRaw.substring(with: queCutListSelWordRange!)
                     
-                    
                     // 이 지점에서 목록 문장 뒤에 있는 문제정보가 contentRaw에서 날라가 버리는 문제가 발생한다
                     // 이는 꼭 바로잡아야 되는 문제이다. 그래서 수정하엿다. 그치만 출력함수가 안변하면 의미 없을 것이다. 2017. 5. 11. 꼭 바꾸길 (+)
                     // 제대로 작동하는지 디버깅을 안해봐서 모르겠다. 담에 꼭해야함, <p>~~</p>처리도 함께
                     contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
                     if queCutListSelWordRange!.upperBound < contentRaw.endIndex {
                         contentSuffix = contentRaw.substring(with: queCutListSelWordRange!.upperBound..<contentRaw.endIndex)
+                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
+                    } else {
+                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
                     }
                 }
                 
@@ -368,9 +369,11 @@ class DataConverter: NSObject {
                 let queCutListSelLetterRange = contentRaw.range(of: "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression)
                 if queCutListSelLetterRange != nil {
                     queCutListSelLetter = contentRaw.substring(with: queCutListSelLetterRange!)
-                    contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelLetterRange!.lowerBound)
                     if queCutListSelLetterRange!.upperBound < contentRaw.endIndex {
                         contentSuffix = contentRaw.substring(with: queCutListSelLetterRange!.upperBound..<contentRaw.endIndex)
+                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelLetterRange!.lowerBound)
+                    } else {
+                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelLetterRange!.lowerBound)
                     }
                 }
                 
@@ -418,25 +421,27 @@ class DataConverter: NSObject {
                 
                 
                 
-                
-                
-                
+                // 문제의 정답을 이미 찾아두었던 메모리상의 값의 리스트에서 찾아가는 과정
+                // regex에서 받은 질문형식에서 찾은 문장을 이용해서 문제번호를 추출하고
                 guard let questionNumber = Int(questionStringDictionary.key.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) else {
                     fatalError("\(questionStringDictionary.key)에서 문제번호를 찾아낼 수 없음")
                 }
-                
                 newQuestion.number = questionNumber
                 
-                
+                // 그러한 문제번호가 시험포인터가 가르키는 곳에 있는지 확인해써 있으면 저장하고 없으면 치명적 에러
                 guard let answer = testCategories[index].testSubjects[jndex].tests[kndex].answers.filter({$0.questionNumber == questionNumber}).first?.answer else {
                     fatalError("파싱한 문제에 맞는 전에 입력해두었던 문제의 정답이 없음")
                 }
                 newQuestion.answer = answer
                 
+                // 그 외에 나머지 문제에 관한 정보들도 넣어둠
                 newQuestion.passage = passage
                 newQuestion.content = contentRaw.trimmingCharacters(in: .whitespacesAndNewlines)
                 newQuestion.contentSuffix = contentSuffix?.trimmingCharacters(in: .whitespacesAndNewlines)
                 
+                
+                // content를 잘 분석하면 많은 정보를 얻을 수 잇을 가능성이 많다. 향후 경우의 수를 최대한 많이 생각해서
+                // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
                 if newQuestion.content.contains("옳은 것은?") {
                     newQuestion.questionType = .Select
                     newQuestion.questionOX = .O
@@ -447,16 +452,17 @@ class DataConverter: NSObject {
                 
                 testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
                 // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
+                // 지문과 contentSuffix를 추가함 contentPrefix와 도표 추가 필요? 2017. 5. 11.
+                
             }
-            
+            log = log + "  \(Date().HHmmss) : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공\n"
         }
     }
     
     
     
-    
-    // 파싱한 시험과 질문데이터를 소팅해주는 함수
-    // 저장전에 불러주면 좋을 듯
+    // 네번째 : 파싱한 시험과 질문데이터를 소팅해주는 함수
+    //         저장전에 불러주면 좋을 듯
     func sortTestAndQuestion() {
         
         
@@ -475,15 +481,8 @@ class DataConverter: NSObject {
                 
                 for (kndex, _) in testCategories[index].testSubjects[jndex].tests.enumerated() {
                     
-                    if testCategories[index].testSubjects[jndex].tests[kndex].number == 27 {
-                        
-                    }
                     
-                    testCategories[index].testSubjects[jndex].tests[index].questions.sort{$0.number < $1.number}
-                    
-                    if testCategories[index].testSubjects[jndex].tests[kndex].number == 27 {
-                        
-                    }
+                    testCategories[index].testSubjects[jndex].tests[kndex].questions.sort{$0.number < $1.number}
                     
                     
                     for (lndex, _) in testCategories[index].testSubjects[jndex].tests[kndex].questions.enumerated() {
@@ -496,6 +495,23 @@ class DataConverter: NSObject {
             }
         }
         
+//        print("==================================")
+//        for cat in self.testCategories {
+//            print(cat.category)
+//            for sub in cat.testSubjects {
+//                print("  ",cat.category, "=", sub.subject)
+//                for te in sub.tests {
+//                    print("    ",cat.category, "=", sub.subject,"=", te.number)
+//                    for qu in te.questions {
+//                        print("      ",qu.number, qu.answer)
+//                    }
+//                }
+//            }
+//            
+//        }
+//        print("==================================")
+        
+        
     }
     
     
@@ -504,21 +520,35 @@ class DataConverter: NSObject {
         
         sortTestAndQuestion()
         
+        var catCounter = 0
+        var subCounter = 0
+        var testCounter = 0
+        var queCounter = 0
+        var listCounter = 0
+        var selCounter = 0
+        
+        
         for testCategory in testCategories {
             
             let newTestCategory = TestCategory(testDatabase: self.testDatabase, category: testCategory.category, catHelper: testCategory.catHelper)
             newTestCategory.specification = testCategory.specification
+            catCounter = catCounter + 1
             
             for testSubject in testCategory.testSubjects {
                 let newTestSubject = TestSubject(testCategory: newTestCategory, subject: testSubject.subject)
                 newTestSubject.specification = testSubject.specification
+                subCounter = subCounter + 1
+                // 다른 저장할 것들은 없으려나?
                 
                 for test in testSubject.tests {
                     
                     let newTest = Test(testSubject: newTestSubject, isPublished: true, number: test.number, numHelper: test.numHelper)
+                    newTest.specification = test.specification
+                    testCounter = testCounter + 1
                     
                     for question in test.questions {
                         let newQuestion = Question(test: newTest, number: question.number, questionType: question.questionType, questionOX: question.questionOX, content: question.content, answer: question.answer)
+                        queCounter = queCounter + 1
                         
                         newQuestion.contentNote = question.contentNote
                         newQuestion.contentPrefix = question.contentPrefix
@@ -529,11 +559,14 @@ class DataConverter: NSObject {
                         newQuestion.raw =  question.raw
                         newQuestion.rawLists = question.rawLists
                         newQuestion.rawSelections =  question.rawSelections
+                        // 다 저장한 것 맞은건가? 항상 확인해야 하는 곳임
+                        // 2017. 5. 11.
                         
                         for selection in question.selections {
                             let newSelection = Selection(question: newQuestion, number: selection.number, content: selection.content)
                             newSelection.contentControversal = selection.contentControversal
                             newSelection.specification = selection.specification
+                            selCounter = selCounter + 1
                         }
                         for list in question.lists {
                             
@@ -548,6 +581,7 @@ class DataConverter: NSObject {
                             let newList = List(question: newQuestion, content: list.content, selectString: listCharacter)
                             newList.contentControversal = list.contentControversal
                             newList.specification = list.specification
+                            listCounter = listCounter + 1
                         }
                         
                         // 이것을 안하니 .Find형식의 문제에서는 섞은 문제가 정답을 찾지 못하는 문제가 발생했다.
@@ -557,7 +591,7 @@ class DataConverter: NSObject {
                 }
             }
         }
-        
+        log = log + "  \(Date().HHmmss) : \(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지와 함께 저장완료\n"
         return true
     }
 
@@ -626,7 +660,7 @@ class DataConverter: NSObject {
         {
             // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
             guard let header = headerUn else {
-                fatalError("이상한 입력으로 인하여 시험 파싱을 진행할 수 없음")
+                fatalError("\(regexPattern)에 맞지 않는 이상한 텍스트를 파싱하려니 진행할 수 없음\n")
             }
             // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
             //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
@@ -720,11 +754,11 @@ class DataConverter: NSObject {
     
     func checkPath(path : URL?)  -> URL {
         guard let answerPathUnwrraped = path else {
-            fatalError("\(path)가 존재하지 않음")
+            fatalError("\(path?.path)가 존재하지 않음")
         }
         let fileManager = FileManager()
         if !fileManager.fileExists(atPath: answerPathUnwrraped.path) {
-            fatalError("\(path)에 파일이 존재하지 않음")
+            fatalError("\(path?.path)에 파일이 존재하지 않음")
         }
         return answerPathUnwrraped
     }

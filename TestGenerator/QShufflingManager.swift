@@ -91,6 +91,8 @@ class QShufflingManager : Publishable {
             listsNumberString : listsNumberString, // 셔플하면 변경
             origialListsNumberString : origialListsNumberString, // 셔플하면 변경
             
+            questionSuffix:  qShuffled.question.contentSuffix,
+            
             selectionsContent : selectionsContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
             selsIsAnswer : selsIsAnswer,  // 셔플하면 변경

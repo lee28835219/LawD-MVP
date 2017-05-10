@@ -40,6 +40,8 @@ class OutputManager {
             questionPassage : String?, questionType : QuestionType, questionOX : QuestionOX,
             //목록
             listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
+            //질문 Suffix
+            questionSuffix : String?,
             //선택지
             selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool?],originalSelectionsNumber : [String],
             //정답
@@ -93,6 +95,11 @@ class OutputManager {
                 }
                 print(" "+listsNumberString[index]+". "+selectionStr.spacing(4))
             }
+            print()
+        }
+        
+        if questionSuffix != nil {
+            print("  "+questionSuffix!.spacing(4))
             print()
         }
         

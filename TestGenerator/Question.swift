@@ -201,6 +201,8 @@ extension Question {
             listsNumberString : listSelsIntString,
             origialListsNumberString : origialListsNumberString,
             
+            questionSuffix: contentSuffix,
+            
             selectionsContent : selectionsContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
             selsIsAnswer : selsIsAnswer,  // 셔플하면 변경

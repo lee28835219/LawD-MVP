@@ -18,6 +18,8 @@ class DC공인중개사: DataConverter {
                   questionFilename: "공인중개사-문제.txt"
         )
         
+       
+        
         let resultTuple = extractTestAndAnswerJson()
         setTestAndAnswerTemplet(resultTuple)
         
