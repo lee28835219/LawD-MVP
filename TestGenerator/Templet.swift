@@ -14,9 +14,17 @@ struct Templet {
         
         var category : String = ""
         var catHelper : String? = nil
-        var subject : String = ""
         
         var raw : String = ""
+        
+        var testSubjects : [Templet.TestSubject] = []
+    }
+    
+    struct TestSubject {
+        var specification : String = ""
+        var subject : String = ""
+        
+        var tests : [Templet.Test] = []
     }
     
     struct Test {

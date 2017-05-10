@@ -21,12 +21,12 @@ class InputManager {
     
     func execute(_ input : String) -> Bool? {
         
-        if input.caseInsensitiveCompare("dir") == ComparisonResult.orderedSame || input == "ㅇㅑㄱ" {
-            
-            outputManager.showDirectory(outputManager.url)
-            
-            return true
-        }
+//        if input.caseInsensitiveCompare("dir") == ComparisonResult.orderedSame || input == "ㅇㅑㄱ" {
+//            
+//            outputManager.showDirectory(outputManager.url)
+//            
+//            return true
+//        }
         
         
         // exit

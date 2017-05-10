@@ -19,25 +19,22 @@ class DCDD : DataConverter {
     
     convenience init?(_ testDatabase : TestDatabase) {
         
-        self.init(testDatabase : testDatabase,
-                  testCategory: "변호사시험 모의시험",
-                  catHelper : nil,
-                  subject : "민사법",
-                  answerFilename: "TestAnswer.json",
-                  questionFilename: "Test.txt")
-        
-        let testSeperator = "=변호사시험=\\d+회=.+법=선택형="
-        
-        parseAnswerAndTestFromJsonFormat(testSeperator: testSeperator)
-        parseQustionsFromTextFile(testSeperator: testSeperator
-            , questionSeperator: "문\\s{0,}\\d+."
-            , selectionSeperator: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}"
-            , numberOfSelections: 5
+        self.init(testDatabase: testDatabase,
+                  answerFilename: "공인중개사-정답.json",
+                  questionFilename: "공인중개사-문제.txt"
         )
+        
+        let resultTuple = extractTestAndAnswerJson()
+        setTestAndAnswerTemplet(resultTuple)
+        
+        
         
         _ = saveTests()
         
+        
         log = log + "Data Converter Log 종료 \(Date().HHmmss)"
         print(log)
+        
+
     }
 }

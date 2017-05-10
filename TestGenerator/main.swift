@@ -26,6 +26,8 @@ let dddd = DCDD(testDatabase)
 
 let barExam = DC변호사시험민사법(testDatabase)
 let firstBarExam = DC법조윤리(testDatabase)
+let HouseExam = DC공인중개사(testDatabase)
+
 
 //무한루프 시작
 repeat {
