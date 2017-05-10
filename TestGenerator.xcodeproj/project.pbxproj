@@ -12,6 +12,7 @@
 		392561C01EC0E79E00A9E3FF /* TestDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561BF1EC0E79E00A9E3FF /* TestDatabase.swift */; };
 		392561C21EC0FCA400A9E3FF /* TestSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561C11EC0FCA400A9E3FF /* TestSubject.swift */; };
 		392561C61EC2297700A9E3FF /* DC공인중개사.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561C51EC2297700A9E3FF /* DC공인중개사.swift */; };
+		392561CA1EC31CF000A9E3FF /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561C91EC31CF000A9E3FF /* Instruction.swift */; };
 		394E08471EBE70FB005A835D /* DC변호사시험.swift in Sources */ = {isa = PBXBuildFile; fileRef = 394E08461EBE70FB005A835D /* DC변호사시험.swift */; };
 		394E084A1EBEF693005A835D /* Templet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 394E08491EBEF693005A835D /* Templet.swift */; };
 		395BF6D31E82BA36004BE198 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395BF6D21E82BA36004BE198 /* main.swift */; };
@@ -65,6 +66,7 @@
 		392561C11EC0FCA400A9E3FF /* TestSubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestSubject.swift; sourceTree = "<group>"; };
 		392561C41EC2294E00A9E3FF /* 공인중개사-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "공인중개사-정답.json"; path = "../../Test/TestGeneratorResource/공인중개사-정답.json"; sourceTree = "<group>"; };
 		392561C51EC2297700A9E3FF /* DC공인중개사.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC공인중개사.swift"; sourceTree = "<group>"; };
+		392561C91EC31CF000A9E3FF /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		394E08441EBE70B8005A835D /* 변호사시험 1~6회 민사법 정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "변호사시험 1~6회 민사법 정답.json"; path = "../../Test/TestGeneratorResource/변호사시험 1~6회 민사법 정답.json"; sourceTree = "<group>"; };
 		394E08461EBE70FB005A835D /* DC변호사시험.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC변호사시험.swift"; sourceTree = "<group>"; };
 		394E08481EBE714E005A835D /* 변호사시험-1~6회-민사법.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "변호사시험-1~6회-민사법.txt"; path = "../../Test/TestGeneratorResource/변호사시험-1~6회-민사법.txt"; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 			children = (
 				39E1DE1A1E82C250006F3DB9 /* InputManager.swift */,
 				39E7E2B11EBB88E800087D73 /* OutputManager.swift */,
+				392561C91EC31CF000A9E3FF /* Instruction.swift */,
 			);
 			name = IO;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 				39DF734B1EAF2EFE005AD7D7 /* 3. Keyword.swift in Sources */,
 				396291B31EBC60C300FADC4C /* Selection.swift in Sources */,
 				395BF6D31E82BA36004BE198 /* main.swift in Sources */,
+				392561CA1EC31CF000A9E3FF /* Instruction.swift in Sources */,
 				397214D71EBD82E800FDCD62 /* DataStructure.swift in Sources */,
 				396291AE1EBC41CC00FADC4C /* List.swift in Sources */,
 				3903139F1EB9BC8B006FE79A /* Test.swift in Sources */,

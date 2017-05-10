@@ -9,7 +9,6 @@
 import Foundation
 
 class InputManager {
-    var isDBChanged : Bool = false
     
     let testDatabase : TestDatabase
     let outputManager : OutputManager
@@ -19,35 +18,38 @@ class InputManager {
         self.outputManager = outputManager
     }
     
+    
+    var helps = [
+        "exit" : "exit"
+        , "tcatall" : "tcatall"
+        , "tsuball" : "tsuball"
+        , "testall" : "testall"
+        , "queall" : "queall"
+        , "keyall" : "keyall"
+        , "savet" : "savet"
+        , "saveall" : "saveall"
+        , "selta" : "selta"
+        , "selt" : "selt"
+        , "selqa" : "selqa"
+        , "selq" : "selq"
+        , "shufflet" : "shufflet"
+        , "shuffleq" : "shuffleq"
+    ]
+                
     func execute(_ input : String) -> Bool? {
         
-//        if input.caseInsensitiveCompare("dir") == ComparisonResult.orderedSame || input == "ㅇㅑㄱ" {
-//            
-//            outputManager.showDirectory(outputManager.url)
-//            
-//            return true
-//        }
         
         
-        // exit
+        if input.caseInsensitiveCompare("h") == ComparisonResult.orderedSame || input == "ㅗ" {
+            
+            for help in helps {
+                print(help)
+            }
+            
+            return true
+        }
         
-        // 조회명령
-        // tcatall
-        // tsuball
-        // testall
-        // queall
-        // keyall
         
-        // 저장명령
-        // savet
-        
-        // 출력명령
-        // selta, selt
-        // selqa, selq
-        
-        // 문제 섞어 출력
-        // shufflet
-        // shuffleq
         
         if input == "" {
             return nil
