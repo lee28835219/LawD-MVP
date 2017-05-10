@@ -29,7 +29,6 @@ class DCDD : DataConverter {
         setTestAndAnswerTemplet(resultTuple)
         
         
-        
         _ = saveTests()
         
         

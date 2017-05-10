@@ -180,8 +180,10 @@ class DC법조윤리: DataConverter {
         log = log + "  \(Date().HHmmss) : \(testParsedCounter)개의 시험에서 총 \(answerParsedCounter)개의 문제를 찾아서 작업함\n"
     }
     
+    
+    
     // 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
-    func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
+    override func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
         
         // path를 확인하고
         let path = checkPath(path: questionPath)

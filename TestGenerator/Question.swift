@@ -80,10 +80,6 @@ class Question : DataStructure, Publishable {
         
         _setlistInContentOfSelection()
         
-        if self.key == "변호사윤리시험=법조윤리=007=0039" {
-            
-        }
-        
         
         switch self.questionType {
         case .Find:
@@ -196,6 +192,7 @@ extension Question {
             
             questionContent: content,  // 셔플하면 변경
             questionContentNote: contentNote,
+            questionPassage: passage,
             questionType: questionType,
             questionOX: questionOX,   // 셔플하면 변경
             

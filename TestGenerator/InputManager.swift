@@ -21,11 +21,13 @@ class InputManager {
     
     var helps = [
         "exit" : "exit"
+        , "~~조회명령어" : "-"
         , "tcatall" : "tcatall"
         , "tsuball" : "tsuball"
         , "testall" : "testall"
         , "queall" : "queall"
         , "keyall" : "keyall"
+        , "~~저장명령어" : "-"
         , "savet" : "savet"
         , "saveall" : "saveall"
         , "selta" : "selta"
@@ -260,7 +262,7 @@ class InputManager {
             }
             
             for que in selectedQuestions {
-                que.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+                que.publish(showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
                 print()
                 print("[변형]" + que.key)
                 for _ in 1...1 {
@@ -306,7 +308,7 @@ class InputManager {
             return false
         }
         
-        QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: true, showAnswer: true, showTitle: false, showOrigSel: true)
+        QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
         
         print("정답은? $ ", terminator : "")
         input = getInput()

@@ -36,7 +36,8 @@ class OutputManager {
             //시험키
             testKey : String,
             //질문
-            questionNumber : Int, questionContent : String, questionContentNote : String?, questionType : QuestionType, questionOX : QuestionOX,
+            questionNumber : Int, questionContent : String, questionContentNote : String?,
+            questionPassage : String?, questionType : QuestionType, questionOX : QuestionOX,
             //목록
             listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
             //선택지
@@ -46,10 +47,11 @@ class OutputManager {
             ) {
         
         //문제
-        print("")
+        print()
         if showTitle {
             let testTitle = (isPublished ? "[기출] " : "[변형] ") + testKey
             print(testTitle)
+            print()
         }
         
         print("문 "+questionNumber.description+". ")
@@ -63,6 +65,17 @@ class OutputManager {
         print("  "+queCont.spacing(2))
         print()
         
+        //지문
+        if questionPassage != nil {
+            // How to split a string by new lines in Swift
+            // http://stackoverflow.com/questions/32021712/how-to-split-a-string-by-new-lines-in-swift
+            let array = questionPassage!.components(separatedBy: .newlines)
+            for st in array {
+                print("   "+st.spacing(3))
+            }
+            print()
+        }
+
         
         //목록
         if listsContents.count > 0 {

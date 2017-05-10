@@ -15,8 +15,6 @@ class DC변호사시험민사법 : DataConverter {
         let subject : String
     
         var tests : [Templet.Test] = []
-
-
     
     
     //    Read JSON file with Swift 3
@@ -175,7 +173,7 @@ class DC변호사시험민사법 : DataConverter {
     }
     
     // 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
-    func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
+    override func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
         
         // path를 확인하고
         let path = checkPath(path: questionPath)

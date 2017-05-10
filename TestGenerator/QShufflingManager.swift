@@ -82,6 +82,7 @@ class QShufflingManager : Publishable {
             questionNumber: qShuffled.question.number,
             questionContent: questionModifed.content,  // 셔플하면 변경
             questionContentNote: qShuffled.question.contentNote,
+            questionPassage:  qShuffled.question.passage,
             questionType: qShuffled.question.questionType,
             questionOX: questionModifed.questionOX ,   // 셔플하면 변경
             
