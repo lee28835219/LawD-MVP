@@ -28,7 +28,8 @@ class DC변호사시험민사법 : DataConverter {
         let testSeperator = "=(변호사시험)=(.+)=(\\d+)회="
         
         parseQustionsFromTextFile(testSeperator: testSeperator
-            , questionSeperator: "문\\s{0,}\\d+."
+            // "문\\s{0,}\\d+."의 형식으로 레겍스를 입력할 경우 .항목이 모든 문자를 가져오는 것으로 해석되버리므로 여기서는 꼭 \.표현으로 입력해주어야 함 2017. 5. 11.
+            , questionSeperator: "문\\s{0,}\\d+\\."
             , selectionSeperator: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}"
             , numberOfSelections: 5
         )
@@ -36,7 +37,8 @@ class DC변호사시험민사법 : DataConverter {
         _ = saveTests()
         
         
-        log = log + "Data Converter Log 종료 \(Date().HHmmss)"
+        log = closeLog(log: log, file: "\(#file)")
+//            log + "Data Converter Log 종료 \(Date().HHmmSS)"
         print(log)
         
         

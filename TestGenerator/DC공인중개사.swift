@@ -29,14 +29,14 @@ class DC공인중개사: DataConverter {
         
         
         parseQustionsFromTextFile(testSeperator: testSeperator
-            , questionSeperator: "문\\s{0,}\\d+."
+            , questionSeperator: "문\\s{0,}\\d+\\."
             , selectionSeperator: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}"
             , numberOfSelections: 6
         )
         
         _ = saveTests()
         
-        log = log + "Data Converter Log 종료 \(Date().HHmmss)"
+        log = log + "Data Converter Log 종료 \(Date().HHmmSS)"
         print(log)
         
         

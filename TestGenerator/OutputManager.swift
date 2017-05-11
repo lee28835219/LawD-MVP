@@ -201,7 +201,7 @@ class OutputManager {
                 test.testSubject.subject,   //과목
                 testNumber //회차
             ],
-            fileName: "[\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json",
+            fileName: "[\(Date().HHmmSS)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json",
             data: data) {
             return true
         } else {
@@ -246,6 +246,7 @@ protocol JSONoutable {
 }
 
 extension Date {
+    
     var yyyymmdd : String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy. MM. dd."
@@ -253,9 +254,18 @@ extension Date {
         let dateString = dateFormatter.string(from: self)
         return dateString
     }
+    
     var HHmmss : String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy. MM. dd. HH시mm분ss초"
+        dateFormatter.dateFormat = "yyyy. MM. dd. HH시 mm분 ss초"
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    
+    var HHmmSS : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd. HH시 mm분 ss.SS초"
         dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
         let dateString = dateFormatter.string(from: self)
         return dateString
@@ -267,5 +277,6 @@ extension Date {
         let dateString = dateFormatter.string(from: self)
         return dateString
     }
+    
 }
 

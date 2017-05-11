@@ -20,13 +20,13 @@ testSubject.setSampleTest()
 let outputManager = OutputManager()
 var inputManger = InputManager(testDatabase : testDatabase, outputManager : outputManager)
 
-print("시작 -", Date().HHmmss)
+print("\(#file) 시작 -", Date().HHmmSS)
 
 let dddd = DCDD(testDatabase)
 
 let barExam = DC변호사시험민사법(testDatabase)
-let firstBarExam = DC법조윤리(testDatabase)
-let HouseExam = DC공인중개사(testDatabase)
+//let firstBarExam = DC법조윤리(testDatabase)
+//let HouseExam = DC공인중개사(testDatabase)
 
 
 //무한루프 시작
@@ -53,4 +53,15 @@ repeat {
 
 print("bye!")
 
+func openLog(file : String) -> String {
+    return "\(file) 시작 \(Date().HHmmSS)\n"
+}
+
+func writeLog(log : String, funcName : String, outPut : String) -> String {
+    return  log + "  \(funcName) : \(outPut)\n"
+}
+
+func closeLog(log : String, file : String) -> String {
+    return log + "\(file) 종료 \(Date().HHmmSS)"
+}
 

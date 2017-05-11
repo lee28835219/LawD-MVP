@@ -14,21 +14,16 @@ import Foundation
 //Read and write data from text file
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
-    var log : String = "Data Converter Log 시작 \(Date().HHmmss)\n"
+    var log : String = "\(#file) Log 시작 \(Date().HHmmSS)\n"
+    var printLog = true
     
     var testDatabase : TestDatabase
-    
-//    var tests : [Templet.Test] = []
     var testCategories : [Templet.TestCategory] = []
     
     var answerFilename : String
     var questionFilename : String
     let answerPath : URL?
     let questionPath : URL?
-    
-//    let testCategory : String
-//    var catHelper : String? = nil
-//    let subject : String
     
     private var _headerAndResidualStrings : [String : String] = [:]
     
@@ -66,6 +61,7 @@ class DataConverter: NSObject {
     // 출력-> (category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)
     func extractTestAndAnswerJson() -> [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)] {
         
+        let fName = "extractTestAndAnswerJson"
         
         let path = checkPath(path: answerPath)
         var result : [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)] = []
@@ -118,8 +114,10 @@ class DataConverter: NSObject {
             fatalError("josn파싱 중 에러발생")
         }
         
-        log = log + "  \(Date().HHmmss) : \(result.count)개의 문제와 정답을 찾았음\n"
-        log = log + "  \(Date().HHmmss) : \(path.path) 파싱 완료\n"
+        // http://stackoverflow.com/questions/24048430/logging-method-signature-using-swift
+        // Logging Method signature using swift
+        log = writeLog(log: log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
+        log = writeLog(log: log, funcName: "\(#function)", outPut: "\(path.path) 파싱 완료")
         
         return result
     }
@@ -130,6 +128,7 @@ class DataConverter: NSObject {
     // 출력-> self.testCategories 트리 아래에 모든 파싱정보를 담을 Templet.TestCategory의 배열
     //       여기에는 시험의 정보와 각 질문의 정답이 정리되어 메모리에서 가지고 있게됨
     func setTestAndAnswerTemplet(_ testAndAnswerTuple : [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)]) {
+        let funcName = "setTestAndAnswerTemplet"
         
         var index = 0
         var jndex = 0
@@ -176,7 +175,7 @@ class DataConverter: NSObject {
         }
         
         
-        log = log + "  \(Date().HHmmss) : 파싱자료를 분석하여 -> \(catCounter)개의 시험명에서 \(subCounter)개의 과목의 \(testCounter)회의 시험에서  \(answerCounter)개의 정답을 찾았음 \n"
+        log = log + "  \(funcName) : 파싱자료를 분석하여 -> \(catCounter)개의 시험명에서 \(subCounter)개의 과목의 \(testCounter)회의 시험에서  \(answerCounter)개의 정답을 찾았음 \n"
         
         
         
@@ -199,18 +198,21 @@ class DataConverter: NSObject {
     
     // 세번째 : 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
     // -사용하는 함수 checkPath, getText, matchingStrings, sliceString
-    //
-    //
+
+    
     func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
         
+        
+        
         // path를 확인 및 텍스트를 가져오고
+        // 먼저 모든 텍스트에서 커멘트를 확인하여 제거하는 작업을 getText()함수 안의 commentOut()함수에서 진행한 뒤에 진행할 것이다. 2017. 5. 11.
         let path = checkPath(path: questionPath)
         let wholeTestString = getText(path: path)
         
         
         // 시험별로 쪼개고
         let testStrings = sliceString(regexPattern: testSeperator, string: wholeTestString)
-        log = log + "  \(Date().HHmmss) : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
+        log = log + "  parseQustionsFromTextFile : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
         
         
         
@@ -239,6 +241,7 @@ class DataConverter: NSObject {
             // 그리고 이 시험의 위치 포인터 index, jndex를 찾아낸뒤 문제의 정보를 확인하기 시작함
             for questionStringDictionary in questionStrings {
                 
+                
                 // 필터는 포인터가 아니라 갚을 반환해줘서 사용이 안된다. 다른 방법은 없느가? 2017. 5. 7. (-)
                 // 아마도 index(where)로 찾아낼 수 있을 것임 2017. 5. 10.
 //                var currentIndex = -1
@@ -253,6 +256,7 @@ class DataConverter: NSObject {
 //                if currentIndex == -1 {
 //                    fatalError("\(self.questionFilename)에서 시험과 정답파일에서 찾은 시험을 찾을 수 없음")
 //                }
+                
                 
                 guard let kndex = self.testCategories[index].testSubjects[jndex].tests.index(where: {$0.number == Int(testInfo[3])}) else {
                     fatalError("\(self.questionFilename)에서 시험과 정답파일에서 찾은 시험을 찾을 수 없음")
@@ -286,17 +290,27 @@ class DataConverter: NSObject {
                 var contentSuffix : String?
                 
                 
+                
+                
                 // 문제의 Passage인 <p> </p>를 처리
                 // Regex select all text between tags
                 // http://stackoverflow.com/questions/7167279/regex-select-all-text-between-tags
-                // 꼭 공부해야하는 좋은 구문 2017. 5. 11.
+                // 꼭 공부해야하는 좋은 구문 2017. 5. 11. -> 별로 효율적이지 못해서
+                // 아래 구문으로 변경함 
+                // Regular expression to match all characters between <h1> tag
+                // http://stackoverflow.com/questions/14525286/regular-expression-to-match-all-characters-between-h1-tag
+                
                 var passage : String?
-                if let passageRange = contentRaw.range(of: "(?<=(<p>))(\\w|\\d|\\n|[().,\\-:;@#$%^&*\\[\\]\"'+–/\\/®°⁰!?○{}|`~]| )+?(?=(</p>))", options: .regularExpression) {
-                    if let passageRangeOutrange = contentRaw.range(of: "<p>(\\w|\\d|\\n|[().,\\-:;@#$%^&*\\[\\]\"'+–/\\/®°⁰!?○{}|`~]| )+?</p>", options: .regularExpression) {
+                if let passageRange = contentRaw.range(of: "(?s)<p>.+</p>", options: .regularExpression) {
+                    if let passageRangeOutrange = contentRaw.range(of: "(?s)<p>(.+)</p>", options: .regularExpression) {
                         passage = contentRaw.substring(with: passageRange)
                         contentRaw = contentRaw.substring(with: contentRaw.startIndex..<passageRangeOutrange.lowerBound) + contentRaw.substring(with: passageRangeOutrange.upperBound..<contentRaw.endIndex)
+                        log = log + "  parseQustionsFromTextFile : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
                     }
                 }
+                
+                
+                
                 
                 
                 
@@ -305,6 +319,7 @@ class DataConverter: NSObject {
                 // 이 후 선택지텍스트를 찾아냄
                 // ->입력 contentRaw, selectionSeperator (regex)
                 // 출력-> selectionStrings
+                
                 let selectionRange = contentRaw.range(of: selectionSeperator, options: .regularExpression)
                 guard let selectionRangeWrapped = selectionRange else {
                     fatalError("\(testString.key)시험의 \(questionStringDictionary.key)문제 파싱 중 문제의 선택지를 찾을 수 없음")
@@ -313,9 +328,13 @@ class DataConverter: NSObject {
                 
                 
                 
+                
+                
+                
                 // 선택지를 파싱하여 selectionStringSliced을 만들고
                 // 이를 분석해서 여러개의 선택지를 만들어냄
                 // que.rawSelections = queCutSelection.trimmingCharacters(in: .whitespacesAndNewlines)
+                
                 let selectionStringSliced = sliceString(regexPattern: "①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩", string: selectionStrings)
                 for selection in selectionStringSliced {
                     
@@ -330,10 +349,13 @@ class DataConverter: NSObject {
                 
                 
                 
+                
+                
                 // 선택지가 주어진 갯수와 맞는지 체크하는 함수, 입력이 nil이면 하지않음
+                
                 if let numberOfSelectionsWrapped = numberOfSelections {
-                    if selectionStringSliced.count > numberOfSelectionsWrapped {
-                        fatalError("\(testString.key) - \(questionStringDictionary.key) 에는 선택지가 \(numberOfSelectionsWrapped)개 보다많음")
+                    if selectionStringSliced.count != numberOfSelectionsWrapped {
+                        fatalError("\(testString.key) - \(questionStringDictionary.key) 에는 선택지가 필요한 갯수인 \(numberOfSelectionsWrapped)개와 다른 \(selectionStringSliced.count)개가 있음")
                     }
                 }
                 
@@ -341,6 +363,7 @@ class DataConverter: NSObject {
                 // 문제텍스트에서 선택지 텍스트를 제거함, 이게 문제의 content가 될 수 있음
                 // 만약 선택지 뒤에 잡다한 텍스트가 잇다면 어그러질 것 그치만 그런 형식의 텍스트가 입력되는 일은 없겠지?
                 // 문제를 정확하게 자르지 못하지 않는한 그런일 없다.
+                
                 contentRaw = contentRaw.substring(with: contentRaw.startIndex..<selectionRangeWrapped.lowerBound)
                 
                 
@@ -455,7 +478,7 @@ class DataConverter: NSObject {
                 // 지문과 contentSuffix를 추가함 contentPrefix와 도표 추가 필요? 2017. 5. 11.
                 
             }
-            log = log + "  \(Date().HHmmss) : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공\n"
+            log = log + "  parseQustionsFromTextFile : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공\n"
         }
     }
     
@@ -591,7 +614,7 @@ class DataConverter: NSObject {
                 }
             }
         }
-        log = log + "  \(Date().HHmmss) : \(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지와 함께 저장완료\n"
+        log = log + "  saveTests : \(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지와 함께 저장완료\n"
         return true
     }
 
@@ -777,7 +800,17 @@ class DataConverter: NSObject {
         guard let textWrapped = text else {
             fatalError("\(path) 텍스트 파일에서 문자열 가져오기 실패하였음, 문자열이 아님")
         }
-        return textWrapped
+        
+        return commentOut(textWrapped)
+    }
+    
+    func commentOut(_ text :String) -> String {
+        var outText = text
+        if let commetnRange = outText.range(of: "//.+", options: .regularExpression) {
+            outText = outText.substring(with: outText.startIndex..<commetnRange.lowerBound) + outText.substring(with: commetnRange.upperBound..<outText.endIndex)
+            outText = commentOut(outText)
+        }
+        return outText
     }
     
 }
