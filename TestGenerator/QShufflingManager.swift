@@ -51,10 +51,25 @@ class QShufflingManager : Publishable {
         for sel in qShuffled.selections {
             // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (+)
             var selResult = qShuffled.getModfiedStatementOfCommonStatement(statement: sel)
-                           // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
-            if qShuffled.question.questionType == QuestionType.Find {
-                selResult = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+            
+            switch qShuffled.question.questionType {
+            case .Find:
+                switch qShuffled.question.questionOX {
+                case .O:
+                    selResult = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .X:
+                    selResult = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .Correct:
+                    _ = true
+                case .Unknown:
+                    _ = true
+                }
+            case .Select:
+                _ = true
+            case .Unknown:
+                _ = true
             }
+            
             selectionsContent.append(selResult.content)
             selsIscOrrect.append(selResult.iscOrrect)
             selsIsAnswer.append(selResult.isAnswer)
@@ -83,6 +98,7 @@ class QShufflingManager : Publishable {
             questionContent: questionModifed.content,  // 셔플하면 변경
             questionContentNote: qShuffled.question.contentNote,
             questionPassage:  qShuffled.question.passage,
+            questionPassageSuffix:  qShuffled.question.passageSuffix,
             questionType: qShuffled.question.questionType,
             questionOX: questionModifed.questionOX ,   // 셔플하면 변경
             
@@ -91,7 +107,7 @@ class QShufflingManager : Publishable {
             listsNumberString : listsNumberString, // 셔플하면 변경
             origialListsNumberString : origialListsNumberString, // 셔플하면 변경
             
-            questionSuffix:  qShuffled.question.contentSuffix,
+            questionSuffix:  qShuffled.question.questionSuffix,
             
             selectionsContent : selectionsContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrect,  // 셔플하면 변경

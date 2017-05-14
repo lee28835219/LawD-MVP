@@ -53,15 +53,15 @@ repeat {
 
 print("bye!")
 
-func openLog(file : String) -> String {
+func newLog(_ file : String) -> String {
     return "\(file) 시작 \(Date().HHmmSS)\n"
 }
 
-func writeLog(log : String, funcName : String, outPut : String) -> String {
+func writeLog(_ log : String, funcName : String, outPut : String) -> String {
     return  log + "  \(funcName) : \(outPut)\n"
 }
 
-func closeLog(log : String, file : String) -> String {
+func closeLog(_ log : String, file : String) -> String {
     return log + "\(file) 종료 \(Date().HHmmSS)"
 }
 

@@ -14,28 +14,32 @@ import Foundation
 //Read and write data from text file
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
-    var log : String = "\(#file) Log 시작 \(Date().HHmmSS)\n"
+    var log : String
     var printLog = true
     
     var testDatabase : TestDatabase
     var testCategories : [Templet.TestCategory] = []
     
-    var answerFilename : String
-    var questionFilename : String
+    var answerFileName : String
+    var questionFileNames : [String]
     let answerPath : URL?
-    let questionPath : URL?
+    var questionPaths = [URL?]()
+    
+    var directory : String?
     
     private var _headerAndResidualStrings : [String : String] = [:]
     
     
     
     init(testDatabase : TestDatabase,
-         answerFilename: String,
-         questionFilename : String) {
+         answerFileName: String,
+         questionFileNames : [String],
+         directory : String? = nil) {
         
+        self.log = newLog("\(#file)")
         self.testDatabase = testDatabase
-        self.answerFilename = answerFilename
-        self.questionFilename = questionFilename
+        self.answerFileName = answerFileName
+        self.questionFileNames = questionFileNames
         
         //Accessing files in xcode
         //https://www.youtube.com/watch?v=71DnOYeqJuM
@@ -45,10 +49,15 @@ class DataConverter: NSObject {
         //http://stackoverflow.com/questions/14950440/how-can-i-add-a-file-to-an-existing-mac-os-x-app-bundle
         
         //일단 system의 document폴더 안의 TestGeneratorResource 에서 읽는 것으로 진행
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            let dirTestGeneratorResource = dir.appendingPathComponent("Test").appendingPathComponent("TestGeneratorResource")
-            self.answerPath = dirTestGeneratorResource.appendingPathComponent(self.answerFilename)
-            self.questionPath = dirTestGeneratorResource.appendingPathComponent(self.questionFilename)
+        if let dirDocumetn = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            var dir = dirDocumetn.appendingPathComponent("Test").appendingPathComponent("Resource")
+            if directory != nil {
+                dir = dir.appendingPathComponent(directory!)
+            }
+            self.answerPath = dir.appendingPathComponent(self.answerFileName)
+            for quFileName in self.questionFileNames {
+                self.questionPaths.append(dir.appendingPathComponent(quFileName))
+            }
         } else {
             fatalError("파일을 파싱해서 저장하려는 Document 폴더가 존재하지 않음")
         }
@@ -57,11 +66,10 @@ class DataConverter: NSObject {
     
     // 2017. 5. 10.
     // 첫번째 : json 정답파일에서 시험과 문제, 정답의 원시정보를 가져옴
+    // nested Json형태의 입력을 받을 수 있도록 수정되면 좋겠음 2017. 5. 12.
     // ->입력 answerPath 즉 json파일의 URL
     // 출력-> (category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)
     func extractTestAndAnswerJson() -> [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)] {
-        
-        let fName = "extractTestAndAnswerJson"
         
         let path = checkPath(path: answerPath)
         var result : [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)] = []
@@ -116,8 +124,8 @@ class DataConverter: NSObject {
         
         // http://stackoverflow.com/questions/24048430/logging-method-signature-using-swift
         // Logging Method signature using swift
-        log = writeLog(log: log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
-        log = writeLog(log: log, funcName: "\(#function)", outPut: "\(path.path) 파싱 완료")
+        log = writeLog(log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
+        log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path) 파싱 완료")
         
         return result
     }
@@ -128,8 +136,6 @@ class DataConverter: NSObject {
     // 출력-> self.testCategories 트리 아래에 모든 파싱정보를 담을 Templet.TestCategory의 배열
     //       여기에는 시험의 정보와 각 질문의 정답이 정리되어 메모리에서 가지고 있게됨
     func setTestAndAnswerTemplet(_ testAndAnswerTuple : [(category: String, subject: String, testNumber: Int, questonNumber: Int, answerNumber: Int)]) {
-        let funcName = "setTestAndAnswerTemplet"
-        
         var index = 0
         var jndex = 0
         var kndex = 0
@@ -138,9 +144,9 @@ class DataConverter: NSObject {
         var subCounter = 0
         var testCounter = 0
         var answerCounter = 0
-
         
         for result in testAndAnswerTuple {
+            
             
             if let i = self.testCategories.index(where: {$0.category == result.category}) {
                 index = i
@@ -160,6 +166,7 @@ class DataConverter: NSObject {
                 subCounter = subCounter + 1
             }
             
+            
             if let i = self.testCategories[index].testSubjects[jndex].tests.index(where: {$0.number == result.testNumber}) {
                 kndex = i
             } else {
@@ -169,316 +176,405 @@ class DataConverter: NSObject {
             }
             
             
-            
             self.testCategories[index].testSubjects[jndex].tests[kndex].answers.append(Templet.Answer(questionNumber: result.questonNumber, answer: result.answerNumber))
             answerCounter = answerCounter + 1
+            
         }
         
+        for cat in self.testCategories {
+            for sub in cat.testSubjects {
+                for te in sub.tests {
+                    log = writeLog(log, funcName: "\(#function)", outPut: "\(cat.category), \(sub.subject) 과목 \(te.number)회 시험에서 \(te.answers.count)개의 정답을 확인함")
+                }
+            }
+            
+        }
+    
         
-        log = log + "  \(funcName) : 파싱자료를 분석하여 -> \(catCounter)개의 시험명에서 \(subCounter)개의 과목의 \(testCounter)회의 시험에서  \(answerCounter)개의 정답을 찾았음 \n"
+        log = writeLog(log, funcName: "\(#function)", outPut: "파싱자료를 분석하여 -> \(catCounter)개의 시험명 \(subCounter)개의 과목의 \(testCounter)회의 시험에서 \(answerCounter)개의 정답을 찾았음")
         
-        
-        
-//        print("==================================")
-//        for cat in self.testCategories {
-//            print(cat.category)
-//            for sub in cat.testSubjects {
-//                print("  ",cat.category, "=", sub.subject)
-//                for te in sub.tests {
-//                    print("    ",cat.category, "=", sub.subject,"=", te.number)
-//                    for qu in te.answers {
-//                        print("      ",qu.questionNumber, qu.answer)
-//                    }
-//                }
-//            }
-//            
-//        }
-//        print("==================================")
     }
+    
+    
+    
+    
     
     // 세번째 : 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
     // -사용하는 함수 checkPath, getText, matchingStrings, sliceString
-
     
-    func parseQustionsFromTextFile(testSeperator: String, questionSeperator: String, contentSuffixSeperator: String? = nil, selectionSeperator: String, numberOfSelections: Int?) {
+    func parseQustionsFromTextFile(testSep: String, queSep: String, selSep: String, numberOfSels: Int?) {
         
         
         
         // path를 확인 및 텍스트를 가져오고
-        // 먼저 모든 텍스트에서 커멘트를 확인하여 제거하는 작업을 getText()함수 안의 commentOut()함수에서 진행한 뒤에 진행할 것이다. 2017. 5. 11.
-        let path = checkPath(path: questionPath)
-        let wholeTestString = getText(path: path)
+        let paths = checkPath(paths: questionPaths)
         
-        
-        // 시험별로 쪼개고
-        let testStrings = sliceString(regexPattern: testSeperator, string: wholeTestString)
-        log = log + "  parseQustionsFromTextFile : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
-        
-        
-        
-        
-        for testString in testStrings {
+        for path in paths {
             
-            // 문제별로 쪼개었음
-            let questionStrings = sliceString(regexPattern: questionSeperator, string: testString.value)
+            // 먼저 모든 텍스트에서 커멘트를 확인하여 제거하는 작업을 getText()함수 안의 commentOut()함수에서 진행한 뒤에 진행할 것이다. 2017. 5. 11.
+            var wholeTestString = getText(path: path)
             
+            // \r이 들어있는 텍스트는 뒤에서 사용하기 귀찮으므로 이를 의미가 다를바 없는 \n으로 모두 변경할 것이다. 2017. 5. 13.
+            wholeTestString = wholeTestString.replacingOccurrences(of: "\r", with: "\n")
             
-            // 시험정보에 대해서 matchingStrings 함수의 regex를 이용해서 분석한뒤 이 시험의 위치가 testCategories의 어디인지 밝혀내는 소중한 함수
-            let testInfoArray = testString.key.matchingStrings(regex: testSeperator)
-            if testInfoArray.count != 1 {
-                fatalError("이상한 시험정보 입력 \(testSeperator)")
-            }
-            let testInfo = testInfoArray[0]
+            // 여기에 추후 <u> </u> 태그 사이의 글을 밑줄로 표시해주는 기능을 추가해야한다.
             
-            guard let index = testCategories.index(where: {$0.category == testInfo[1]}) else {
-                fatalError("정답파일에서 추출한 시험명이 없는 이상한 시험정보 입력 \(testSeperator)")
-            }
-            guard let jndex = testCategories[index].testSubjects.index(where: {$0.subject == testInfo[2]}) else {
-                fatalError("정답파일에서 추출한 과목명이 없는 이상한 시험정보 입력 \(testSeperator)")
-            }
+            // 시험별로 쪼개고
+            let testStrings = sliceString(regexPattern: testSep, string: wholeTestString)
+            log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path) 파일을 \(testStrings.count)개의 시험으로 나눠 파싱시작")
             
             
-            // 그리고 이 시험의 위치 포인터 index, jndex를 찾아낸뒤 문제의 정보를 확인하기 시작함
-            for questionStringDictionary in questionStrings {
+            
+            // 시험에 대해서 문제를 쪼개는 작업을 시작함
+            for testString in testStrings {
                 
+                // 문제별로 쪼개었음
+                var questionStringsUnsorted = sliceString(regexPattern: queSep, string: testString.value)
                 
-                // 필터는 포인터가 아니라 갚을 반환해줘서 사용이 안된다. 다른 방법은 없느가? 2017. 5. 7. (-)
-                // 아마도 index(where)로 찾아낼 수 있을 것임 2017. 5. 10.
-//                var currentIndex = -1
-//                for (kndex,test) in self.testCategories[index].testSubjects[jndex].tests.enumerated() {
-//                    //getTestNumber 함수에서 가져오던 시험의 숮자를 레겍스로 정밀하게 가져오도록 수정함 2017. 5. 10. 비록 함수는 배꼈지만..
-//                    if test.number == Int(testInfo[3]) {
-//                        currentIndex = kndex
-//                        break
-//                    }
-//                }
-//                
-//                if currentIndex == -1 {
-//                    fatalError("\(self.questionFilename)에서 시험과 정답파일에서 찾은 시험을 찾을 수 없음")
-//                }
+                // 딕셔너리는 소트란 개념이 없어서 아래와 같은 삽질을 진행하였음 더 좋은 방법은? 2017. 5. 12. (+)
+                // 일단 문자로 받던 소팅을 숫자로 바꿔서 진행하도록 수정 2017. 5. 14.
                 
+                var questionTitlesString = [Int : String]()
+                var questionTitles = [Int]()
                 
-                guard let kndex = self.testCategories[index].testSubjects[jndex].tests.index(where: {$0.number == Int(testInfo[3])}) else {
-                    fatalError("\(self.questionFilename)에서 시험과 정답파일에서 찾은 시험을 찾을 수 없음")
-                }
-                
-                
-                
-                var contentRaw = questionStringDictionary.value
-                // 모든정보를 거짓으로 하여 새로운 문제 Templet.Qustion을 만듬
-                // 입력정보는 없어도 되지만 향후 사용 및 전체 문제에 입력할 데이터 조망을 위해 남겨두겠음
-                var newQuestion = Templet.Question(specification: "",
-                                                   number: 0,
-                                                   subjectDetails: [],
-                                                   questionType: QuestionType.Unknown,
-                                                   questionOX: QuestionOX.Unknown,
-                                                   content: contentRaw,
-                                                   contentControversal: nil,
-                                                   contentPrefix: nil,
-                                                   contentNote: nil,
-                                                   passage: nil,
-                                                   contentSuffix: nil,
-                                                   answer: 1,
-                                                   raw: "",
-                                                   rawSelections: "",
-                                                   rawLists: "",
-                                                   selections: [],
-                                                   lists: []
-                )
-                
-                
-                var contentSuffix : String?
-                
-                
-                
-                
-                // 문제의 Passage인 <p> </p>를 처리
-                // Regex select all text between tags
-                // http://stackoverflow.com/questions/7167279/regex-select-all-text-between-tags
-                // 꼭 공부해야하는 좋은 구문 2017. 5. 11. -> 별로 효율적이지 못해서
-                // 아래 구문으로 변경함 
-                // Regular expression to match all characters between <h1> tag
-                // http://stackoverflow.com/questions/14525286/regular-expression-to-match-all-characters-between-h1-tag
-                
-                var passage : String?
-                if let passageRange = contentRaw.range(of: "(?s)<p>.+</p>", options: .regularExpression) {
-                    if let passageRangeOutrange = contentRaw.range(of: "(?s)<p>(.+)</p>", options: .regularExpression) {
-                        passage = contentRaw.substring(with: passageRange)
-                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<passageRangeOutrange.lowerBound) + contentRaw.substring(with: passageRangeOutrange.upperBound..<contentRaw.endIndex)
-                        log = log + "  parseQustionsFromTextFile : \(path.path) 텍스트를 \(testStrings.count)개의 시험으로 나누는데 성공\n"
+                for queInfo in questionStringsUnsorted {
+                    guard let questionNumber = Int(queInfo.key.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) else {
+                        fatalError("\(queInfo.key)에서 문제번호를 찾아낼 수 없음")
                     }
+                    questionTitles.append(questionNumber)
+                    questionTitlesString[questionNumber] = queInfo.key
+                }
+                
+                questionTitles.sort()
+                var questionStrings = [String]()
+                for quT in questionTitles {
+                    questionStrings.append(questionStringsUnsorted[questionTitlesString[quT]!]!)
                 }
                 
                 
-                
-                
-                
-                
-                // 문제텍스트 중에 선택지는 항상 잇어야 하므로 선택지가 잇는지를 확인하고
-                // 특히 이는 꼭있어야 되니 없으면 치명적 에러
-                // 이 후 선택지텍스트를 찾아냄
-                // ->입력 contentRaw, selectionSeperator (regex)
-                // 출력-> selectionStrings
-                
-                let selectionRange = contentRaw.range(of: selectionSeperator, options: .regularExpression)
-                guard let selectionRangeWrapped = selectionRange else {
-                    fatalError("\(testString.key)시험의 \(questionStringDictionary.key)문제 파싱 중 문제의 선택지를 찾을 수 없음")
+                // 시험정보에 대해서 matchingStrings 함수의 regex를 이용해서 분석한뒤 이 시험의 위치가 testCategories의 어디인지 밝혀내는 소중한 함수
+                let testInfoArray = testString.key.matchingStrings(regex: testSep)
+                if testInfoArray.count != 1 {
+                    fatalError("이상한 시험정보 입력 \(testSep)")
                 }
-                let selectionStrings = contentRaw.substring(with: selectionRangeWrapped)
+                let testInfo = testInfoArray[0]
                 
-                
-                
-                
-                
-                
-                // 선택지를 파싱하여 selectionStringSliced을 만들고
-                // 이를 분석해서 여러개의 선택지를 만들어냄
-                // que.rawSelections = queCutSelection.trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                let selectionStringSliced = sliceString(regexPattern: "①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩", string: selectionStrings)
-                for selection in selectionStringSliced {
-                    
-                    var newSelection = Templet.Selection()
-                    newSelection.content = selection.value.trimmingCharacters(in: .whitespacesAndNewlines)
-                    newSelection.contentControversal = nil
-                    newSelection.number = selection.key.roundInt
-                    
-                    newQuestion.selections.append(newSelection)
-                    
+                guard let index = testCategories.index(where: {$0.category == testInfo[1]}) else {
+                    fatalError("정답파일에서 추출한 시험명이 없는 이상한 시험정보 입력 \(testSep)")
+                }
+                guard let jndex = testCategories[index].testSubjects.index(where: {$0.subject == testInfo[2]}) else {
+                    fatalError("정답파일에서 추출한 과목명이 없는 이상한 시험정보 입력 \(testSep)")
                 }
                 
+                log = writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작")
                 
                 
-                
-                
-                // 선택지가 주어진 갯수와 맞는지 체크하는 함수, 입력이 nil이면 하지않음
-                
-                if let numberOfSelectionsWrapped = numberOfSelections {
-                    if selectionStringSliced.count != numberOfSelectionsWrapped {
-                        fatalError("\(testString.key) - \(questionStringDictionary.key) 에는 선택지가 필요한 갯수인 \(numberOfSelectionsWrapped)개와 다른 \(selectionStringSliced.count)개가 있음")
+                // 그리고 이 시험의 위치 포인터 index, jndex를 찾아낸뒤 문제의 정보를 확인하기 시작함
+                for (i, questionString) in questionStrings.enumerated() {
+                    let questionTitle = questionTitles[i]
+                    
+                    
+                // 0. 추가할 정보의 정의
+                    // 모든정보를 거짓으로 하여 새로운 문제 Templet.Qustion을 만듬
+                    // 입력정보는 없어도 되지만 향후 사용 및 전체 문제에 입력할 데이터 조망을 위해 남겨두겠음
+                    // 전체 조망을 하기에 가장 좋다. 입력할 항목별로 목록을 정리하였음 아주보기 편해짐 2017. 5. 12.
+                   
+                    var contentRaw = questionString
+                    
+                    var newQuestion = Templet.Question(specification: "",
+                                                       number: 0,  //가짜입력
+                                                       subjectDetails: [],
+                                                       questionType: QuestionType.Unknown, // 6. 질문 그리고 입력값은 Default로 의미를 가짐
+                                                       questionOX: QuestionOX.Unknown,   // 6. 질문 그리고 입력값은 Default로 의미를 가짐
+                                                       contentPrefix: nil, // ==> 아직구현되지 않음
+                                                       content: contentRaw,   // 6. 질문
+                                                       contentControversal: nil, // 6. 질문
+                                                       contentNote: nil, // 5. 질문부가사항
+                                                       questionSuffix: nil, // 5. 질문부가사항
+                                                       passage: nil,  // 1. 지문
+                                                       passageSuffix: nil,
+                                                       answer: 1,   // 4. 정답
+                                                       raw: questionString,  // 0. 정의
+                                                       rawSelections: "",   // 2. 선택지
+                                                       rawLists: "",     // 3. 목록
+                                                       selections: [],  // 2. 선택지
+                                                       lists: []  // 3. 목록
+                    )
+                    
+                    
+                    
+                // 4. 정답
+                    // 문제의 정답을 이미 찾아두었던 메모리상의 값의 리스트에서 찾아가는 과정
+                    // regex에서 받은 질문형식에서 찾은 문장을 이용해서 문제번호를 추출하고
+                    
+                    // 필터는 포인터가 아니라 갚을 반환해줘서 사용이 안된다. 다른 방법은 없느가? 2017. 5. 7. (-)
+                    // 아마도 index(where)로 찾아낼 수 있을 것임 2017. 5. 10.
+                    guard let kndex = self.testCategories[index].testSubjects[jndex].tests.index(where: {$0.number == Int(testInfo[3])}) else {
+                        fatalError("\(self.questionFileNames[0])에서 시험과 정답파일에서 찾은 시험을 찾을 수 없음")
                     }
-                }
-                
-                
-                // 문제텍스트에서 선택지 텍스트를 제거함, 이게 문제의 content가 될 수 있음
-                // 만약 선택지 뒤에 잡다한 텍스트가 잇다면 어그러질 것 그치만 그런 형식의 텍스트가 입력되는 일은 없겠지?
-                // 문제를 정확하게 자르지 못하지 않는한 그런일 없다.
-                
-                contentRaw = contentRaw.substring(with: contentRaw.startIndex..<selectionRangeWrapped.lowerBound)
-                
-                
-                
-                // 각각 가나다 형태와 ㄱㄴㄷ 목록이 있는지 확인해서 문제텍스트를 잘라 가지고 있음
-                // queCutListSelWord와 queCutListSelLetter
-                // ->입력 contentRaw
-                var queCutListSelWord : String? = nil
-                let queCutListSelWordRange = contentRaw.range(of: "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression)
-                if queCutListSelWordRange != nil {
-                    queCutListSelWord = contentRaw.substring(with: queCutListSelWordRange!)
                     
-                    // 이 지점에서 목록 문장 뒤에 있는 문제정보가 contentRaw에서 날라가 버리는 문제가 발생한다
-                    // 이는 꼭 바로잡아야 되는 문제이다. 그래서 수정하엿다. 그치만 출력함수가 안변하면 의미 없을 것이다. 2017. 5. 11. 꼭 바꾸길 (+)
-                    // 제대로 작동하는지 디버깅을 안해봐서 모르겠다. 담에 꼭해야함, <p>~~</p>처리도 함께
-                    contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
-                    if queCutListSelWordRange!.upperBound < contentRaw.endIndex {
-                        contentSuffix = contentRaw.substring(with: queCutListSelWordRange!.upperBound..<contentRaw.endIndex)
-                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
+                    
+                    newQuestion.number = questionTitle
+                    
+                    // 그러한 문제번호가 시험포인터가 가르키는 곳에 있는지 확인해써 있으면 저장하고 없으면 치명적 에러
+                    guard let answer = testCategories[index].testSubjects[jndex].tests[kndex].answers.filter({$0.questionNumber == newQuestion.number}).first?.answer else {
+                        fatalError("파싱한 문제에 맞는 전에 입력해두었던 문제의 정답이 없음")
+                    }
+                    newQuestion.answer = answer
+                    log = writeLog(log, funcName: "\(#function)", outPut: "Q\(newQuestion.number) - 파싱시작 & 정답 \(newQuestion.answer) 입력완료")
+                    
+                    
+                    
+                
+                    
+                    
+                    
+                    
+                    
+                    
+                // 1-1. 지문
+                    
+                    // 문제의 Passage인 <p> </p>를 처리
+                    
+                    if let taggedTest = contentRaw.getTaggedText("p").taggedText {
+                        newQuestion.passage = taggedTest
+                        contentRaw = contentRaw.getTaggedText("p").modifiedText
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 추가"))
+                    }
+                    
+                // 1-2. 지문Suffix
+                    
+                    if let taggedTest = contentRaw.getTaggedText("d").taggedText {
+                        if newQuestion.passage == nil {
+                            fatalError("지문도 없는데 지문Suffix가 정의되었음, <d>태그 입력잘못임 \(path.path) 파일 \(testString.key) \(newQuestion.number) 문제")
+                        }
+                        newQuestion.passageSuffix = taggedTest
+                        contentRaw = contentRaw.getTaggedText("d").modifiedText
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 suffix 추가"))
+                    }
+
+                    
+                    
+                    
+                // 2. 선택지
+                    // 먼저 "위 (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)" 형태의 진술이 존재하는지 체크해야 한다.
+                    // 체크안하면 선택지 파싱자체가 엉망이 된다.
+                    
+                    let contentRawTemp = contentRaw
+                    contentRaw = anotherSelectionPaser(contentRaw)
+                    if contentRawTemp != contentRaw {
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지에 있는 다른 진술에 관한 정보 태그<anotherStatement>을 반영함"))
+                    }
+                    
+                    
+                    // 문제텍스트 중에 선택지는 항상 잇어야 하므로 선택지가 잇는지를 확인하고
+                    // 특히 이는 꼭있어야 되니 없으면 치명적 에러
+                    // 이 후 선택지텍스트를 찾아냄
+                    // ->입력 contentRaw, selectionSeperator (regex)
+                    // 출력-> selectionStrings
+                    
+                    let selectionRange = contentRaw.range(of: selSep, options: .regularExpression)
+                    guard let selectionRangeWrapped = selectionRange else {
+                        fatalError("\(path.path) 파일 \(testString.key)시험 \(questionTitle)문제 파싱 중 문제의 선택지를 찾을 수 없음")
+                    }
+                    let selectionStrings = contentRaw.substring(with: selectionRangeWrapped)
+                    
+                    
+                    // 선택지를 파싱하여 selectionStringSliced을 만들고
+                    // 이를 분석해서 여러개의 선택지를 만들어냄
+                    // que.rawSelections = queCutSelection.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    let selectionStringSliced = sliceString(regexPattern: "①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩", string: selectionStrings)
+                    for selection in selectionStringSliced {
+                        
+                        var newSelection = Templet.Selection()
+                        newSelection.content = selection.value.trimmingCharacters(in: .whitespacesAndNewlines)
+                        newSelection.contentControversal = nil
+                        newSelection.number = selection.key.roundInt
+                        
+                        newQuestion.selections.append(newSelection)
+                        
+                    }
+                    
+                    
+                    // 선택지가 주어진 갯수와 맞는지 체크하는 함수, 입력이 nil이면 하지않음
+                    
+                    if let numberOfSelectionsWrapped = numberOfSels {
+                        if selectionStringSliced.count != numberOfSelectionsWrapped {
+                            log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지가 필요한 갯수 \(numberOfSelectionsWrapped)와 다른 \(selectionStringSliced.count)개 확인)"))
+                            print(questionString)
+                            fatalError("\(testString.key) - \(questionTitle) 에는 선택지가 필요한 갯수인 \(numberOfSelectionsWrapped)개와 다른 \(selectionStringSliced.count)개가 있음")
+                        }
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(필요한 개수와 동일)"))
                     } else {
-                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelWordRange!.lowerBound)
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(시험마다 동일한지 체크안함)"))
                     }
-                }
-                
-                var queCutListSelLetter : String? = nil
-                let queCutListSelLetterRange = contentRaw.range(of: "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression)
-                if queCutListSelLetterRange != nil {
-                    queCutListSelLetter = contentRaw.substring(with: queCutListSelLetterRange!)
-                    if queCutListSelLetterRange!.upperBound < contentRaw.endIndex {
-                        contentSuffix = contentRaw.substring(with: queCutListSelLetterRange!.upperBound..<contentRaw.endIndex)
-                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelLetterRange!.lowerBound)
+                    
+                    // 문제텍스트에서 선택지 텍스트를 제거함, 이게 문제의 content가 될 수 있음
+                    // 만약 선택지 뒤에 잡다한 텍스트가 잇다면 어그러질 것 그치만 그런 형식의 텍스트가 입력되는 일은 없겠지?
+                    // 문제를 정확하게 자르지 못하지 않는한 그런일 없다.
+                    contentRaw = contentRaw.substring(with: contentRaw.startIndex..<selectionRangeWrapped.lowerBound)
+                    
+                    
+                    
+                    
+                    
+                    
+                // 3. 목록
+                    
+                    // 각각 가나다 형태와 ㄱㄴㄷ 목록이 있는지 확인해서 문제텍스트를 잘라 가지고 있음
+                    // queCutListSelWord와 queCutListSelLetter
+                    // ->입력 contentRaw
+                    var contentSuffix : String? = nil
+                    let listStringResult = getListString(contentRaw: contentRaw, contentSuffix: contentSuffix)
+                    contentRaw = listStringResult.contentRaw
+                    contentSuffix = listStringResult.contentSuffix
+                    let listsString = listStringResult.lists
+                    let listType = listStringResult.listType
+                    
+                    
+                    
+                    
+                    
+                    // 잘라낸 가나다 혹은 ㄱㄴㄷ 문장들을 각각 파싱
+                    let listParserResult = listParser(listString: listsString, listType: listType)
+                    newQuestion.rawLists = listParserResult.rawLists
+                    newQuestion.lists = listParserResult.lists
+                    if listsString != nil {
+                        newQuestion.questionType = .Find
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "목록 선택지 \(newQuestion.lists.count)개 확인"))
+                    }
+                    
+                    
+                //5. 질문부가사항
+                    // 위치에 대해서 생각해봐야 함, 맨앞? 컨텐트 입력직전?
+                    // => 이는 질문 Suffix이고 따라서 질문 앞에서 검토,
+                    // 추가로 지문의 suffix 태그 <d>를 정의햇는데 이는 패시지 앞에서 검토할 것임
+                    
+                    
+                    if let taggedTest = contentRaw.getTaggedText("s").taggedText {
+                        newQuestion.questionSuffix = taggedTest
+                        contentRaw = contentRaw.getTaggedText("s").modifiedText
                     } else {
-                        contentRaw = contentRaw.substring(with: contentRaw.startIndex..<queCutListSelLetterRange!.lowerBound)
+                        newQuestion.questionSuffix = contentSuffix?.trimmingCharacters(in: .whitespacesAndNewlines)
                     }
-                }
-                
-                
-                
-                // 가나다와 ㄱㄴㄷ이 둘다 존재할 수는 없을것
-                if queCutListSelWord != nil && queCutListSelLetter != nil {
-                    fatalError("문제 파싱중에 목록선택지의 구조가 이상하게 파싱되었음")
-                }
-                
-                
-                // 잘라낸 가나다 혹은 ㄱㄴㄷ 문장들을 각각 파싱
-                if queCutListSelLetter != nil {
-                    newQuestion.rawLists = queCutListSelLetter!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let listsDictionary = sliceString(regexPattern: "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\.", string: newQuestion.rawLists)
-                    for listDictionary in listsDictionary {
-                        var newList = Templet.List()
-                        newList.specification = ""
-                        newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
-                        newList.contentControversal = nil
-                        newList.listStringType = .koreanCharcter  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
-                        newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt
-                        
-                        newQuestion.lists.append(newList)
+                    if newQuestion.questionSuffix != nil {
+                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문 suffix 추가"))
                     }
-                    newQuestion.questionType = .Find
-                }
-                
-                if queCutListSelWord != nil {
-                    newQuestion.rawLists = queCutListSelWord!.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let listsDictionary = sliceString(regexPattern: "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\.", string: newQuestion.rawLists)
-                    for listDictionary in listsDictionary {
-                        var newList = Templet.List()
-                        newList.specification = ""
-                        newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
-                        newList.contentControversal = nil
-                        newList.listStringType = .koreanCharcter
-                        newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt
-                        
-                        newQuestion.lists.append(newList)
-                        
+                    
+                //6. 질문
+                    
+                    
+                    
+                    
+                    // 가) contentNote
+                    
+                    // contentNote를 검토할 Regex표현의 배열
+                    let contNotesRegexDB = ["\\(다툼이 있는 경우 판례에 의함\\)"
+                                    , "\\(다툼이 있는 경우 헌법재판소 판례에 의함\\)"
+                                    , "\\(다툼이 있는 경우에는 판례에 의함\\)"
+                                    ]
+                    for contNote in contNotesRegexDB {
+                        let result = contentRaw.getElimatedText(contNote)
+                        if result.textToElimate != nil {
+                            if newQuestion.contentNote == nil {
+                                newQuestion.contentNote = result.textToElimate!
+                                contentRaw = result.elimatedText
+                                log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문에 Note \"\(newQuestion.contentNote!)\" 추출"))
+                            } else {
+                                fatalError("\(path.path) 파일 \(testString.key) \(newQuestion.number) 질문에 질문노트가 여러개 발견되었음")
+                            }
+                        }
                     }
-                    newQuestion.questionType = .Find
+                    
+                    
+                    // 나) 질문을 분석하여 문제타입 검토
+                    
+                    // content를 잘 분석하면 많은 정보를 얻을 수 잇을 가능성이 많다. 향후 경우의 수를 최대한 많이 생각해서
+                    // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
+                    
+                    // 여기서 newQuestion.content를 검토하는데 사실 raw데이터이다. 편리하기는하나 위험할 수 있다 위험점에 대허서 미리 생각해야 한다.
+                    if newQuestion.content.contains("옳은 것은?")
+                        || newQuestion.content.contains("판례의 입장과 부합하는 것은?")
+                        || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되는 것은?")
+                        || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하는는 것은?")
+                        || newQuestion.content.contains("물을 수 있는 것은?")
+                        || newQuestion.content.contains("형법이론상의 논점과 관련이 있는 것은?") {
+                        newQuestion.questionType = .Select
+                        newQuestion.questionOX = .O
+                    } else if newQuestion.content.contains("옳지 않은 것은?")
+                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것은?")
+                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되지 않는 것은?")
+                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하지 않는 것은?")
+                            || newQuestion.content.contains("물을 수 없는 것은?")
+                            || newQuestion.content.contains("형법이론상의 논점과 관련이 없는 것은?") {
+                        newQuestion.questionType = .Select
+                        newQuestion.questionOX = .X
+                    } else if newQuestion.content.contains("용어를 올바르게 나열한 것은?")
+                              || newQuestion.content.contains("바르게 연결된 것은?") {
+                        newQuestion.questionType = .Select
+                        newQuestion.questionOX = .Correct
+                    }
+                    
+                    if newQuestion.questionType == .Find { // 위에 3에서 list가 존재했음을 의미
+                        if newQuestion.content.contains("옳은 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 입장과 부합하는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 입장에 부합하는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 태도와 부합하는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("허용되는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("되는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("되는 경우를 모두 고른 것은?")
+                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("사례를 모두 모아 놓은 것은?")
+                            || newQuestion.content.contains("인정할 수 있는 경우를 모두 고른 것은?")
+                            || newQuestion.content.contains("유죄를 인정할 수 있는 것을 모두 고른 것은?") {
+                            newQuestion.questionOX = .O
+                        } else if newQuestion.content.contains("옳지 않은 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 입장에 부합하지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("판례의 태도와 부합하지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("허용되지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("되지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("되지 않는 경우를 모두 고른 것은?")
+                            || newQuestion.content.contains("해당할 수 없는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("해당하지 않는 것을 모두 고른 것은?")
+                            || newQuestion.content.contains("사례가 아닌 것을 모두 모아 놓은 것은?")
+                            || newQuestion.content.contains("인정할 수 없는 경우를 모두 고른 것은?")
+                            || newQuestion.content.contains("유죄를 인정할 수 없는 것을 모두 고른 것은?") {
+                            newQuestion.questionOX = .X
+                        } else if newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 올바르게 조합한 것은?")
+                            || newQuestion.content.contains("옳은 것(o)과 옳지 않은 것(x)을 올바르게 조합한 것은?")
+                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(× )을 올바르게 조합한 것은?") {
+                            newQuestion.questionOX = .Correct
+                        }
+                    }
+                    log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
+                    
+                    
+                    
+                // 최종정리
+                    
+                    
+                    // 질문의 앞뒤 새줄 트리밍
+                    
+                    newQuestion.content = contentRaw.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if newQuestion.content == "" {
+                        fatalError("\(path.path) \(testString.key) \(newQuestion.number) 문제에 질문이 없음")
+                    }
+                    
+                    
+                    // 질문 로깅
+                    log = writeLog(log, funcName: "\(#function)", outPut: " \""+newQuestion.content+"\"")
+                    
+                    testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
+                    // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
+                    // 지문과 contentSuffix를 추가함 contentPrefix와 도표 추가 필요? 2017. 5. 11.
+                    
+                    
                 }
-                
-                
-                
-                // 문제의 정답을 이미 찾아두었던 메모리상의 값의 리스트에서 찾아가는 과정
-                // regex에서 받은 질문형식에서 찾은 문장을 이용해서 문제번호를 추출하고
-                guard let questionNumber = Int(questionStringDictionary.key.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) else {
-                    fatalError("\(questionStringDictionary.key)에서 문제번호를 찾아낼 수 없음")
-                }
-                newQuestion.number = questionNumber
-                
-                // 그러한 문제번호가 시험포인터가 가르키는 곳에 있는지 확인해써 있으면 저장하고 없으면 치명적 에러
-                guard let answer = testCategories[index].testSubjects[jndex].tests[kndex].answers.filter({$0.questionNumber == questionNumber}).first?.answer else {
-                    fatalError("파싱한 문제에 맞는 전에 입력해두었던 문제의 정답이 없음")
-                }
-                newQuestion.answer = answer
-                
-                // 그 외에 나머지 문제에 관한 정보들도 넣어둠
-                newQuestion.passage = passage
-                newQuestion.content = contentRaw.trimmingCharacters(in: .whitespacesAndNewlines)
-                newQuestion.contentSuffix = contentSuffix?.trimmingCharacters(in: .whitespacesAndNewlines)
-                
-                
-                // content를 잘 분석하면 많은 정보를 얻을 수 잇을 가능성이 많다. 향후 경우의 수를 최대한 많이 생각해서
-                // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
-                if newQuestion.content.contains("옳은 것은?") {
-                    newQuestion.questionType = .Select
-                    newQuestion.questionOX = .O
-                } else if newQuestion.content.contains("옳지 않은 것은?") {
-                    newQuestion.questionType = .Select
-                    newQuestion.questionOX = .X
-                }
-                
-                testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
-                // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
-                // 지문과 contentSuffix를 추가함 contentPrefix와 도표 추가 필요? 2017. 5. 11.
-                
+                log = writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공")
             }
-            log = log + "  parseQustionsFromTextFile : \(testString.key) 시험을 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공\n"
         }
     }
     
@@ -517,29 +613,11 @@ class DataConverter: NSObject {
                 }
             }
         }
-        
-//        print("==================================")
-//        for cat in self.testCategories {
-//            print(cat.category)
-//            for sub in cat.testSubjects {
-//                print("  ",cat.category, "=", sub.subject)
-//                for te in sub.tests {
-//                    print("    ",cat.category, "=", sub.subject,"=", te.number)
-//                    for qu in te.questions {
-//                        print("      ",qu.number, qu.answer)
-//                    }
-//                }
-//            }
-//            
-//        }
-//        print("==================================")
-        
-        
     }
     
     
     
-    func saveTests() -> Bool {
+    func uploadTests() -> Bool {
         
         sortTestAndQuestion()
         
@@ -573,17 +651,18 @@ class DataConverter: NSObject {
                         let newQuestion = Question(test: newTest, number: question.number, questionType: question.questionType, questionOX: question.questionOX, content: question.content, answer: question.answer)
                         queCounter = queCounter + 1
                         
-                        newQuestion.contentNote = question.contentNote
                         newQuestion.contentPrefix = question.contentPrefix
-                        newQuestion.contentSuffix = question.contentSuffix
+                        newQuestion.contentNote = question.contentNote
+                        newQuestion.questionSuffix = question.questionSuffix
                         newQuestion.passage =  question.passage
+                        newQuestion.passageSuffix =  question.passageSuffix
                         newQuestion.specification =  question.specification
                         
                         newQuestion.raw =  question.raw
                         newQuestion.rawLists = question.rawLists
                         newQuestion.rawSelections =  question.rawSelections
                         // 다 저장한 것 맞은건가? 항상 확인해야 하는 곳임
-                        // 2017. 5. 11.
+                        // 2017. 5. 13.
                         
                         for selection in question.selections {
                             let newSelection = Selection(question: newQuestion, number: selection.number, content: selection.content)
@@ -614,7 +693,7 @@ class DataConverter: NSObject {
                 }
             }
         }
-        log = log + "  saveTests : \(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지와 함께 저장완료\n"
+        log = writeLog(log, funcName: "\(#function)", outPut: "\(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지를 불러오기 완료")
         return true
     }
 
@@ -687,6 +766,7 @@ class DataConverter: NSObject {
             }
             // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
             //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
+            
             //// newTest 초기화에 대해서 고민해봐야 함 (-) 2017. 5. 5.
             // let testString = residualString
             // let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
@@ -694,6 +774,7 @@ class DataConverter: NSObject {
             // newTest.raw = testString
             // 시험들.append(newTest)
             //// newTest를 이 함수 안에서 초기화 하는 것 보다는 밖에서 나가서 할 수 있도록 수정, 이를 위해 Templet이라는 구조체를 만듬 2017. 5. 7.
+            
             self._headerAndResidualStrings[header] = residualString
             return _headerAndResidualStrings
         }
@@ -746,12 +827,12 @@ class DataConverter: NSObject {
         
         let testNumberRange = testHeader.range(of: "\\d회", options: .regularExpression)
         guard let testNumberRangeWrapped = testNumberRange else {
-            fatalError("\(answerFilename) 파일 안의 시험정보 \(testNumberRange) 안에는 시험회차정보가 없음")
+            fatalError("\(answerFileName) 파일 안의 시험정보 \(testNumberRange) 안에는 시험회차정보가 없음")
         }
         
         let testNumberString = testHeader.substring(with: testNumberRangeWrapped)
         guard let testNumber = Int(testNumberString.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) else {
-            fatalError("\(answerFilename)에서 문제회차정보를 찾을 수 없음")
+            fatalError("\(answerFileName)에서 문제회차정보를 찾을 수 없음")
         }
         
         return testNumber
@@ -773,8 +854,6 @@ class DataConverter: NSObject {
     
     
     
-    
-    
     func checkPath(path : URL?)  -> URL {
         guard let answerPathUnwrraped = path else {
             fatalError("\(path?.path)가 존재하지 않음")
@@ -787,6 +866,21 @@ class DataConverter: NSObject {
     }
     
     
+    
+    func checkPath(paths : [URL?])  -> [URL] {
+        var answerPathUnwrraped = [URL]()
+        for path in paths {
+            guard let answerPath = path else {
+                fatalError("\(path?.path)가 존재하지 않음")
+            }
+            let fileManager = FileManager()
+            if !fileManager.fileExists(atPath: answerPath.path) {
+                fatalError("\((path?.path)!)에 파일이 존재하지 않음")
+            }
+            answerPathUnwrraped.append(answerPath)
+        }
+        return answerPathUnwrraped
+    }
     
     
     
@@ -804,6 +898,7 @@ class DataConverter: NSObject {
         return commentOut(textWrapped)
     }
     
+    
     func commentOut(_ text :String) -> String {
         var outText = text
         if let commetnRange = outText.range(of: "//.+", options: .regularExpression) {
@@ -813,14 +908,115 @@ class DataConverter: NSObject {
         return outText
     }
     
+    
+    // 문제텍스트에서 목록을 가져오는 기능을 함수화 2017. 5. 12. 버그는 없으려나?
+    func getListString(contentRaw: String, contentSuffix: String?) -> (contentRaw: String, contentSuffix: String?, lists: String?, listType: SelectStringType?) {
+        
+        var regex : String? = nil
+        var listRange : Range<String.Index>? = nil
+        var listType : SelectStringType? = nil
+        
+        
+        if let range = contentRaw.range(of: "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression) {
+            listType = SelectStringType.koreanLetter
+            regex = "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}"
+            listRange = range
+        }
+        
+        if let range = contentRaw.range(of: "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression) {
+            if listType != nil {
+                fatalError("파싱한 문자에 목록 선택지가 여래개 존재할 수 없음, 텍스트 입력의 오류가 의심됨")
+            }
+            listType = SelectStringType.koreanCharcter
+            regex = "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}"
+            listRange = range
+        }
+        
+        var lists : String? = nil
+        var contRawOut = contentRaw
+        var contSuffixOut = contentSuffix
+        
+        if listRange != nil {
+            lists = contentRaw.substring(with: listRange!)
+        
+            // 이 지점에서 목록 문장 뒤에 있는 문제정보가 contentRaw에서 날라가 버리는 문제가 발생한다
+            // 이는 꼭 바로잡아야 되는 문제이다. 그래서 수정하엿다. 그치만 출력함수가 안변하면 의미 없을 것이다. 2017. 5. 11. 꼭 바꾸길 (+)
+            // 제대로 작동하는지 디버깅을 안해봐서 모르겠다. 담에 꼭해야함, <p>~~</p>처리도 함께
+            contRawOut = contentRaw.substring(with: contentRaw.startIndex..<listRange!.lowerBound)
+            if listRange!.upperBound < contentRaw.endIndex {
+                contSuffixOut = contentRaw.substring(with: listRange!.upperBound..<contentRaw.endIndex)
+                contRawOut = contentRaw.substring(with: contentRaw.startIndex..<listRange!.lowerBound)
+            } else {
+                contRawOut = contentRaw.substring(with: contentRaw.startIndex..<listRange!.lowerBound)
+            }
+        }
+        
+        return (contRawOut, contSuffixOut, lists, listType)
+    }
+    
+    
+    func listParser(listString: String?, listType: SelectStringType?) -> (rawLists: String, lists : [Templet.List]){
+        
+        var rawLists = ""
+        var lists : [Templet.List] = []
+        
+        if listType != nil {
+            
+            var regex = ""
+            
+            switch listType! {
+            case .koreanCharcter:
+                regex = "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\."
+            case .koreanLetter:
+                regex = "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\."
+            }
+            
+        
+            rawLists = listString!.trimmingCharacters(in: .whitespacesAndNewlines)
+            let listsDictionary = sliceString(regexPattern: regex, string: rawLists)
+            
+            for listDictionary in listsDictionary {
+                
+                var newList = Templet.List()
+                newList.specification = ""
+                newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
+                newList.contentControversal = nil
+                newList.listStringType = .koreanCharcter  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
+                newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt
+                
+                lists.append(newList)
+            }
+        }
+            
+        return (rawLists, lists)
+    }
+    
+    
+    // 진술 속의 "위 (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)" 부분을 태그로 전환해주는 함수
+    func anotherSelectionPaser(_ statement : String) -> String {
+        var resultString = statement
+        
+        if let anoSelInStateRange = statement.range(of: "위 (①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)", options: .regularExpression) {
+            
+            // 태그안에 넣을 다른 선택지 숫자를 찾는 함수
+            let numberRange = statement.substring(with: anoSelInStateRange).range(of: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)", options: .regularExpression)
+            let anoSelNumber = statement.substring(with: anoSelInStateRange).substring(with: numberRange!).roundInt
+            
+            // 결과를 편집
+            resultString = resultString.substring(with: statement.startIndex..<anoSelInStateRange.lowerBound) + "<anotherSelection>" + anoSelNumber.description + "</anotherSelection>" + resultString.substring(with: anoSelInStateRange.upperBound..<statement.endIndex)
+            resultString = anotherSelectionPaser(resultString)
+        }
+        return resultString
+    }
 }
 
 
-// http://stackoverflow.com/questions/27880650/swift-extract-regex-matches
-// Swift extract regex matches
-// 2017. 5. 10. 공부를 해야, 아주 훌륭한 공부예제일 것 (+) 지금은 잘 모르는 구문이지만..
+
 
 extension String {
+    // http://stackoverflow.com/questions/27880650/swift-extract-regex-matches
+    // Swift extract regex matches
+    // 2017. 5. 10. 공부를 해야, 아주 훌륭한 공부예제일 것 (+) 지금은 잘 모르는 구문이지만..
     func matchingStrings(regex: String) -> [[String]] {
         guard let regex = try? NSRegularExpression(pattern: regex, options: []) else { return [] }
         let nsString = self as NSString
@@ -831,5 +1027,63 @@ extension String {
                 : ""
             }
         }
+    }
+    
+    
+    // 내가 만든 태그안에 있는 텍스트를 가져오는 함수
+    // 노가다의 산물로 더 깔끔하게 짜는 방법이 있을듯 하나 모르겟음 개선필요 
+    // 특히 레겍스 식을 연구해야함  (+) 2017. 5. 12.
+    func getTaggedText(_ tag : String) -> (modifiedText : String, taggedText : String?){
+        var modifiedText : String = self
+        var taggedText : String? = nil
+        
+        // Regex select all text between tags
+        // http://stackoverflow.com/questions/7167279/regex-select-all-text-between-tags
+        // 꼭 공부해야하는 좋은 구문 2017. 5. 11. -> 별로 효율적이지 못해서
+        // 아래 구문으로 변경함
+        // Regular expression to match all characters between <h1> tag
+        // http://stackoverflow.com/questions/14525286/regular-expression-to-match-all-characters-between-h1-tag
+        
+        let regexTag = "(?s)<" + tag + ">(.+)</" + tag+">"  // "(?s)<p>.+</p>"
+        if let range = self.range(of: regexTag, options: .regularExpression) {
+            taggedText = self.substring(with: range)
+            modifiedText = self.substring(with: self.startIndex..<range.lowerBound) + self.substring(with: range.upperBound..<self.endIndex)
+            
+            //        let tagRegex = "(?s)<" + tag + ">.+</" + tag+"s>"
+            //        if let passageRange = originalText.range(of: tagRegex, options: .regularExpression) {
+            // 태그안의 값만 가져오도록 수정해야 하는데 이 구문이 먹지 않아 삽질해서 구현하였음 향후 레겍스 개발 필요 2017. 5. 12. (+)
+            
+            let lowerTagRange = taggedText!.range(of: "<" + tag + ">", options: .regularExpression)
+            let upperTagRange = taggedText!.range(of: "</" + tag + ">", options: .regularExpression)
+            taggedText = taggedText?.substring(with: (lowerTagRange?.upperBound)!..<(upperTagRange?.lowerBound)!)
+        }
+        return (modifiedText, taggedText)
+    }
+    
+    
+    
+    
+    
+    func getElimatedText(_ regexToElimate : String, spaceCheck : Bool = false) -> (elimatedText : String, textToElimate : String?) {
+        
+        // http://stackoverflow.com/questions/24200888/any-way-to-replace-characters-on-swift-string
+        // Any way to replace characters on Swift String?
+        let regex = spaceCheck ? regexToElimate : regexToElimate.replacingOccurrences(of: " ", with: "\\s")
+        
+        var elimatedText = self
+        var textToElimateResult : String? = nil
+        
+        if let range = self.range(of: regex, options: .regularExpression) {
+            textToElimateResult = elimatedText.substring(with: range)
+            // 왜 offset을 +1, -1해줘야 하는지 모르겠다. 그냥 일단 넘어가는데 나중에 자세하게 탐구 필요 2017. 5. 13. (+)
+            elimatedText =
+                elimatedText.substring(with: elimatedText.startIndex..<index(range.lowerBound, offsetBy : -1))
+                +
+                elimatedText.substring(with: index(range.upperBound, offsetBy : 1)..<elimatedText.endIndex)
+        }
+        
+        
+        
+        return (elimatedText, textToElimateResult)
     }
 }

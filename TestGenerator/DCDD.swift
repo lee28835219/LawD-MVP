@@ -20,8 +20,8 @@ class DCDD : DataConverter {
     convenience init?(_ testDatabase : TestDatabase) {
         
         self.init(testDatabase: testDatabase,
-                  answerFilename: "공인중개사-정답.json",
-                  questionFilename: "공인중개사-문제.txt"
+                  answerFileName: "공인중개사-정답.json",
+                  questionFileNames: ["공인중개사-문제.txt"]
         )
         
     }

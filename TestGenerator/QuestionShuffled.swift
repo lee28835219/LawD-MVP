@@ -254,6 +254,19 @@ class QuestionShuffled {
         
         changeCommonTypeQuestion()
         
+        // 일단 FindCorrect 타입 질문이면 지문을 섞지 않음 향후 예도 정보를 읽어서 섞도록 하면 좋을 것 2017. 5. 12. (+)
+        // 최종 업무가 되겠지~
+        switch question.questionOX {
+        case .O:
+            _ = true
+        case .X:
+            _ = true
+        case .Correct:
+            return
+        case .Unknown:
+            return
+        }
+        
         lists.shuffle()
         if showLog {
             print("--1. 목록 순서 변경함")

@@ -8,40 +8,40 @@
 
 import Cocoa
 
-class DC공인중개사: DataConverter {
+//class DC공인중개사: DataConverter {
     
-    convenience init?(_ testDatabase : TestDatabase) {
+//    convenience init?(_ testDatabase : TestDatabase) {
+
         
-        
-        self.init(testDatabase: testDatabase,
-                  answerFilename: "공인중개사-정답.json",
-                  questionFilename: "공인중개사-문제.txt"
-        )
-        
-       
-        
-        let resultTuple = extractTestAndAnswerJson()
-        setTestAndAnswerTemplet(resultTuple)
-        
-        
-        
-        let testSeperator = "=(공인중개사 국가자격시험)=(.+)=(\\d+)회="
-        
-        
-        parseQustionsFromTextFile(testSeperator: testSeperator
-            , questionSeperator: "문\\s{0,}\\d+\\."
-            , selectionSeperator: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}"
-            , numberOfSelections: 6
-        )
-        
-        _ = saveTests()
-        
-        log = log + "Data Converter Log 종료 \(Date().HHmmSS)"
-        print(log)
-        
-        
-    }
-}
+//        self.init(testDatabase: testDatabase,
+//                  answerFilename: "공인중개사-정답.json",
+//                  questionFilename: "공인중개사-문제.txt"
+//        )
+//        
+//       
+//        
+//        let resultTuple = extractTestAndAnswerJson()
+//        setTestAndAnswerTemplet(resultTuple)
+//        
+//        
+//        
+//        let testSeperator = "=(공인중개사 국가자격시험)=(.+)=(\\d+)회="
+//        
+//        
+//        parseQustionsFromTextFile(testSeperator: testSeperator
+//            , questionSeperator: "문\\s{0,}\\d+\\."
+//            , selectionSeperator: "(①|②|③|④|⑤|⑥|⑦|⑧|⑨|⑩)(.+\\n{0,}){1,9}"
+//            , numberOfSelections: 6
+//        )
+//        
+//        _ = saveTests()
+//        
+//        log = log + "Data Converter Log 종료 \(Date().HHmmSS)"
+//        print(log)
+//        
+//        
+//    }
+//}
 
 //파싱의 미스테리 2017. 5. 10. (+)
 

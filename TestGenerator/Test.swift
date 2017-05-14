@@ -89,7 +89,8 @@ extension Test {
             testSubject__test__question_attribute["contentPrefix"] = question.contentPrefix
             testSubject__test__question_attribute["contentNote"] = question.contentNote
             testSubject__test__question_attribute["passage"] = question.passage
-            testSubject__test__question_attribute["contentSuffix"] = question.contentSuffix
+            testSubject__test__question_attribute["passageSuffix"] = question.passageSuffix
+            testSubject__test__question_attribute["questionSuffix"] = question.questionSuffix
             testSubject__test__question_attribute["answer"] = question.answer
             testSubject__test__question_attribute["raw"] = question.raw
             testSubject__test__question_attribute["rawSelections"] = question.rawSelections
@@ -105,6 +106,7 @@ extension Test {
                 testSubject__test__question__selection_attribute["iscOrrect"] = selection.iscOrrect
                 testSubject__test__question__selection_attribute["isAnswer"] = selection.isAnswer
                 testSubject__test__question__selection_attribute["number"] = selection.number
+                // anotherSelectionInStatement 추가해야함 2017. 5. 14. (+)
                 var testSubject__test__question__selection = [String : Any]()
                 testSubject__test__question__selection[key] = selection.key
                 testSubject__test__question__selection[attribute] = testSubject__test__question__selection_attribute

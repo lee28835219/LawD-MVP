@@ -21,13 +21,16 @@ class Question : DataStructure, Publishable {
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
     
+    var contentPrefix : String?
+    
     var content: String //원본
     var contentControversal : String? //원본
-    
-    var contentPrefix : String?
     var contentNote: String? //원본
+    
     var passage : String?
-    var contentSuffix : String?
+    var passageSuffix : String?
+    
+    var questionSuffix : String?
     
     //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
     //하지만 문제 파싱시에 없는 값일 경우가 많을 것임, 추후 optional로 변경하도록 수정 필요(+) 2017. 4.29.
@@ -78,14 +81,11 @@ class Question : DataStructure, Publishable {
             fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
         }
         
-        _setlistInContentOfSelection()
-        
-        
-        switch self.questionType {
+        switch questionType {
         case .Find:
-            switch self.questionOX {
-            // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
+            switch questionOX {
             case .O:
+                _setlistInContentOfSelection()
                 for listSel in lists {
                     let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
@@ -98,8 +98,8 @@ class Question : DataStructure, Publishable {
                     }
                 }
                 return true
-            // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
             case .X:
+                _setlistInContentOfSelection()
                 for listSel in lists {
                     let listSelString = listSel.getListString()
                     if ans.content.range(of: listSelString) != nil {
@@ -112,13 +112,64 @@ class Question : DataStructure, Publishable {
                     }
                 }
                 return true
-            default:
-                //print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+            case .Correct:
+                return false
+            case .Unknown:
                 return false
             }
-        default: // 정답을 찾는 대상이 아님
+        case .Select:
+            switch questionOX {
+            case .O:
+                return false
+            case .X:
+                return false
+            case .Correct:
+                return false
+            case .Unknown:
+                return false
+            }
+        case .Unknown:
             return false
         }
+        
+//        switch self.questionType {
+//        case .Find:
+//            switch self.questionOX {
+//            // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
+//            case .O:
+//                for listSel in lists {
+//                    let listSelString = listSel.getListString()
+//                    if ans.content.range(of: listSelString) != nil {
+//                        listSel.iscOrrect = true
+//                        listSel.isAnswer = true
+//                        self.answerLists.append(listSel)
+//                    } else {
+//                        listSel.iscOrrect = false
+//                        listSel.isAnswer = false
+//                    }
+//                }
+//                return true
+//            // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
+//            case .X:
+//                for listSel in lists {
+//                    let listSelString = listSel.getListString()
+//                    if ans.content.range(of: listSelString) != nil {
+//                        listSel.iscOrrect = false
+//                        listSel.isAnswer = true
+//                        self.answerLists.append(listSel)
+//                    } else {
+//                        listSel.iscOrrect = true
+//                        listSel.isAnswer = false
+//                    }
+//                }
+//                return true
+//            default:
+//                //print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
+//                return false
+//            }
+//        default: // 정답을 찾는 대상이 아님
+//            return false
+//        }
         
     }
     
@@ -135,7 +186,6 @@ class Question : DataStructure, Publishable {
             if selection.listInContentOfSelection != [] {
                 fatalError("잘못된 함수호출 _setlistInContentOfSelection(), 선택지의 내용안에 있는 목록지가 초기화되지 않은 상태에서 호출됨")
             }
-            
             for list in lists {
                 // 선택지에 문제의 목록 문자가 존재하는지 확인하는 분기
                 if selection.content.range(of: list.getListString()) != nil {
@@ -193,6 +243,8 @@ extension Question {
             questionContent: content,  // 셔플하면 변경
             questionContentNote: contentNote,
             questionPassage: passage,
+            questionPassageSuffix: passageSuffix,
+            
             questionType: questionType,
             questionOX: questionOX,   // 셔플하면 변경
             
@@ -201,7 +253,7 @@ extension Question {
             listsNumberString : listSelsIntString,
             origialListsNumberString : origialListsNumberString,
             
-            questionSuffix: contentSuffix,
+            questionSuffix: questionSuffix,
             
             selectionsContent : selectionsContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
@@ -220,6 +272,7 @@ extension Question {
 enum QuestionOX : String {
     case O //옳은 것
     case X //옳지 않은 것
+    case Correct // 올바른 것
     case Unknown
 }
 

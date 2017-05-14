@@ -13,6 +13,7 @@ class Selection: Statement {
     
     let number : Int
     var listInContentOfSelection = [List]()
+    var anotherSelectionInStatement = [Selection]()
     
     init(question: Question, number: Int, content: String) {
         

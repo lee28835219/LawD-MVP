@@ -30,9 +30,6 @@ struct Templet {
     struct Test {
         var specification : String = ""
         
-//        var category : String = ""
-//        var catHelper : String? = nil
-//        var subject : String = ""
         var number : Int = 0
         var numHelper : Int? = nil
         var date : Date?
@@ -58,13 +55,16 @@ struct Templet {
         var questionType : QuestionType
         var questionOX : QuestionOX
         
+        var contentPrefix : String?
+        
         var content: String = ""
         var contentControversal : String?
-        
-        var contentPrefix : String?
         var contentNote: String?
+        
+        var questionSuffix : String?
+        
         var passage : String?
-        var contentSuffix : String?
+        var passageSuffix : String?
         
         var answer: Int = 0
         

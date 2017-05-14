@@ -69,9 +69,7 @@
 		392561C91EC31CF000A9E3FF /* Instruction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		392561CB1EC3308F00A9E3FF /* 공인중개사-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "공인중개사-문제.txt"; path = "../../Test/TestGeneratorResource/공인중개사-문제.txt"; sourceTree = "<group>"; };
 		392561CC1EC38C0700A9E3FF /* 법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt"; path = "../../Test/TestGeneratorResource/법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt"; sourceTree = "<group>"; };
-		394E08441EBE70B8005A835D /* 변호사시험=1~6회-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "변호사시험=1~6회-정답.json"; path = "../../Test/TestGeneratorResource/변호사시험=1~6회-정답.json"; sourceTree = "<group>"; };
 		394E08461EBE70FB005A835D /* DC변호사시험.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC변호사시험.swift"; sourceTree = "<group>"; };
-		394E08481EBE714E005A835D /* 변호사시험=1~6회-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "변호사시험=1~6회-문제.txt"; path = "../../Test/TestGeneratorResource/변호사시험=1~6회-문제.txt"; sourceTree = "<group>"; };
 		394E08491EBEF693005A835D /* Templet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Templet.swift; sourceTree = "<group>"; };
 		395BF6CF1E82BA36004BE198 /* TestGenerator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestGenerator; sourceTree = BUILT_PRODUCTS_DIR; };
 		395BF6D21E82BA36004BE198 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -93,6 +91,20 @@
 		39E7E2AD1EBB263700087D73 /* QShufflingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QShufflingManager.swift; sourceTree = "<group>"; };
 		39E7E2B11EBB88E800087D73 /* OutputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputManager.swift; sourceTree = "<group>"; };
 		39F2DEF11EBA4C3C005F5A30 /* 법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json"; path = "../../Test/TestGeneratorResource/법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json"; sourceTree = "<group>"; };
+		39FDF3C01EC5F70400ABF885 /* =변호사시험=공법=5회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=5회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=5회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C11EC5F70400ABF885 /* =변호사시험=공법=6회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=6회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=6회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C21EC5F70400ABF885 /* 변호사시험=1~6회-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "변호사시험=1~6회-정답.json"; path = "../../Test/Resource/1. 변호사시험/변호사시험=1~6회-정답.json"; sourceTree = "<group>"; };
+		39FDF3C31EC743E300ABF885 /* =변호사시험=공법=4회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=4회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=4회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C41EC7501800ABF885 /* =변호사시험=공법=3회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=3회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=3회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C51EC753FE00ABF885 /* =변호사시험=공법=2회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=2회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=2회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C61EC75B1100ABF885 /* =변호사시험=공법=1회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=1회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=공법=1회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C71EC75EE900ABF885 /* =변호사시험=형사법=6회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=6회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=6회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3C81EC761E600ABF885 /* test.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = test.txt; path = "../../Test/Resource/1. 변호사시험/test.txt"; sourceTree = "<group>"; };
+		39FDF3C91EC7807C00ABF885 /* =변호사시험=형사법=5회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=5회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=5회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3CA1EC7839D00ABF885 /* =변호사시험=형사법=4회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=4회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=4회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3CB1EC7862400ABF885 /* =변호사시험=형사법=3회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=3회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=3회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3CC1EC7898900ABF885 /* =변호사시험=형사법=2회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=2회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=2회=선택형=.txt"; sourceTree = "<group>"; };
+		39FDF3CD1EC78B4900ABF885 /* =변호사시험=형사법=1회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=형사법=1회=선택형=.txt"; path = "../../Test/Resource/1. 변호사시험/=변호사시험=형사법=1회=선택형=.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,14 +138,26 @@
 			name = "공인중개사";
 			sourceTree = "<group>";
 		};
-		394E08451EBE70C0005A835D /* 변호사시험 민사 */ = {
+		394E08451EBE70C0005A835D /* 변호사시험 */ = {
 			isa = PBXGroup;
 			children = (
 				394E08461EBE70FB005A835D /* DC변호사시험.swift */,
-				394E08441EBE70B8005A835D /* 변호사시험=1~6회-정답.json */,
-				394E08481EBE714E005A835D /* 변호사시험=1~6회-문제.txt */,
+				39FDF3C81EC761E600ABF885 /* test.txt */,
+				39FDF3CD1EC78B4900ABF885 /* =변호사시험=형사법=1회=선택형=.txt */,
+				39FDF3CC1EC7898900ABF885 /* =변호사시험=형사법=2회=선택형=.txt */,
+				39FDF3CB1EC7862400ABF885 /* =변호사시험=형사법=3회=선택형=.txt */,
+				39FDF3CA1EC7839D00ABF885 /* =변호사시험=형사법=4회=선택형=.txt */,
+				39FDF3C91EC7807C00ABF885 /* =변호사시험=형사법=5회=선택형=.txt */,
+				39FDF3C71EC75EE900ABF885 /* =변호사시험=형사법=6회=선택형=.txt */,
+				39FDF3C61EC75B1100ABF885 /* =변호사시험=공법=1회=선택형=.txt */,
+				39FDF3C51EC753FE00ABF885 /* =변호사시험=공법=2회=선택형=.txt */,
+				39FDF3C41EC7501800ABF885 /* =변호사시험=공법=3회=선택형=.txt */,
+				39FDF3C31EC743E300ABF885 /* =변호사시험=공법=4회=선택형=.txt */,
+				39FDF3C01EC5F70400ABF885 /* =변호사시험=공법=5회=선택형=.txt */,
+				39FDF3C11EC5F70400ABF885 /* =변호사시험=공법=6회=선택형=.txt */,
+				39FDF3C21EC5F70400ABF885 /* 변호사시험=1~6회-정답.json */,
 			);
-			name = "변호사시험 민사";
+			name = "변호사시험";
 			sourceTree = "<group>";
 		};
 		395BF6C61E82BA36004BE198 = {
@@ -212,7 +236,7 @@
 				392561BA1EC0BBD700A9E3FF /* DefaultData */,
 				392561C31EC228C100A9E3FF /* 공인중개사 */,
 				397631AF1EB6E7BC0040CE01 /* 법조윤리 */,
-				394E08451EBE70C0005A835D /* 변호사시험 민사 */,
+				394E08451EBE70C0005A835D /* 변호사시험 */,
 			);
 			name = TestData;
 			sourceTree = "<group>";

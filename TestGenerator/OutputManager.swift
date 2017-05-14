@@ -37,7 +37,7 @@ class OutputManager {
             testKey : String,
             //질문
             questionNumber : Int, questionContent : String, questionContentNote : String?,
-            questionPassage : String?, questionType : QuestionType, questionOX : QuestionOX,
+            questionPassage : String?, questionPassageSuffix : String?, questionType : QuestionType, questionOX : QuestionOX,
             //목록
             listsContents : [String], listsIscOrrect : [Bool?], listsNumberString : [String], origialListsNumberString : [String],
             //질문 Suffix
@@ -76,6 +76,10 @@ class OutputManager {
                 print("   "+st.spacing(3))
             }
             print()
+            if questionPassageSuffix != nil {
+                print("   "+questionPassageSuffix!.spacing(3))
+                print()
+            }
         }
 
         
@@ -99,7 +103,7 @@ class OutputManager {
         }
         
         if questionSuffix != nil {
-            print("  "+questionSuffix!.spacing(4))
+            print("  "+questionSuffix!.spacing(2))
             print()
         }
         
