@@ -19,7 +19,7 @@ class OutputManager {
     var url : URL? {
         let path : URL?
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            path = dir.appendingPathComponent("Test").appendingPathComponent("TestGeneratorStorage")
+            path = dir.appendingPathComponent("Test").appendingPathComponent("Storage")
         } else {
             path = nil
         }

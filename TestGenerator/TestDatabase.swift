@@ -14,6 +14,7 @@ class TestDatabase: DataStructure {
     
     var categories : [TestCategory] = []
     
+    
     override init(_ key: String = "Default") {
         super.init(key)
     }

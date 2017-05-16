@@ -11,16 +11,17 @@ import Foundation
 class QuestionShuffled {
     var showLog = true
     
+    
     let question : Question
     
-    var selections = [Selection]() //출력
-    var lists = [List]() //출력
+    var selections = [Selection]()
+    var lists = [List]()
     
     
     //공통, 초기화 단계에서 꼭 정답의 존재를 확인해야 함
-    var answerSelectionModifed : Selection  //출력
-    var isOXChanged = false  //출력
-    var isAnswerChanged = false  //출력
+    var answerSelectionModifed : Selection
+    var isOXChanged = false
+    var isAnswerChanged = false
     
     //Find유형 문제용
     var originalShuffleMap = [(original : List, shuffled : List)]()
@@ -59,12 +60,24 @@ class QuestionShuffled {
         }
         // 문제를 섞는 가장 중요한 함수
         switch question.questionType {
+            
         case .Find:
-            _ = changeFindTypeQuestion()
+            let result = changeFindTypeQuestion()
+            self.selections = result.selections
+            self.isOXChanged = result.isOXChanged
+            self.answerListSelectionModifed = result.answerListSelectionModifed
+            self.originalShuffleMap = result.originalShuffleMap
+            self.isAnswerChanged = result.isAnswerChanged
+            
         case .Select:
-            _ = changeSelectTypeQuestion()
+            let result = changeSelectTypeQuestion()
+            self.selections = result.selections
+            self.isOXChanged = result.isOXChanged
+            self.isAnswerChanged = result.isAnswerChanged
+            self.answerSelectionModifed = result.answerSelectionModifed
+            
         case .Unknown:
-            _ = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
+            self.selections = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
         if showLog {
             print("-\(question.key) 문제 변경성공")
@@ -72,12 +85,12 @@ class QuestionShuffled {
     }
     
     // 공통 변경사항
-    func changeCommonTypeQuestion() {
+    func changeCommonTypeQuestion() -> [Selection] {
         // 1. 선택지의 순서를 변경
-        selections.shuffle()
         if showLog {
             print("--1. 선택지 순서 변경함")
         }
+        return selections.shuffled()
     }
     
     // 문제를 논리에 맞게 변경하여 반환
@@ -187,9 +200,12 @@ class QuestionShuffled {
         }
     }
     
-    private func changeSelectTypeQuestion() {
+    private func changeSelectTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, isAnswerChanged : Bool, answerSelectionModifed : Selection) {
         
-        changeCommonTypeQuestion()
+        let selections = changeCommonTypeQuestion()
+        var isOXChanged = false
+        var isAnswerChanged = false
+        var answerSelectionModifed : Selection = self.answerSelectionModifed
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.contentControversal == nil ? false : true
@@ -232,13 +248,14 @@ class QuestionShuffled {
             //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
             //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
             guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
-                print("--\(question.key) 변형문제의 정답찾기 실패")
-                return
+//                print("--\(question.key) 변형문제의 정답찾기 실패")
+                fatalError("--\(question.key) 변형문제의 정답찾기 실패")
             }
            if showLog {
                 print("--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
             }
         }
+        return (selections, isOXChanged, isAnswerChanged, answerSelectionModifed)
     }
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
     func getAnswerNumber() -> Int {
@@ -250,9 +267,13 @@ class QuestionShuffled {
         return ansNumber
     }
     
-    private func changeFindTypeQuestion() {
+    private func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [List], originalShuffleMap : [(List, List)], isAnswerChanged : Bool){
         
-        changeCommonTypeQuestion()
+        let selections = changeCommonTypeQuestion()
+        var isOXChanged = false
+        var answerListSelectionModifed = [List]()
+        var originalShuffleMap = [(List, List)]()
+        var isAnswerChanged = false
         
         // 일단 FindCorrect 타입 질문이면 지문을 섞지 않음 향후 예도 정보를 읽어서 섞도록 하면 좋을 것 2017. 5. 12. (+)
         // 최종 업무가 되겠지~
@@ -262,9 +283,9 @@ class QuestionShuffled {
         case .X:
             _ = true
         case .Correct:
-            return
+            return (selections, isOXChanged, answerListSelectionModifed, originalShuffleMap, isAnswerChanged)
         case .Unknown:
-            return
+            return (selections, isOXChanged, answerListSelectionModifed, originalShuffleMap, isAnswerChanged)
         }
         
         lists.shuffle()
@@ -349,7 +370,9 @@ class QuestionShuffled {
             isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
             // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
+            
         }
+        return (selections, isOXChanged, answerListSelectionModifed, originalShuffleMap, isAnswerChanged)
     }
     
     // Find유형의 문제의 선택지를 출력하는 함수

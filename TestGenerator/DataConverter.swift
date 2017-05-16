@@ -473,6 +473,9 @@ class DataConverter: NSObject {
                     let contNotesRegexDB = ["\\(다툼이 있는 경우 판례에 의함\\)"
                                     , "\\(다툼이 있는 경우 헌법재판소 판례에 의함\\)"
                                     , "\\(다툼이 있는 경우에는 판례에 의함\\)"
+                                    , "\\(각 지문은 독립적이며, 다툼이 있는 경우 판례에 의함\\)"
+                                    , "\\(각 지문은 독립적이고, 다툼이 있는 경우에는 판례에 의함\\)"
+                                    , "\\(다툼이 있는 경우에는 판례에 의하고, 각 지문은 모두 독립적이다\\)"
                                     ]
                     for contNote in contNotesRegexDB {
                         let result = contentRaw.getElimatedText(contNote)
@@ -494,62 +497,90 @@ class DataConverter: NSObject {
                     // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
                     
                     // 여기서 newQuestion.content를 검토하는데 사실 raw데이터이다. 편리하기는하나 위험할 수 있다 위험점에 대허서 미리 생각해야 한다.
-                    if newQuestion.content.contains("옳은 것은?")
-                        || newQuestion.content.contains("판례의 입장과 부합하는 것은?")
-                        || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되는 것은?")
-                        || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하는는 것은?")
-                        || newQuestion.content.contains("물을 수 있는 것은?")
-                        || newQuestion.content.contains("형법이론상의 논점과 관련이 있는 것은?") {
-                        newQuestion.questionType = .Select
-                        newQuestion.questionOX = .O
-                    } else if newQuestion.content.contains("옳지 않은 것은?")
-                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것은?")
-                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되지 않는 것은?")
-                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하지 않는 것은?")
-                            || newQuestion.content.contains("물을 수 없는 것은?")
-                            || newQuestion.content.contains("형법이론상의 논점과 관련이 없는 것은?") {
-                        newQuestion.questionType = .Select
-                        newQuestion.questionOX = .X
-                    } else if newQuestion.content.contains("용어를 올바르게 나열한 것은?")
-                              || newQuestion.content.contains("바르게 연결된 것은?") {
-                        newQuestion.questionType = .Select
-                        newQuestion.questionOX = .Correct
-                    }
                     
-                    if newQuestion.questionType == .Find { // 위에 3에서 list가 존재했음을 의미
-                        if newQuestion.content.contains("옳은 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 입장과 부합하는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 입장에 부합하는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 태도와 부합하는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("허용되는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("되는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("되는 경우를 모두 고른 것은?")
-                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("사례를 모두 모아 놓은 것은?")
-                            || newQuestion.content.contains("인정할 수 있는 경우를 모두 고른 것은?")
-                            || newQuestion.content.contains("유죄를 인정할 수 있는 것을 모두 고른 것은?") {
-                            newQuestion.questionOX = .O
-                        } else if newQuestion.content.contains("옳지 않은 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 입장에 부합하지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("판례의 태도와 부합하지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("허용되지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("되지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("되지 않는 경우를 모두 고른 것은?")
-                            || newQuestion.content.contains("해당할 수 없는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("해당하지 않는 것을 모두 고른 것은?")
-                            || newQuestion.content.contains("사례가 아닌 것을 모두 모아 놓은 것은?")
-                            || newQuestion.content.contains("인정할 수 없는 경우를 모두 고른 것은?")
-                            || newQuestion.content.contains("유죄를 인정할 수 없는 것을 모두 고른 것은?") {
-                            newQuestion.questionOX = .X
-                        } else if newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 올바르게 조합한 것은?")
-                            || newQuestion.content.contains("옳은 것(o)과 옳지 않은 것(x)을 올바르게 조합한 것은?")
-                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(× )을 올바르게 조합한 것은?") {
-                            newQuestion.questionOX = .Correct
-                        }
-                    }
-                    log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
+                    
+                    
+//                    if newQuestion.questionType == .Find { // 위에 3에서 list가 존재했음을 의미
+//                        if newQuestion.content.contains("옳은 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 부합하는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 입장에 부합하는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 태도와 부합하는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("허용되는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("되는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("되는 경우를 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("사례를 모두 모아 놓은 것은?")
+//                            || newQuestion.content.contains("인정할 수 있는 경우를 모두 고른 것은?")
+//                            || newQuestion.content.contains("유죄를 인정할 수 있는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("대상이 될 수 있는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("인정되는 권리를 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당하는 자를 모두 고른 것은?") {
+//                            newQuestion.questionOX = .O
+//                        } else if newQuestion.content.contains("옳지 않은 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 입장에 부합하지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("판례의 태도와 부합하지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("허용되지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("되지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("되지 않는 경우를 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당할 수 없는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당하지 않는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("사례가 아닌 것을 모두 모아 놓은 것은?")
+//                            || newQuestion.content.contains("인정할 수 없는 경우를 모두 고른 것은?")
+//                            || newQuestion.content.contains("유죄를 인정할 수 없는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("적법하지 않은 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("대상이 될 수 있는 것을 모두 고른 것은?")
+//                            || newQuestion.content.contains("인정되지 않는 권리를 모두 고른 것은?")
+//                            || newQuestion.content.contains("해당하지 않는 자를 모두 고른 것은?") {
+//                            newQuestion.questionOX = .X
+//                        } else if newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 올바르게 조합한 것은?")
+//                            || newQuestion.content.contains("옳은 것(o)과 옳지 않은 것(x)을 올바르게 조합한 것은?")
+//                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(× )을 올바르게 조합한 것은?")
+//                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 바르게 고른 것은?")
+//                            || newQuestion.content.contains("인정되는 경우(○)와 부정되는 경우(×)를 올바르게 짝지은 것은?")
+//                            || newQuestion.content.contains("괄호 안에 들어갈 금액이 모두 옳게 조합된 것은?")
+//                            || newQuestion.content.contains("옳고 그름의 표시(○,× )가 옳게 조합된 것은?") {
+//                            newQuestion.questionOX = .Correct
+//                        }
+//                    } else {
+//                        if newQuestion.content.contains("옳은 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 부합하는 것은?")
+//                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되는 것은?")
+//                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하는는 것은?")
+//                            || newQuestion.content.contains("물을 수 있는 것은?")
+//                            || newQuestion.content.contains("형법이론상의 논점과 관련이 있는 것은?")
+//                            || newQuestion.content.contains("타당한 항변으로 볼 수 있는 것은?")
+//                            || newQuestion.content.contains("있는 자를 모두 고른 것은?")
+//                            || newQuestion.content.contains("허가를 받아야 하는 경우인 것은?")
+//                            || newQuestion.content.contains("인정되는 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 같은 것은?") {
+//                            newQuestion.questionType = .Select
+//                            newQuestion.questionOX = .O
+//                        } else if newQuestion.content.contains("옳지 않은 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것은?")
+//                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되지 않는 것은?")
+//                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하지 않는 것은?")
+//                            || newQuestion.content.contains("물을 수 없는 것은?")
+//                            || newQuestion.content.contains("형법이론상의 논점과 관련이 없는 것은?")
+//                            || newQuestion.content.contains("타당한 항변으로 볼 수 없는 것은?")
+//                            || newQuestion.content.contains("없는 자를 모두 고른 것은?")
+//                            || newQuestion.content.contains("허가를 받아야 하는 경우가 아닌 것은?")
+//                            || newQuestion.content.contains("인정되지 않는 것은?")
+//                            || newQuestion.content.contains("판례의 입장과 다른 것은?") {
+//                            newQuestion.questionType = .Select
+//                            newQuestion.questionOX = .X
+//                        } else if newQuestion.content.contains("용어를 올바르게 나열한 것은?")
+//                            || newQuestion.content.contains("바르게 연결된 것은?")
+//                            || newQuestion.content.contains("각 얼마를 지급하여야 하는가?")
+//                            || newQuestion.content.contains("만료된 날짜는 언제인가?")
+//                            || newQuestion.content.contains("생략할 수 있는 절차는?")
+//                            || newQuestion.content.contains("우선적으로 배당받을 금액은?")
+//                            || newQuestion.content.contains("될 수 있는 것은?") {
+//                            newQuestion.questionType = .Select
+//                            newQuestion.questionOX = .Correct
+//                        }
+//                    }
                     
                     
                     
@@ -564,8 +595,43 @@ class DataConverter: NSObject {
                     }
                     
                     
+                    let questionContentPairs = DataConverterData().questionContentPair
+                    
+                    for qPair in questionContentPairs {
+                        
+                        if newQuestion.content.contains(qPair.content) {
+                            
+                            newQuestion.questionType = qPair.type
+                            newQuestion.questionOX = qPair.OX
+                            
+                            if newQuestion.questionOX != .Correct {
+                                guard let qPairContCont = qPair.contentControversal else {
+                                    fatalError("질문지 페어의 맞는 상대편이 없음")
+                                }
+                                newQuestion.contentControversal = newQuestion.content.replacingOccurrences(of: qPair.content, with: qPairContCont)
+                            }
+                        }
+                        
+                        if let conControversal = qPair.contentControversal {
+                            
+                            if newQuestion.content.contains(conControversal) {
+                                
+                                newQuestion.questionType = qPair.type
+                                newQuestion.questionOX = .X
+                                
+                                newQuestion.contentControversal = newQuestion.content.replacingOccurrences(of: conControversal, with: qPair.content)
+                                
+                            }
+                        }
+                    }
+                    log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
+                    
+                    
+                    
+                    
                     // 질문 로깅
-                    log = writeLog(log, funcName: "\(#function)", outPut: " \""+newQuestion.content+"\"")
+                    log = writeLog(log, funcName: "\(#function)", outPut: " 질문 : \""+newQuestion.content+"\"")
+                    log = writeLog(log, funcName: "\(#function)", outPut: " 반전 : \""+(newQuestion.contentControversal != nil ? newQuestion.contentControversal! : "없음")+"\"")
                     
                     testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
                     // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
@@ -746,14 +812,15 @@ class DataConverter: NSObject {
     // pattern - testString - Patter - String 순
     // pattern에서 나오는 첫번째 숫자가 시험의 번호가 됨
     
-    func sliceString(regexPattern : String, string : String) -> [String : String] {
+    // 2017. 5. 15. 이후 사용안함
+    func sliceString_oldversion(regexPattern : String, string : String) -> [String : String] {
         _headerAndResidualStrings = [:]  // 전역변수이므로 초기화가 매우 중요, 리컬시브 함수에서 파라미터를 포인터로 전달하는 방법은 없을까? 예가 구조체라서 불가능할려나 2017. 5. 7.
-        return _sliceString(regexPattern : regexPattern, residualString : string, headerUn : nil)
+        return _sliceString_oldversion(regexPattern : regexPattern, residualString : string, headerUn : nil)
     }
     
 
     
-    private func _sliceString(regexPattern : String, residualString : String, headerUn : String?) -> [String : String] {
+    private func _sliceString_oldversion(regexPattern : String, residualString : String, headerUn : String?) -> [String : String] {
         let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
         // 패턴을 못찾았을 경우 else구문 실행하여 종료
         // 1. 패턴이 없는데 첫번째 루프 -> 치명적 에러
@@ -797,12 +864,49 @@ class DataConverter: NSObject {
         _header = _residualString.substring(with: headerRange) // 이는 절대로 nil이 될 수 없다. 왜냐하면 위에서 이미 headerRange을 체크하였기 때문이다. headerRange가 nil이 아니라는 것은 _residualString에 결과가 있다는 의미이다
         _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
         
-        return _sliceString(regexPattern: regexPattern, residualString: _residualString, headerUn: _header)
+        return _sliceString_oldversion(regexPattern: regexPattern, residualString: _residualString, headerUn: _header)
     }
     
 
+    // ^를 레겍스로 사용하기 위해선 혁명적 변화가 필요하다. 기존 String.range( 에서 NSRange(로 추출방법을 변경하였다. 2017. 5. 15.
+    // 이는 결국 String.range(를 이용해 추출하는 sliceString함수 대신에 아래 새로짠 함수로 진행해야 함을 의미한다, 수정한 결과 잘 작동한다.
     
+    // NSRegularExpression의 .anchorsMatchLines 옵션을 이용해서 ^표현을 사용하게 해준다.
+    // 새로운 sliceString함수 2017. 5. 15.
+    func sliceString(regexPattern : String, string : String) -> [String : String] {
+        var listsDictionary = [String : String]()  // 만들어낼 대상
+        
+        // https://code.tutsplus.com/tutorials/swift-and-regular-expressions-swift--cms-26626
+        // Swift and Regular Expressions: Swift
+        let regex = try! NSRegularExpression(pattern: regexPattern, options: .anchorsMatchLines) // .anchorsMatchLines 옵션사용
+        let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: string.characters.count))
+        
+        var previousMatch : NSTextCheckingResult? = nil  // 버퍼
+        
+        for (index,match) in matches.enumerated() {
+            
+            if previousMatch != nil {
+                let range = NSRange(location: previousMatch!.range.location+previousMatch!.range.length, length: (match.range.location-(previousMatch!.range.location+previousMatch!.range.length)))
+                let seperator = (string as NSString).substring(with: previousMatch!.range)
+                let residual = (string as NSString).substring(with: range)
+                listsDictionary[seperator] = residual
+            }
+            
+            if index == matches.count - 1 {
+                let range = NSRange(location: match.range.location+match.range.length, length: (string.characters.count - (match.range.location+match.range.length)))
+                let seperator = (string as NSString).substring(with: match.range)
+                let residual = (string as NSString).substring(with: range)
+                listsDictionary[seperator] = residual
+            } else {
+                
+                previousMatch = match
+                
+            }
+        }
+        return listsDictionary
+    }
     
+
     
     
     
@@ -968,12 +1072,17 @@ class DataConverter: NSObject {
             case .koreanCharcter:
                 regex = "ㄱ\\.|ㄴ\\.|ㄷ\\.|ㄹ\\.|ㅁ\\.|ㅂ\\.|ㅅ\\.|ㅇ\\.|ㅈ\\.|ㅊ\\.|ㅋ\\.|ㅌ\\.|ㅍ\\.|ㅎ\\."
             case .koreanLetter:
-                regex = "가\\.|나\\.|다\\.|라\\.|마\\.|바\\.|사\\.|아\\.|자\\.|차\\.|카\\.|타\\.|파\\.|하\\."
+                regex = "^가\\.|^나\\.|^다\\.|^라\\.|^마\\.|^바\\.|^사\\.|^아\\.|^자\\.|^차\\.|^카\\.|^타\\.|^파\\.|^하\\."
+                // ^ 표시가 없으면 문장의 ~한다.에 있는 다.를 다 읽어버리는 문제가 있을 것이어서 수정 2017. 5. 15.
             }
             
         
             rawLists = listString!.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            
             let listsDictionary = sliceString(regexPattern: regex, string: rawLists)
+            
+            
             
             for listDictionary in listsDictionary {
                 
@@ -981,13 +1090,14 @@ class DataConverter: NSObject {
                 newList.specification = ""
                 newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
                 newList.contentControversal = nil
-                newList.listStringType = .koreanCharcter  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
+                newList.listStringType = listType!  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
+                // 또 잘못되있었음 2017. 5. 15. 아주 그냥 상습범임
                 newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt
                 
                 lists.append(newList)
             }
         }
-            
+        
         return (rawLists, lists)
     }
     

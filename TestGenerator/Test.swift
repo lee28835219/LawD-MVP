@@ -77,24 +77,44 @@ extension Test {
         var questionArray = [Any]()
         for question in self.questions {
             var testSubject__test__question_attribute = [String : Any]()
+            
+            // DataStructure
             testSubject__test__question_attribute["specification"] = question.specification
             testSubject__test__question_attribute["modifiedDate"] = question.modifiedDate.jsonFormat
             testSubject__test__question_attribute["tags"] = question.tags
+            
+            
+            
+            // Question 시작
+            // 문제에 관한 항목
             testSubject__test__question_attribute["number"] = question.number
             testSubject__test__question_attribute["subjectDetails"] = question.subjectDetails
+            
             testSubject__test__question_attribute["questionType"] = question.questionType.rawValue
             testSubject__test__question_attribute["questionOX"] = question.questionOX.rawValue
+            
+            // 질문에 관한 항목
+            testSubject__test__question_attribute["contentPrefix"] = question.contentPrefix
+            
             testSubject__test__question_attribute["content"] = question.content
             testSubject__test__question_attribute["contentControversal"] = question.contentControversal
-            testSubject__test__question_attribute["contentPrefix"] = question.contentPrefix
             testSubject__test__question_attribute["contentNote"] = question.contentNote
+            
+            // 지문에 관한 항목
             testSubject__test__question_attribute["passage"] = question.passage
             testSubject__test__question_attribute["passageSuffix"] = question.passageSuffix
+            
+            // 질문말미에 관한 항목
             testSubject__test__question_attribute["questionSuffix"] = question.questionSuffix
+            
+            
+            // 정답
             testSubject__test__question_attribute["answer"] = question.answer
-            testSubject__test__question_attribute["raw"] = question.raw
-            testSubject__test__question_attribute["rawSelections"] = question.rawSelections
-            testSubject__test__question_attribute["rawLists"] = question.rawLists
+            // 문제종료
+            
+            
+            
+            
             var selectionArray = [Any]()
             for selection in question.selections {
                 var testSubject__test__question__selection_attribute = [String : Any]()

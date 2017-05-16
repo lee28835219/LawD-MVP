@@ -31,15 +31,17 @@ class InputManager {
         , "savet" : "savet"
         , "saveall" : "saveall"
         , "selta" : "selta"
-        , "selt" : "selt"
-        , "selqa" : "selqa"
-        , "selq" : "selq"
-        , "shufflet" : "shufflet"
-        , "shuffleq" : "shuffleq"
+        , "~~출력명령어" : "-"
+        , "selt" : "시험"
+        , "selqa" : "문제(정답포함)"
+        , "selq" : "문제"
+        , "~~문제변경" : "-"
+        , "shuffles" : "과목"
+        , "shufflet" : "시험"
+        , "shuffleq" : "문제"
     ]
                 
     func execute(_ input : String) -> Bool? {
-        
         
         
         if input.caseInsensitiveCompare("h") == ComparisonResult.orderedSame || input == "ㅗ" {
@@ -56,6 +58,8 @@ class InputManager {
         if input == "" {
             return nil
         }
+        
+        
         
         if input.caseInsensitiveCompare("exit") == ComparisonResult.orderedSame || input == "ㄷㅌㅑㅅ" {
             return true
@@ -244,6 +248,31 @@ class InputManager {
             return true
         }
         
+        if input.caseInsensitiveCompare("shuffles") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㄴ" {
+            let selectedSubject = selectTestSubject(selectTestCategory(testDatabase))
+            
+            guard let selectedSubjectWrapped = selectedSubject else {
+                print("선택한 과목을 찾을 수 없었음")
+                return false
+            }
+            
+            var selectedQuestions = [Question]()
+            
+            for test in selectedSubjectWrapped.tests {
+                selectedQuestions.append(contentsOf: test.questions)
+            }
+            
+            if selectedQuestions.count == 0 {
+                print(">\(selectedSubjectWrapped.key)에 문제가 하나도 없음")
+                return false
+            }
+            
+            solveShuffledQuestions(selectedQuestions.shuffled())
+            
+            return true
+        }
+        
+        
         
         // 시험을 선택하여 문제당 5개의 변형문제를 진행
         if input.caseInsensitiveCompare("shufflet") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㅅ" {
@@ -254,26 +283,18 @@ class InputManager {
                 return false
             }
             
-            let selectedQuestions = selectedTestWrapped.questions
+            let selectedQuestions = selectedTestWrapped.questions.shuffled()
             
             if selectedQuestions.count == 0 {
                 print(">\(selectedTestWrapped.key)에 문제가 하나도 없음")
                 return false
             }
             
-            for que in selectedQuestions {
-                que.publish(showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
-                print()
-                print("[변형]" + que.key)
-                for _ in 1...1 {
-                    if !solveShuffledQuestion(question: que) {
-                        return false
-                    }
-                }
-            }
+            let wrongQuestion = solveShuffledQuestions(selectedQuestions.shuffled())
+            
             return true
         }
-        
+
         // 문제를 선택하여 10개의 변형문제를 진행
         if input.caseInsensitiveCompare("shuffleq") ==  ComparisonResult.orderedSame  || input == "ㄴㅗㅕㄹㄹㅣㄷㅂ" {
             
@@ -283,8 +304,10 @@ class InputManager {
             guard let selectedQuestionWrapped = selectedQuestion else { return false }
             
             selectedQuestionWrapped.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-            for _ in 1...1 {
-                if !solveShuffledQuestion(question: selectedQuestionWrapped) {
+            
+            for _ in 1...5 {
+                let result = solveShuffledQuestion(question: selectedQuestionWrapped)
+                if !result.isShuffled {
                     return false
                 }
             }
@@ -295,17 +318,47 @@ class InputManager {
     }
     
     
+    func solveShuffledQuestions(_ questions : [Question]) -> [Question] {
+        var wrongQuestions = [Question]()
+        
+        for (index,que) in questions.enumerated() {
+            print("(\(index) / \(questions.count))")
+            let result = solveShuffledQuestion(question: que)
+            if !result.isShuffled {
+                continue
+            }
+            if !result.isRight {
+                wrongQuestions.append(que)
+            }
+        }
+        if wrongQuestions.count == 0 {
+            print(">총 \(questions.count) 문제 모두 맞춤-종료(),문제수정(m) $ ", terminator: "")
+        } else {
+            print(">총 \(questions.count) 문제 중 \(questions.count - wrongQuestions.count) 개 맞춤-종료(),다시풀기(r),틀린문제만 다시풀기(w) $ ", terminator: "")
+        }
+        let input = readLine()
+        if input == "r" || input == "ㄱ" {
+            wrongQuestions = solveShuffledQuestions(questions)
+        }
+        if (input == "w" && wrongQuestions.count != 0) || (input == "ㅈ" && wrongQuestions.count != 0){
+            wrongQuestions = solveShuffledQuestions(wrongQuestions)
+        }
+        return wrongQuestions
+    }
+
+    
     // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
     // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
     // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
-    private func solveShuffledQuestion(question : Question) -> Bool {
+    private func solveShuffledQuestion(question : Question) -> (isShuffled : Bool, isRight : Bool, questionShuffled : QuestionShuffled?) {
+        var isRight = false
         var quetionShuffled : QuestionShuffled?
         
         quetionShuffled = QuestionShuffled(question: question, showLog: false)
         
         guard let qShuWrapped = quetionShuffled else {
             print("\(question.key) 문제는 변형할 수 없음")
-            return false
+            return (false, isRight, quetionShuffled)
         }
         
         QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
@@ -314,13 +367,14 @@ class InputManager {
         input = getInput()
         if Int(input) == (quetionShuffled?.getAnswerNumber())! + 1 {
             print("정답!", terminator: "")
+            isRight = true
         } else {
             //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
             print("오답임...정답은")
             print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
             print("확인??", terminator: "")
         }
-        print("-계속(),노트(n),태그(t),중단(s) $ ", terminator: "")
+        print("-계속(),노트(n),태그(t),문제수정(m),중단(s) $ ", terminator: "")
         input = getInput()
         if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
             print("노트를 입력하세요>", terminator: "")
@@ -328,11 +382,18 @@ class InputManager {
         } else if input.caseInsensitiveCompare("t") == ComparisonResult.orderedSame || input == "t" {
             print("태그를 입력하세요>", terminator: "")
             // 데이터 추가 필요 2017. 5. 6. (+)
+        } else if input.caseInsensitiveCompare("m") == ComparisonResult.orderedSame || input == "ㅡ" {
+            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+            print()
+            print("<반전된 문제>")
+            question.controversalPublish()
+            print()
+            modify(question)
         } else if input.caseInsensitiveCompare("s") == ComparisonResult.orderedSame || input == "ㄴ" {
             print(question.key, "문제 변형을 중단함")
-            return false
+            return (true, isRight, quetionShuffled)
         }
-        return true
+        return (true, isRight, quetionShuffled)
     }
     
     func selectTestCategory(_ database : TestDatabase) -> TestCategory? {
@@ -584,6 +645,180 @@ class InputManager {
             
             goon = false
             return input
+        }
+    }
+    
+    func modify(_ question: Question) {
+        
+        print("수정할 문제의 항목을 선택-질문형식(0),질문(1X),목록(2X),선택지(3X),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
+        let input = getInput()
+        
+        switch input {
+        case "end" :
+            _ = true
+        case "show" :
+            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+            print()
+            print("<반전된 문제>")
+            question.controversalPublish()
+            modify(question)
+        case "1" :
+            print(" 현재 질문(Content) :")
+            print("\(question.content) (\(question.questionType)\(question.questionOX))")
+            print(" 현재 질문반대사항(Content Controversal) :")
+            print(question.contentControversal != nil ? "\(question.contentControversal!) (\(question.questionType)\(question.questionOX))" : "없음")
+            print(" 신규 질문반대사항(Content Controversal) $ ", terminator:"")
+            let inp = getInput()
+            
+            if inp == "" {
+                print(">아무것도 입력된 것이 없어 질문 반대사항 입력불가")
+            } else {
+                question.contentControversal = inp
+                print(">질문의 반대사항 입력완료 : \(question.contentControversal!)")
+            }
+        case "11" :
+            print(" 현재 질문(Content) :")
+            print(question.content)
+            print(" 현재 질문반대사항(Content Controversal) :")
+            print(question.contentControversal != nil ? question.contentControversal! : "없음")
+            print(" 신규 질문(Content) $ ")
+            let inp = getInput()
+            
+            if inp == "" {
+                print(">아무것도 입력된 것이 없어 질문 반대사항 입력불가")
+            } else {
+                question.content = inp
+                print(">질문의 반대사항 입력완료 : \(question.content)")
+            }
+            
+        case "2" :
+            if question.lists.count == 0 {
+                print(">목록이 존재하지 않음")
+                modify(question)
+            }
+            
+            for list in question.lists {
+                print(" \(list.getListString()) 현재 목록지(Content) :")
+                print(list.content)
+                print(" \(list.getListString()) 현재 목록지 반대사항(Content Controversal) :")
+                print(list.contentControversal != nil ? list.contentControversal! : "없음")
+                print(" 신규 목록지 반대사항(Content Controversal) $ ")
+                let inp = getInput()
+                
+                if inp == "" {
+                    print(">아무것도 입력된 것이 없어 목록 반대사항 입력불가")
+                } else {
+                    list.contentControversal = inp
+                    print("> \(list.getListString()) 목록지의 반대사항 입력완료 : \(list.contentControversal!)")
+                }
+            }
+        
+        case "3" :
+            
+            for sel in question.selections {
+                print(" \(sel.number.roundInt) 현재 선택지(Content) :")
+                print(sel.content)
+                print(" \(sel.number.roundInt) 현재 선택 반대사항(Content Controversal) :")
+                print(sel.contentControversal != nil ? sel.contentControversal! : "없음")
+                print(" 신규 선택지 반대사항(Content Controversal) $ ")
+                let inp = getInput()
+                
+                if inp == "" {
+                    print(">아무것도 입력된 것이 없어 선택지 반대사항 입력불가")
+                } else {
+                    sel.contentControversal = inp
+                    print("> \(sel.number.roundInt) 선택지의 반대사항 입력완료 : \(sel.contentControversal!)")
+                }
+            }
+        case "4" :
+            print()
+            if question.lists.count != 0 {
+                
+                print("> 목록 \(question.lists.count)개 수정을 진행")
+                for list in question.lists {
+                    
+                    print("-. 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+                    print()
+                    print("-. 목록지 : \(list.getListString()).")
+                    print(list.content)
+                    print()
+                    print("-. 반대목록지 :  \(list.getListString()).")
+                    print(list.contentControversal != nil ? list.contentControversal! : "없음")
+                    print()
+                    
+                    print("-. 반대목록지 입력 $ ")
+                    let inp = getInput()
+                    if inp == "" {
+                        print("> 아무것도 입력된 것이 없어 반대목록지 변경없음")
+                    } else {
+                        list.contentControversal = inp
+                        print("> 반대목록지 입력완료 : \(list.getListString()). \(list.contentControversal!)")
+                    }
+                    print()
+                }
+            }
+            
+            print("> 선택지 \(question.selections.count)개 수정을 진행")
+            
+            for sel in question.selections {
+                
+                
+                print("-. 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+                print()
+                print("-. 선택지 : \(sel.number.roundInt)")
+                print("\(sel.content) (\(sel.iscOrrect != nil ? sel.iscOrrect!.description : "없음"))")
+                print()
+                print("-. 반대선택지 : \(sel.number.roundInt)")
+                print(sel.contentControversal != nil ? sel.contentControversal! : "없음")
+                print()
+                
+                print("-. 반대선택지 입력 $ ")
+                let inp = getInput()
+                if inp == "" {
+                    print("> 아무것도 입력된 것이 없어 반대선택지 변경없음")
+                } else {
+                    sel.contentControversal = inp
+                    print("> 반대목록지 입력완료 : \(sel.number.roundInt). \(sel.contentControversal!)")
+                }
+                print()
+            }
+
+
+        default:
+            modify(question)
+            return
+        }
+        
+        var goon = true
+        while goon {
+            print("<반전된 문제> - 변경됨")
+            question.controversalPublish()
+            
+            print("변경사항을 저장?()-저장 후 계속(m),종료(e) $ ", terminator: "")
+            
+            guard let input = readLine() else {
+                print("유효하지 않은 입력")
+                continue
+            }
+            
+            if input == "e" || input == "ㄷ" {
+                
+                print(">"+question.key+" 저장하지 않음")
+                return
+                
+            } else if input == "m" || input == "ㅡ" {
+                
+                print(">"+question.key+" 저장완료")
+                _ = outputManager.saveTest(question.test)
+                modify(question)
+                return
+            }
+            
+            print(">"+question.key+" 저장완료")
+            _ = outputManager.saveTest(question.test)
+            
+            print("")
+            goon = false
         }
     }
 }

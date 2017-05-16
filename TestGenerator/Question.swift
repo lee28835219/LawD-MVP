@@ -15,21 +15,25 @@ class Question : DataStructure, Publishable {
 ////나의 속성은 무었인지
     
     // (+) 질문의공통db, 추후 enum 등으로 변경 2017. 4. 29. => json으로 변환을 생각한다면 기본데이터형으로 놔두는게 오히려 더 편리함
+    // 문제에 관한 항목
     var number : Int //문제번호, 원본
     var subjectDetails = [String]() //민법, 원본
     
     var questionType : QuestionType //원본
     var questionOX : QuestionOX //원본
     
+    // 질문에 관한 항목
     var contentPrefix : String?
     
     var content: String //원본
     var contentControversal : String? //원본
     var contentNote: String? //원본
     
+    // 지문에 관한 항목
     var passage : String?
     var passageSuffix : String?
     
+    // 지문에 관한 항목
     var questionSuffix : String?
     
     //꼭 필요, 선택지 입력 시 문제의 논리와 정답을 이용해서 선택지의 T/F를 모두 자동으로 계산할 수 있음
@@ -262,6 +266,105 @@ extension Question {
             
             ansSelContent: answerSelection?.content,  // 셔플하면 변경
             ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
+            questionAnswer: answer,  // 셔플하면 변경
+            originalAnsSelectionNumber: answerSelection!.number.roundInt
+            )
+        }
+    
+
+    func controversalPublish() {
+        let oManager = OutputManager()
+        oManager.showAnswer = true
+        oManager.showTitle = false
+        oManager.showAttribute = true
+        oManager.showOrigSel = false
+        
+        var selectionsContentControversal = [String]()
+        var selsIscOrrectControversal = [Bool?]()
+        var selsIsAnswer = [Bool?]()
+        var originalSelectionsNumber = [String]()
+        
+        for sel in selections {
+            selectionsContentControversal.append(sel.contentControversal != nil ? sel.contentControversal! : "없음")
+            var selIscOrrectControversal : Bool? = nil
+            switch sel.iscOrrect {
+            case nil:
+                selIscOrrectControversal = nil
+            case .some(true):
+                selIscOrrectControversal = false
+            case .some(false):
+                selIscOrrectControversal = true
+            }
+            selsIscOrrectControversal.append(selIscOrrectControversal)
+            selsIsAnswer.append(sel.isAnswer)
+            originalSelectionsNumber.append(sel.number.roundInt)
+        }
+        
+        var listSelectionsContentControversal = [String]()
+        var listSelsIscOrrectControversal = [Bool?]()
+        var listSelsIntString = [String]()
+        var origialListsNumberString = [String]()
+        
+        for (index,list) in lists.enumerated() {
+            listSelectionsContentControversal.append(list.contentControversal != nil ? list.contentControversal! : "없음")
+            var listIscOrrectControversal : Bool? = nil
+            switch list.iscOrrect {
+            case nil:
+                listIscOrrectControversal = nil
+            case .some(true):
+                listIscOrrectControversal = false
+            case .some(false):
+                listIscOrrectControversal = true
+            }
+            listSelsIscOrrectControversal.append(listIscOrrectControversal)
+            listSelsIntString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
+        }
+    
+        var answerIscOrrect : Bool? = nil
+        switch answerSelection?.iscOrrect {
+        case nil:
+            answerIscOrrect = nil
+        case .some(true):
+            answerIscOrrect = false
+        case .some(false):
+            answerIscOrrect = true
+        }
+        
+        oManager.questionPublish(
+            //            testCategroy: test.testSubject.testCategory.category,
+            //            testCategoryHelper : test.testSubject.testCategory.catHelper,
+            //            testSubject: test.testSubject.subject,
+            isPublished: test.isPublished,
+            
+            //            testNumber: test.number,
+            testKey: test.key,
+            
+            questionNumber: number,
+            
+            questionContent: contentControversal != nil ? contentControversal! : "없음",  // 셔플하면 변경
+            questionContentNote: contentNote,
+            questionPassage: passage,
+            questionPassageSuffix: passageSuffix,
+            
+            questionType: questionType,
+            questionOX: questionOX,   // 셔플하면 변경
+            
+            listsContents : listSelectionsContentControversal,
+            listsIscOrrect : listSelsIscOrrectControversal,
+            listsNumberString : listSelsIntString,
+            origialListsNumberString : origialListsNumberString,
+            
+            questionSuffix: questionSuffix,
+            
+            selectionsContent : selectionsContentControversal,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrectControversal,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber,
+            
+            ansSelContent: answerSelection?.contentControversal != nil ? answerSelection?.contentControversal : "없음",  // 셔플하면 변경
+            ansSelIscOrrect: answerIscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
             questionAnswer: answer,  // 셔플하면 변경
             originalAnsSelectionNumber: answerSelection!.number.roundInt
