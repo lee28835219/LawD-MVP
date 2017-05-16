@@ -97,7 +97,7 @@ extension Test {
             testSubject__test__question_attribute["contentPrefix"] = question.contentPrefix
             
             testSubject__test__question_attribute["content"] = question.content
-            testSubject__test__question_attribute["contentControversal"] = question.contentControversal
+            testSubject__test__question_attribute["notContent"] = question.notContent
             testSubject__test__question_attribute["contentNote"] = question.contentNote
             
             // 지문에 관한 항목
@@ -122,7 +122,7 @@ extension Test {
                 testSubject__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.jsonFormat
                 testSubject__test__question__selection_attribute["tags"] = selection.tags
                 testSubject__test__question__selection_attribute["content"] = selection.content
-                testSubject__test__question__selection_attribute["contentControversal"] = selection.contentControversal
+                testSubject__test__question__selection_attribute["notContent"] = selection.notContent
                 testSubject__test__question__selection_attribute["iscOrrect"] = selection.iscOrrect
                 testSubject__test__question__selection_attribute["isAnswer"] = selection.isAnswer
                 testSubject__test__question__selection_attribute["number"] = selection.number
@@ -139,7 +139,7 @@ extension Test {
                 testSubject__test__question__list_attribute["modifiedDate"] = list.modifiedDate.jsonFormat
                 testSubject__test__question__list_attribute["tags"] = list.tags
                 testSubject__test__question__list_attribute["content"] = list.content
-                testSubject__test__question__list_attribute["contentControversal"] = list.contentControversal
+                testSubject__test__question__list_attribute["notContent"] = list.notContent
                 testSubject__test__question__list_attribute["iscOrrect"] = list.iscOrrect
                 testSubject__test__question__list_attribute["isAnswer"] = list.isAnswer
                 testSubject__test__question__list_attribute["number"] = list.number

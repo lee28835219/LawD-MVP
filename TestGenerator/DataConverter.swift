@@ -15,7 +15,7 @@ import Foundation
 //http://stackoverflow.com/questions/24097826/read-and-write-data-from-text-file
 class DataConverter: NSObject {
     var log : String
-    var printLog = true
+    var printLog = false
     
     var testDatabase : TestDatabase
     var testCategories : [Templet.TestCategory] = []
@@ -27,7 +27,7 @@ class DataConverter: NSObject {
     
     var directory : String?
     
-    private var _headerAndResidualStrings : [String : String] = [:]
+//    private var _headerAndResidualStrings : [String : String] = [:]
     
     
     
@@ -288,7 +288,7 @@ class DataConverter: NSObject {
                                                        questionOX: QuestionOX.Unknown,   // 6. 질문 그리고 입력값은 Default로 의미를 가짐
                                                        contentPrefix: nil, // ==> 아직구현되지 않음
                                                        content: contentRaw,   // 6. 질문
-                                                       contentControversal: nil, // 6. 질문
+                                                       notContent: nil, // 6. 질문
                                                        contentNote: nil, // 5. 질문부가사항
                                                        questionSuffix: nil, // 5. 질문부가사항
                                                        passage: nil,  // 1. 지문
@@ -389,7 +389,7 @@ class DataConverter: NSObject {
                         
                         var newSelection = Templet.Selection()
                         newSelection.content = selection.value.trimmingCharacters(in: .whitespacesAndNewlines)
-                        newSelection.contentControversal = nil
+                        newSelection.notContent = nil
                         newSelection.number = selection.key.roundInt
                         
                         newQuestion.selections.append(newSelection)
@@ -597,6 +597,8 @@ class DataConverter: NSObject {
                     
                     let questionContentPairs = DataConverterData().questionContentPair
                     
+                    
+                    // 문제의논리에 매우 중요한 함수이므로 오류가 없는지 다시 확인
                     for qPair in questionContentPairs {
                         
                         if newQuestion.content.contains(qPair.content) {
@@ -605,25 +607,32 @@ class DataConverter: NSObject {
                             newQuestion.questionOX = qPair.OX
                             
                             if newQuestion.questionOX != .Correct {
-                                guard let qPairContCont = qPair.contentControversal else {
+                                guard let qPairContCont = qPair.notContent else {
                                     fatalError("질문지 페어의 맞는 상대편이 없음")
                                 }
-                                newQuestion.contentControversal = newQuestion.content.replacingOccurrences(of: qPair.content, with: qPairContCont)
+                                newQuestion.notContent = newQuestion.content.replacingOccurrences(of: qPair.content, with: qPairContCont)
                             }
                         }
                         
-                        if let conControversal = qPair.contentControversal {
+                        if let conControversal = qPair.notContent {
                             
                             if newQuestion.content.contains(conControversal) {
                                 
                                 newQuestion.questionType = qPair.type
                                 newQuestion.questionOX = .X
                                 
-                                newQuestion.contentControversal = newQuestion.content.replacingOccurrences(of: conControversal, with: qPair.content)
+                                newQuestion.notContent = newQuestion.content.replacingOccurrences(of: conControversal, with: qPair.content)
                                 
                             }
                         }
                     }
+                    // Find타입은 목록을 반전하지 선택지를 반전하지 않으므로(맞나?) 반전지문이 원래지문과 동일
+                    if newQuestion.questionType == .Find {
+                        for (index,sel) in newQuestion.selections.enumerated() {
+                            newQuestion.selections[index].notContent = sel.content
+                        }
+                    }
+                    
                     log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
                     
                     
@@ -631,7 +640,7 @@ class DataConverter: NSObject {
                     
                     // 질문 로깅
                     log = writeLog(log, funcName: "\(#function)", outPut: " 질문 : \""+newQuestion.content+"\"")
-                    log = writeLog(log, funcName: "\(#function)", outPut: " 반전 : \""+(newQuestion.contentControversal != nil ? newQuestion.contentControversal! : "없음")+"\"")
+                    log = writeLog(log, funcName: "\(#function)", outPut: " 반전 : \""+(newQuestion.notContent != nil ? newQuestion.notContent! : "없음")+"\"")
                     
                     testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
                     // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
@@ -718,6 +727,8 @@ class DataConverter: NSObject {
                         queCounter = queCounter + 1
                         
                         newQuestion.contentPrefix = question.contentPrefix
+                        
+                        newQuestion.notContent = question.notContent
                         newQuestion.contentNote = question.contentNote
                         newQuestion.questionSuffix = question.questionSuffix
                         newQuestion.passage =  question.passage
@@ -732,7 +743,7 @@ class DataConverter: NSObject {
                         
                         for selection in question.selections {
                             let newSelection = Selection(question: newQuestion, number: selection.number, content: selection.content)
-                            newSelection.contentControversal = selection.contentControversal
+                            newSelection.notContent = selection.notContent
                             newSelection.specification = selection.specification
                             selCounter = selCounter + 1
                         }
@@ -747,7 +758,7 @@ class DataConverter: NSObject {
                             }
                             
                             let newList = List(question: newQuestion, content: list.content, selectString: listCharacter)
-                            newList.contentControversal = list.contentControversal
+                            newList.notContent = list.notContent
                             newList.specification = list.specification
                             listCounter = listCounter + 1
                         }
@@ -812,60 +823,60 @@ class DataConverter: NSObject {
     // pattern - testString - Patter - String 순
     // pattern에서 나오는 첫번째 숫자가 시험의 번호가 됨
     
-    // 2017. 5. 15. 이후 사용안함
-    func sliceString_oldversion(regexPattern : String, string : String) -> [String : String] {
-        _headerAndResidualStrings = [:]  // 전역변수이므로 초기화가 매우 중요, 리컬시브 함수에서 파라미터를 포인터로 전달하는 방법은 없을까? 예가 구조체라서 불가능할려나 2017. 5. 7.
-        return _sliceString_oldversion(regexPattern : regexPattern, residualString : string, headerUn : nil)
-    }
-    
-
-    
-    private func _sliceString_oldversion(regexPattern : String, residualString : String, headerUn : String?) -> [String : String] {
-        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
-        // 패턴을 못찾았을 경우 else구문 실행하여 종료
-        // 1. 패턴이 없는데 첫번째 루프 -> 치명적 에러
-        // 2. 패턴이 없는데 첫번째 루프가 아님 -> 파싱이 완료될 때가 되었음
-        guard let headerRange = headerRangeUn else
-        {
-            // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
-            guard let header = headerUn else {
-                fatalError("\(regexPattern)에 맞지 않는 이상한 텍스트를 파싱하려니 진행할 수 없음\n")
-            }
-            // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
-            //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
-            
-            //// newTest 초기화에 대해서 고민해봐야 함 (-) 2017. 5. 5.
-            // let testString = residualString
-            // let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
-            // newTest.specification = testHeader
-            // newTest.raw = testString
-            // 시험들.append(newTest)
-            //// newTest를 이 함수 안에서 초기화 하는 것 보다는 밖에서 나가서 할 수 있도록 수정, 이를 위해 Templet이라는 구조체를 만듬 2017. 5. 7.
-            
-            self._headerAndResidualStrings[header] = residualString
-            return _headerAndResidualStrings
-        }
-        
-        var _header = headerUn
-        var _residualString = residualString
-        
-        //첫번째 루프가 아님
-        if _header != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
-             let result = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
-            // let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
-            // newTest.specification = _testHeader!
-            // newTest.raw = testString
-            // 시험들.append(newTest)
-            
-            self._headerAndResidualStrings[_header!] = result
-        } else {
-        }
-        
-        _header = _residualString.substring(with: headerRange) // 이는 절대로 nil이 될 수 없다. 왜냐하면 위에서 이미 headerRange을 체크하였기 때문이다. headerRange가 nil이 아니라는 것은 _residualString에 결과가 있다는 의미이다
-        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
-        
-        return _sliceString_oldversion(regexPattern: regexPattern, residualString: _residualString, headerUn: _header)
-    }
+//    // 2017. 5. 15. 이후 사용안함
+//    func sliceString_oldversion(regexPattern : String, string : String) -> [String : String] {
+//        _headerAndResidualStrings = [:]  // 전역변수이므로 초기화가 매우 중요, 리컬시브 함수에서 파라미터를 포인터로 전달하는 방법은 없을까? 예가 구조체라서 불가능할려나 2017. 5. 7.
+//        return _sliceString_oldversion(regexPattern : regexPattern, residualString : string, headerUn : nil)
+//    }
+//    
+//
+//    
+//    private func _sliceString_oldversion(regexPattern : String, residualString : String, headerUn : String?) -> [String : String] {
+//        let headerRangeUn = residualString.range(of: regexPattern, options: .regularExpression)
+//        // 패턴을 못찾았을 경우 else구문 실행하여 종료
+//        // 1. 패턴이 없는데 첫번째 루프 -> 치명적 에러
+//        // 2. 패턴이 없는데 첫번째 루프가 아님 -> 파싱이 완료될 때가 되었음
+//        guard let headerRange = headerRangeUn else
+//        {
+//            // 1. 패턴을 못찼잤는데 첫번재 루프라면 입력이 이상한 것임, 이대는 에러 메세지 출력 후 종료
+//            guard let header = headerUn else {
+//                fatalError("\(regexPattern)에 맞지 않는 이상한 텍스트를 파싱하려니 진행할 수 없음\n")
+//            }
+//            // 2. 패턴을못찼았는데 첫번째 루프가 아님, 이는 모든 작업이 완료된 것임, 따라서 잔여 스트링을 저장하고 종료함
+//            //    이 때 사용하는 헤더는 함수에서 입력받은 헤더 즉 전 루프에서 찾았던 헤더의 정보임
+//            
+//            //// newTest 초기화에 대해서 고민해봐야 함 (-) 2017. 5. 5.
+//            // let testString = residualString
+//            // let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: testHeader), numHelper: 2017)
+//            // newTest.specification = testHeader
+//            // newTest.raw = testString
+//            // 시험들.append(newTest)
+//            //// newTest를 이 함수 안에서 초기화 하는 것 보다는 밖에서 나가서 할 수 있도록 수정, 이를 위해 Templet이라는 구조체를 만듬 2017. 5. 7.
+//            
+//            self._headerAndResidualStrings[header] = residualString
+//            return _headerAndResidualStrings
+//        }
+//        
+//        var _header = headerUn
+//        var _residualString = residualString
+//        
+//        //첫번째 루프가 아님
+//        if _header != nil {  //이 조건식이 꼭 필요한가? 구조를 좀더 다시 생각해보는게 좋을 듯 2017. 5. 3.
+//             let result = _residualString.substring(with: _residualString.startIndex..<headerRange.lowerBound)
+//            // let newTest = Test(testDB : TestDB(), isPublished: true, category: testCategory, subject: testSubject, number: getTestNumber(testHeader: _testHeader!), numHelper: 2017)
+//            // newTest.specification = _testHeader!
+//            // newTest.raw = testString
+//            // 시험들.append(newTest)
+//            
+//            self._headerAndResidualStrings[_header!] = result
+//        } else {
+//        }
+//
+//        _header = _residualString.substring(with: headerRange) // 이는 절대로 nil이 될 수 없다. 왜냐하면 위에서 이미 headerRange을 체크하였기 때문이다. headerRange가 nil이 아니라는 것은 _residualString에 결과가 있다는 의미이다
+//        _residualString = _residualString.substring(with: headerRange.upperBound..<_residualString.endIndex)
+//        
+//        return _sliceString_oldversion(regexPattern: regexPattern, residualString: _residualString, headerUn: _header)
+//    }
     
 
     // ^를 레겍스로 사용하기 위해선 혁명적 변화가 필요하다. 기존 String.range( 에서 NSRange(로 추출방법을 변경하였다. 2017. 5. 15.
@@ -1089,7 +1100,7 @@ class DataConverter: NSObject {
                 var newList = Templet.List()
                 newList.specification = ""
                 newList.content = listDictionary.value.trimmingCharacters(in: .whitespacesAndNewlines)
-                newList.contentControversal = nil
+                newList.notContent = nil
                 newList.listStringType = listType!  //여기 입력이 잘못되어 있어서 매우 긴 디버깅 시간이 걸림 2017. 5. 9.
                 // 또 잘못되있었음 2017. 5. 15. 아주 그냥 상습범임
                 newList.number = getKoreanCharacterOrLetterInListSelection(header: listDictionary.key).koreanCharacterAndLetterInt

@@ -13,10 +13,18 @@ class TestDatabase: DataStructure {
     let createDate	: Date = Date()
     
     var categories : [TestCategory] = []
+    var tagAddress : [(tag : String, dataType : DataType, foreignKey : String)] = []
     
     
     override init(_ key: String = "Default") {
         super.init(key)
     }
     
+}
+
+
+enum DataType {
+    case Question
+    case Selection
+    case List
 }

@@ -13,7 +13,7 @@ class Statement : DataStructure {
     let question : Question
     
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
-    var contentControversal : String?
+    var notContent : String?
     
     var iscOrrect : Bool?
     var isAnswer : Bool? = false
@@ -39,6 +39,19 @@ class Statement : DataStructure {
         // 이를 OX문제로 향후에 변경하도록 수정할 때를 대비해서 key 관리방안을 고민해야되긴 한다 2017. 5. 6,
         super.init(key)
     }
+    
+    func getOX() -> String {
+        var result = "(알수없음)"
+        if let iscOrrectUnwrapped = iscOrrect {
+            if iscOrrectUnwrapped {
+                result = "(O)"
+            } else {
+                result = "(X)"
+            }
+        }
+        return result
+    }
+    
 }
 
 // 숫자 스트링 -> 라운드 숫자 스트링 변환, 뭔가 더 고급스러운 방법은 없는가? 2017. 4. 9.
@@ -75,3 +88,10 @@ extension String {
 }
 
 
+//extension Bool {
+//    var OX : String? {
+//        if self == nil {
+//            return "(알수없음)"
+//        }
+//    }
+//}

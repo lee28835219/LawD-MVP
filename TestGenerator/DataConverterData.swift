@@ -10,7 +10,7 @@ import Foundation
 
 struct DataConverterData {
     
-    var questionContentPair : [(content : String, contentControversal : String?, type : QuestionType, OX : QuestionOX)] = [
+    var questionContentPair : [(content : String, notContent : String?, type : QuestionType, OX : QuestionOX)] = [
 
         
         ("옳은 것을 모두 고른 것은?", "옳지 않은 것을 모두 고른 것은?", .Find, .O),

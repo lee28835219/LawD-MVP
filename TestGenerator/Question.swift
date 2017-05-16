@@ -26,7 +26,7 @@ class Question : DataStructure, Publishable {
     var contentPrefix : String?
     
     var content: String //원본
-    var contentControversal : String? //원본
+    var notContent : String? //원본
     var contentNote: String? //원본
     
     // 지문에 관한 항목
@@ -55,6 +55,8 @@ class Question : DataStructure, Publishable {
     var lists = [List]() //원본
     
     
+    
+    
     init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
         self.test = test
@@ -74,6 +76,8 @@ class Question : DataStructure, Publishable {
         
         self.test.questions.append(self)
     }
+    
+    
     
     //자동으로 이 명령을 실행하는 방법은 없을까? (+) 2017. 4. 30.
     //목록에 자동으로 iscOrrect와 isAnswer를 찍어주는 함수
@@ -177,6 +181,9 @@ class Question : DataStructure, Publishable {
         
     }
     
+    
+    
+    
     // 객체 밖에서 함수가 들어나지 않도록 정의하는 방법은 무었인가 (+) 2017. 4. 30.
     // 다시 체크할 수 있도록 수정필요 (+) 2017. 5. 5.
     
@@ -199,9 +206,15 @@ class Question : DataStructure, Publishable {
             }
         }
     }
+    
+    
 }
 
+
+
 extension Question {
+    
+    
     func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
         let oManager = OutputManager()
         oManager.showAnswer = showAnswer
@@ -280,13 +293,13 @@ extension Question {
         oManager.showAttribute = true
         oManager.showOrigSel = false
         
-        var selectionsContentControversal = [String]()
+        var selectionsNotContent = [String]()
         var selsIscOrrectControversal = [Bool?]()
         var selsIsAnswer = [Bool?]()
         var originalSelectionsNumber = [String]()
         
         for sel in selections {
-            selectionsContentControversal.append(sel.contentControversal != nil ? sel.contentControversal! : "없음")
+            selectionsNotContent.append(sel.notContent != nil ? sel.notContent! : "없음")
             var selIscOrrectControversal : Bool? = nil
             switch sel.iscOrrect {
             case nil:
@@ -301,13 +314,13 @@ extension Question {
             originalSelectionsNumber.append(sel.number.roundInt)
         }
         
-        var listSelectionsContentControversal = [String]()
+        var listSelectionsNotContent = [String]()
         var listSelsIscOrrectControversal = [Bool?]()
         var listSelsIntString = [String]()
         var origialListsNumberString = [String]()
         
         for (index,list) in lists.enumerated() {
-            listSelectionsContentControversal.append(list.contentControversal != nil ? list.contentControversal! : "없음")
+            listSelectionsNotContent.append(list.notContent != nil ? list.notContent! : "없음")
             var listIscOrrectControversal : Bool? = nil
             switch list.iscOrrect {
             case nil:
@@ -343,7 +356,7 @@ extension Question {
             
             questionNumber: number,
             
-            questionContent: contentControversal != nil ? contentControversal! : "없음",  // 셔플하면 변경
+            questionContent: notContent != nil ? notContent! : "없음",  // 셔플하면 변경
             questionContentNote: contentNote,
             questionPassage: passage,
             questionPassageSuffix: passageSuffix,
@@ -351,26 +364,29 @@ extension Question {
             questionType: questionType,
             questionOX: questionOX,   // 셔플하면 변경
             
-            listsContents : listSelectionsContentControversal,
+            listsContents : listSelectionsNotContent,
             listsIscOrrect : listSelsIscOrrectControversal,
             listsNumberString : listSelsIntString,
             origialListsNumberString : origialListsNumberString,
             
             questionSuffix: questionSuffix,
             
-            selectionsContent : selectionsContentControversal,  // 셔플하면 변경
+            selectionsContent : selectionsNotContent,  // 셔플하면 변경
             selsIscOrrect : selsIscOrrectControversal,  // 셔플하면 변경
             selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
             originalSelectionsNumber : originalSelectionsNumber,
             
-            ansSelContent: answerSelection?.contentControversal != nil ? answerSelection?.contentControversal : "없음",  // 셔플하면 변경
+            ansSelContent: answerSelection?.notContent != nil ? answerSelection?.notContent : "없음",  // 셔플하면 변경
             ansSelIscOrrect: answerIscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
             questionAnswer: answer,  // 셔플하면 변경
             originalAnsSelectionNumber: answerSelection!.number.roundInt
         )
     }
+    
 }
+
+
 
 enum QuestionOX : String {
     case O //옳은 것
@@ -385,21 +401,6 @@ enum QuestionType : String {
     case Unknown
 }
 
-
-
-
-// 변수타입을 정의
-// enum을 이용해서 멋잇게 저장하는 법을 고민해봐야 한다. 2017. 4. 29. (-)
-// 2017. 5. 6. json완성한 지금은 별 필요없다. 향후 쓸일이 있을까???
-struct JsonAttributes {
-    let stringNullableAttribute = ["Type":"String", "Nullable":"true"]
-    let stringNotNullableAttribute = ["Type":"String", "Nullable":"false"]
-    let intNullableAttribute = ["Type":"int", "Nullable":"true"]
-    let intNotNullableAttribute = ["Type":"int", "Nullable":"false"]
-    let boolNotNullableAttribute = ["Type":"Bool", "Nullable":"false"]
-    let questionTypeNotNullableAttribute = ["Type":"QuestionType", "Nullable":"false"]
-    let questionOXNotNullableAttribute = ["Type":"QuestionOX", "Nullable":"false"]
-}
 
 extension String {
     func spacing(_ space:Int, _ cutLength: Int = 39) -> String {
@@ -425,5 +426,21 @@ extension String {
         }
         return str
     }
+}
+
+
+
+
+// 변수타입을 정의
+// enum을 이용해서 멋잇게 저장하는 법을 고민해봐야 한다. 2017. 4. 29. (-)
+// 2017. 5. 6. json완성한 지금은 별 필요없다. 향후 쓸일이 있을까???
+struct JsonAttributes {
+    let stringNullableAttribute = ["Type":"String", "Nullable":"true"]
+    let stringNotNullableAttribute = ["Type":"String", "Nullable":"false"]
+    let intNullableAttribute = ["Type":"int", "Nullable":"true"]
+    let intNotNullableAttribute = ["Type":"int", "Nullable":"false"]
+    let boolNotNullableAttribute = ["Type":"Bool", "Nullable":"false"]
+    let questionTypeNotNullableAttribute = ["Type":"QuestionType", "Nullable":"false"]
+    let questionOXNotNullableAttribute = ["Type":"QuestionOX", "Nullable":"false"]
 }
 

@@ -58,7 +58,7 @@ struct Templet {
         var contentPrefix : String?
         
         var content: String = ""
-        var contentControversal : String?
+        var notContent : String?
         var contentNote: String?
         
         var questionSuffix : String?
@@ -80,7 +80,7 @@ struct Templet {
         var specification : String = ""
         
         var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
-        var contentControversal : String?
+        var notContent : String?
         var number : Int = 0
         
         var iscOrrect : Bool?
@@ -91,7 +91,7 @@ struct Templet {
         var specification : String = ""
         
         var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
-        var contentControversal : String?
+        var notContent : String?
         
         var listStringType : SelectStringType = .koreanCharcter
         var number : Int = 0

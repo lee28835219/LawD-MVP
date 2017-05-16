@@ -105,7 +105,7 @@ class QuestionShuffled {
             } else {
                 questionShuffledOX = QuestionOX.O
             }
-            questionContent = question.contentControversal!
+            questionContent = question.notContent!
         }
         return (questionShuffledOX,questionContent)
     }
@@ -190,7 +190,7 @@ class QuestionShuffled {
     }
     
     private func _toggleStatementContent(statementContentShuffled : String, selection : Statement) -> String {
-        guard let statementCont = selection.contentControversal else {
+        guard let statementCont = selection.notContent else {
             return selection.content
         }
         if statementContentShuffled == statementCont  {
@@ -208,12 +208,12 @@ class QuestionShuffled {
         var answerSelectionModifed : Selection = self.answerSelectionModifed
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
-        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
+        let isOppositeQuestionExist = question.notContent == nil ? false : true
         
         // 2,3-2. 정오변경 지문이 선택지에 모두 있는지 확인
         var isAllSelectionControversalExist = true
         for sel in question.selections {
-            if sel.contentControversal == nil {
+            if sel.notContent == nil {
                 isAllSelectionControversalExist = false
             }
         }
@@ -294,12 +294,12 @@ class QuestionShuffled {
         }
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
-        let isOppositeQuestionExist = question.contentControversal == nil ? false : true
+        let isOppositeQuestionExist = question.notContent == nil ? false : true
         
         // 2,3-2. 정오변경 지문이 목록에 모두 있는지 확인
         var isAllSelectionListControversalExist = true
         for sel in question.lists {
-            if sel.contentControversal == nil {
+            if sel.notContent == nil {
                 isAllSelectionListControversalExist = false
             }
         }

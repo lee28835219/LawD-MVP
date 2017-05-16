@@ -44,7 +44,7 @@ class DC변호사시험민사법 : DataConverter {
         )
         
         
-        self.printLog = true
+//        self.printLog = true
         
         
         let resultTuple = extractTestAndAnswerJson()
