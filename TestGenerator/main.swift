@@ -12,19 +12,23 @@ print("Hello!TestGenerator Starts!")
 var input : String
 
 var testDatabase = TestDatabase()
+
 var testCategory = TestCategory(testDatabase: testDatabase, category: "변호사 시험 샘플(모의고사, 기출)")
 var testSubject = TestSubject(testCategory: testCategory, subject: "민사법")
-
-testSubject.setSampleTest()
+//testSubject.setSampleTest()
 
 let outputManager = OutputManager()
-var inputManger = InputManager(testDatabase : testDatabase, outputManager : outputManager)
+let inputManger = InputManager(testDatabase : testDatabase, outputManager : outputManager)
+let storageManager = StorageManager(testDatabase)
+print(storageManager.log)
+
 
 print("\(#file) 시작 -", Date().HHmmSS)
 
 let dddd = DCDD(testDatabase)
 
-let barExam = DC변호사시험민사법(testDatabase)
+//let barExam = DC변호사시험(testDatabase)
+//print(barExam!.log)
 //let firstBarExam = DC법조윤리(testDatabase)
 //let HouseExam = DC공인중개사(testDatabase)
 

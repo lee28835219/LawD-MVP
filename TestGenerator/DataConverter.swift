@@ -171,7 +171,7 @@ class DataConverter: NSObject {
                 kndex = i
             } else {
                 kndex  = self.testCategories[index].testSubjects[jndex].tests.count
-                self.testCategories[index].testSubjects[jndex].tests.append(Templet.Test(specification: "", number: result.testNumber, numHelper: nil, date: nil, raw: "", answers: [], questions: []))
+                self.testCategories[index].testSubjects[jndex].tests.append(Templet.Test(revision: 0, specification: "", number: result.testNumber, numHelper: nil, date: nil, raw: "", answers: [], questions: []))
                 testCounter = testCounter + 1
             }
             
@@ -281,7 +281,8 @@ class DataConverter: NSObject {
                    
                     var contentRaw = questionString
                     
-                    var newQuestion = Templet.Question(specification: "",
+                    var newQuestion = Templet.Question(revision: 0, // 최초의 생성이므로
+                                                       specification: "",
                                                        number: 0,  //가짜입력
                                                        subjectDetails: [],
                                                        questionType: QuestionType.Unknown, // 6. 질문 그리고 입력값은 Default로 의미를 가짐
@@ -718,12 +719,12 @@ class DataConverter: NSObject {
                 
                 for test in testSubject.tests {
                     
-                    let newTest = Test(testSubject: newTestSubject, isPublished: true, number: test.number, numHelper: test.numHelper)
+                    let newTest = Test(createDate: Date(), testSubject: newTestSubject, revision: test.revision, isPublished: true, number: test.number, numHelper: test.numHelper)
                     newTest.specification = test.specification
                     testCounter = testCounter + 1
                     
                     for question in test.questions {
-                        let newQuestion = Question(test: newTest, number: question.number, questionType: question.questionType, questionOX: question.questionOX, content: question.content, answer: question.answer)
+                        let newQuestion = Question(revision: question.revision, test: newTest, number: question.number, questionType: question.questionType, questionOX: question.questionOX, content: question.content, answer: question.answer)
                         queCounter = queCounter + 1
                         
                         newQuestion.contentPrefix = question.contentPrefix
@@ -742,7 +743,7 @@ class DataConverter: NSObject {
                         // 2017. 5. 13.
                         
                         for selection in question.selections {
-                            let newSelection = Selection(question: newQuestion, number: selection.number, content: selection.content)
+                            let newSelection = Selection(revision: selection.revision, question: newQuestion, number: selection.number, content: selection.content)
                             newSelection.notContent = selection.notContent
                             newSelection.specification = selection.specification
                             selCounter = selCounter + 1
@@ -757,7 +758,7 @@ class DataConverter: NSObject {
                                 listCharacter = list.number.koreanLetterInt
                             }
                             
-                            let newList = List(question: newQuestion, content: list.content, selectString: listCharacter)
+                            let newList = List(revision: list.revision, question: newQuestion, content: list.content, selectString: listCharacter)
                             newList.notContent = list.notContent
                             newList.specification = list.specification
                             listCounter = listCounter + 1

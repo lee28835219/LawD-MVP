@@ -10,6 +10,9 @@ import Foundation
 
 //선택지
 class Statement : DataStructure {
+    
+    var cases = [String]()
+    var revision : Int
     let question : Question
     
     var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
@@ -19,7 +22,9 @@ class Statement : DataStructure {
     var isAnswer : Bool? = false
     
     
-    init(key : String, question : Question, content : String) {
+    init(revision : Int, key : String, question : Question, content : String) {
+        
+        self.revision = revision
         
         //(+)문제와 선택지가 상호참조에 따른 문제점이 없는지 시간내서 확인 2017. 4. 26
         

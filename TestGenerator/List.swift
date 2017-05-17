@@ -12,12 +12,15 @@ class List: Statement {
     // key가 선택지이면 S접두어, ㄱ,ㄴ,ㄷ, 가,나,다이면 L접두어
     
     var listStringType : SelectStringType = .koreanCharcter
+    let selectString: String
     var number : Int = 0
     
     // super클라스의 초기화 함수를 덮어 씌울수는 없는가? (-) 2017. 5. 5.
     // http://stackoverflow.com/questions/39344422/delegating-up-to-convenience-initializer-of-superclass
     // Delegating up to Convenience Initializer of Superclass
-    init(question: Question, content: String, selectString: String) {
+    init(revision: Int, question: Question, content: String, selectString: String) {
+        
+        self.selectString = selectString
         
         let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
         let stringArrayLetter = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"]
@@ -33,7 +36,7 @@ class List: Statement {
         
         let key = question.key + "=L" + String(format: "%02d",number)
         
-        super.init(key: key, question: question, content: content)
+        super.init(revision: revision, key: key, question: question, content: content)
         self.question.lists.append(self)
     }
     
@@ -70,7 +73,7 @@ class List: Statement {
 }
 
 
-enum SelectStringType {
+enum SelectStringType : String {
     case koreanCharcter
     case koreanLetter
 }

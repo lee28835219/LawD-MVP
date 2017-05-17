@@ -1,5 +1,5 @@
 //
-//  DC변호사시험민사법.swift
+//  DC변호사시험.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 5. 7..
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class DC변호사시험민사법 : DataConverter {
+class DC변호사시험 : DataConverter {
     
     //    Read JSON file with Swift 3
     //    http://stackoverflow.com/questions/40438784/read-json-file-with-swift-3
@@ -44,7 +44,7 @@ class DC변호사시험민사법 : DataConverter {
         )
         
         
-//        self.printLog = true
+        self.printLog = true
         
         
         let resultTuple = extractTestAndAnswerJson()
@@ -70,7 +70,7 @@ class DC변호사시험민사법 : DataConverter {
         
         log = closeLog(log, file: "\(#file)")
         if printLog {
-            print(log)
+//            print(log)
         }
         
         

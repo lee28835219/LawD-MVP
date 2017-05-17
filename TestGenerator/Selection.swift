@@ -15,12 +15,12 @@ class Selection: Statement {
     var listInContentOfSelection = [List]()
     var anotherSelectionInStatement = [Selection]()
     
-    init(question: Question, number: Int, content: String) {
+    init(revision: Int, question: Question, number: Int, content: String) {
         
         self.number = number
         let key = question.key + "=S" + String(format: "%02d",number)
         
-        super.init(key: key, question: question, content: content)
+        super.init(revision: revision, key: key, question: question, content: content)
         
         self.question.selections.append(self)
         

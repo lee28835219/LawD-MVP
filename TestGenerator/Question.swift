@@ -11,6 +11,8 @@ import Foundation
 class Question : DataStructure, Publishable {
 ////내가 무엇인지
     let test : Test
+    var cases = [String]()
+    var revision : Int
     
 ////나의 속성은 무었인지
     
@@ -57,8 +59,9 @@ class Question : DataStructure, Publishable {
     
     
     
-    init(test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
+    init(revision : Int, test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
+        self.revision = revision
         self.test = test
         
         self.questionType = questionType

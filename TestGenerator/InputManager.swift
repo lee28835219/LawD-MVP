@@ -189,6 +189,14 @@ class InputManager {
             return true
         }
         
+        if isSame(input, targets: ["refreshall","ㄱㄷㄹㄱㄷ노"]) {
+            
+//            storageManager.refresh()
+            
+            return true
+        }
+        
+        
         
         if isSame(input, targets: ["selta","selt","ㄴ딧ㅁ","ㄴ딧"]) {
             

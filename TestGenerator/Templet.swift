@@ -28,6 +28,7 @@ struct Templet {
     }
     
     struct Test {
+        var revision : Int = 0
         var specification : String = ""
         
         var number : Int = 0
@@ -46,6 +47,7 @@ struct Templet {
     }
     
     struct Question {
+        var revision : Int = 0
         
         var specification : String = ""
         
@@ -77,6 +79,7 @@ struct Templet {
     }
     
     struct Selection {
+        var revision : Int = 0
         var specification : String = ""
         
         var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."
@@ -88,6 +91,7 @@ struct Templet {
     }
     
     struct List {
+        var revision : Int = 0
         var specification : String = ""
         
         var content : String = "대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다."

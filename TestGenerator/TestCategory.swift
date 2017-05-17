@@ -40,6 +40,14 @@ class TestCategory : DataStructure {
             key = key + self.category
         }
         
+        for category in self.testDatabase.categories {
+            if category.key == key {
+                fatalError("\(key)과 똑같은 시험이 이미 testDB \(testDatabase.key)에 있음")
+            }
+        }
+        
+        
+        
         super.init(key)
         testDatabase.categories.append(self)
     }
