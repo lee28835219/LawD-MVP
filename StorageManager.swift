@@ -21,9 +21,10 @@ class StorageManager {
         
         log = newLog("\(#file)")
         
+        
         // 작업을 시작할 디렉토리를 설정 Document/Test/Storage/DB의 key
         if let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            self.rootURL = documentURL.appendingPathComponent("Test").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key)
+            self.rootURL = documentURL.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key)
             if FileManager.default.fileExists(atPath: rootURL.path, isDirectory: nil) {
                 log = writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)에서 \(testDatabase.key) testDB를 불러오기 시작")
             } else {
@@ -33,7 +34,6 @@ class StorageManager {
         } else {
             fatalError("시스템의 Document 폴더가 존재하지 않음")
         }
-        
         
         
         if !parseJsons(.getNewer) {
@@ -52,6 +52,7 @@ class StorageManager {
         
         
         // 시험명을 찾음
+        // 시험명 먼저 찾고 과목찾고 회차찾아서 json을 찾는게 삽질이라는 생각이 좀 든다만 더 좋은 방법이 있는가?
         do {
             
             // Getting list of files in documents folder
@@ -172,8 +173,10 @@ class StorageManager {
                     let testDirectories = try FileManager.default.contentsOfDirectory(at: subjectURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
                     
                     
+                    
                     log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차 확인시작")
                     var testCounter = 0
+                    var testFailureCounter = 0
                     for testURL in testDirectories {
                         
                         
@@ -184,7 +187,6 @@ class StorageManager {
                         var isDir: ObjCBool = ObjCBool(false)
                         if FileManager.default.fileExists(atPath: testURL.path, isDirectory: &isDir) {
                             if isDir.boolValue {
-                                
                                 
                                 do {
                                     
@@ -230,22 +232,37 @@ class StorageManager {
                                     }
                                     
                                     
+                                    // json 파싱에 관한 부분
+                                    // json 파싱결과를 확인해서 성공이면 카운터를 늘리고, 실패면 이미 만들어놓은 시험 오브젝트를 삭제함
                                     
-                                    
-                                    testCounter = testCounter + 1
-                                    totalTestCounter = totalTestCounter + 1
                                     log = writeLog(log, funcName: "\(#function)", outPut: "     [\(testCounter)] \(newTest.key) 파싱시작")
                                     log = writeLog(log, funcName: "\(#function)", outPut: "       \(jsonFileURL.lastPathComponent.precomposedStringWithCompatibilityMapping)")
                                     
-                                    jsonToClass(jsonData, newTest)
                                     
+                                    if jsonToClass(jsonData, newTest) {
+                                        
+                                        testCounter = testCounter + 1
+                                        totalTestCounter = totalTestCounter + 1
+
+                                    } else {
                                     
+                                        log = writeLog(log, funcName: "\(#function)", outPut: "     !!!! \(newTest.key) 파싱실패")
+                                        subject.tests.remove(at: subject.tests.index(of: newTest)!)
+                                        testFailureCounter = testFailureCounter + 1
+                                    
+                                    }
+                                    
+                                
                                 } catch {
+                                    
                                     log = writeLog(log, funcName: "\(#function)", outPut: "       시험을 찾을 수 없음")
+                                    
                                 }
+                                
                             }
                         }
                     }
+                    
                     if testCounter == 0 {
                         log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차가 하나도 없어 \(subject.key) 제거")
                         category.testSubjects.remove(at: category.testSubjects.index(of: subject)!)
@@ -258,10 +275,15 @@ class StorageManager {
                             }
                         }
                     } else {
-                        log = writeLog(log, funcName: "\(#function)", outPut: "    총 시험회차 \(testCounter)개 생성")
+                        let testFailureResult = testFailureCounter == 0 ? "실패한 파싱없음" : "시험회차 실패 : \(testFailureCounter)"
+                        log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차 생성 : \(testCounter)개, \(testFailureResult)")
+                        
                     }
+                    
                 } catch {
+                    
                     log = writeLog(log, funcName: "\(#function)", outPut: "    시험 회차를 가져오면서 에러 발생")
+                    
                 }
                 
                 
@@ -269,7 +291,9 @@ class StorageManager {
             }
             
             log = writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 종료")
+            
         }
+        
         log = writeLog(log, funcName: "\(#function)", outPut: "총 \(totalTestCounter)개의 json파일을 가져오기 성공")
         
         testDatabase.categories.append(contentsOf: tempTestDatabase.categories)
@@ -314,13 +338,13 @@ class StorageManager {
             }
             
             new_test.specification = testSubject__test_attribute_specification
-//            test.modifiedDate = testSubject__test_attribute_modifiedDate
+            new_test.modifiedDate = testSubject__test_attribute_modifiedDate.jsonDateFormat
             new_test.tags = testSubject__test_attribute_tags
             new_test.revision = testSubject__test_attribute_revision
-//            test.createDate = testSubject__test_attribute_createDate
+            new_test.createDate = testSubject__test_attribute_createDate.jsonDateFormat
             new_test.isPublished = testSubject__test_attribute_isPublished
             
-//            test.date = testSubject__test_attribute_date
+            new_test.date = testSubject__test_attribute_date.jsonDateFormat
             new_test.raw = testSubject__test_attribute_raw
             
             
@@ -395,7 +419,7 @@ class StorageManager {
                 
                 
                 new_question.specification = testSubject__test__question_attribute_specification
-//                new_question.modifiedDate = testSubject__test__question_attribute_modifiedDate
+                new_question.modifiedDate = testSubject__test__question_attribute_modifiedDate.jsonDateFormat
                 new_question.tags = testSubject__test__question_attribute_tags
                 new_question.cases = testSubject__test__question_attribute_cases
                 new_question.revision = testSubject__test__question_attribute_revision
@@ -448,7 +472,7 @@ class StorageManager {
                     
                     
                     new_selection.specification = testSubject__test__question__selection_attribute_specification
-//                    new_selection.modifiedDate = testSubject__test__question__selection_attribute_modifiedDate
+                    new_selection.modifiedDate = testSubject__test__question__selection_attribute_modifiedDate.jsonDateFormat
                     new_selection.tags = testSubject__test__question__selection_attribute_tags
                     new_selection.cases = testSubject__test__question__selection_attribute_cases
                     new_selection.revision = testSubject__test__question__selection_attribute_revision
@@ -479,7 +503,6 @@ class StorageManager {
                     guard let testSubject__test__question__list_attribute_iscOrrect = testSubject__test__question__list_attribute["iscOrrect"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 iscOrrect 찾을 수 없음"); return false}
                     guard let testSubject__test__question__list_attribute_isAnswer = testSubject__test__question__list_attribute["isAnswer"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 isAnswer 찾을 수 없음"); return false}
                     guard let testSubject__test__question__list_attribute_selectStirng = testSubject__test__question__list_attribute["selectString"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 selectString 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_number = testSubject__test__question__list_attribute["number"] as? Bool else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 number 찾을 수 없음"); return false}
                     
                     let new_list = List(revision: testSubject__test__question__list_attribute_revision, question: new_question, content: testSubject__test__question__list_attribute_content, selectString: testSubject__test__question__list_attribute_selectStirng)
                     
@@ -489,7 +512,7 @@ class StorageManager {
                     }
                     
                     new_list.specification = testSubject__test__question__list_attribute_specification
-//                    new_list.modifiedDate = testSubject__test__question__list_attribute_modifiedDate
+                    new_list.modifiedDate = testSubject__test__question__list_attribute_modifiedDate.jsonDateFormat
                     new_list.tags = testSubject__test__question__list_attribute_tags
                     new_list.cases = testSubject__test__question__list_attribute_cases
                     new_list.revision = testSubject__test__question__list_attribute_revision
@@ -511,9 +534,6 @@ class StorageManager {
             }
             
             
-            
-//            log = writeLog(log, funcName: "\(#function)", outPut: "        \(testSubject__test_key) 파싱중....")
-//            
             log = writeLog(log, funcName: "\(#function)", outPut: "     - \(testSubject__test_key) 파싱종료")
             
             

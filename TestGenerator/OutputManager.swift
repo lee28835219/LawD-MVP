@@ -249,6 +249,21 @@ protocol JSONoutable {
     func createJsonObject() -> Data?
 }
 
+
+extension String {
+    var jsonDateFormat : Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let date = dateFormatter.date(from: self)
+        if let dateWrapped = date {
+            return dateWrapped
+        } else {
+            return Date(timeIntervalSince1970: 0)
+        }
+    }
+}
+
+
 extension Date {
     
     var yyyymmdd : String {

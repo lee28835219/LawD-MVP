@@ -15,7 +15,7 @@ var testDatabase = TestDatabase()
 
 var testCategory = TestCategory(testDatabase: testDatabase, category: "변호사 시험 샘플(모의고사, 기출)")
 var testSubject = TestSubject(testCategory: testCategory, subject: "민사법")
-//testSubject.setSampleTest()
+testSubject.setSampleTest()
 
 let outputManager = OutputManager()
 let inputManger = InputManager(testDatabase : testDatabase, outputManager : outputManager)
@@ -30,6 +30,7 @@ let dddd = DCDD(testDatabase)
 //let barExam = DC변호사시험(testDatabase)
 //print(barExam!.log)
 //let firstBarExam = DC법조윤리(testDatabase)
+//print(firstBarExam!.log)
 //let HouseExam = DC공인중개사(testDatabase)
 
 

@@ -296,6 +296,8 @@ extension Question {
         oManager.showAttribute = true
         oManager.showOrigSel = false
         
+        
+        
         var selectionsNotContent = [String]()
         var selsIscOrrectControversal = [Bool?]()
         var selsIsAnswer = [Bool?]()
@@ -365,7 +367,7 @@ extension Question {
             questionPassageSuffix: passageSuffix,
             
             questionType: questionType,
-            questionOX: questionOX,   // 셔플하면 변경
+            questionOX: self.getNotOX(),   // 셔플하면 변경
             
             listsContents : listSelectionsNotContent,
             listsIscOrrect : listSelsIscOrrectControversal,
@@ -387,6 +389,17 @@ extension Question {
         )
     }
     
+    
+    
+    func getNotOX() -> QuestionOX {
+        var result = self.questionOX
+        if result == .O {
+            result = .X
+        } else if result == .X {
+            result = .O
+        }
+        return result
+    }
 }
 
 

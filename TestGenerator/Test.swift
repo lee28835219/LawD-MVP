@@ -13,7 +13,7 @@ class Test : DataStructure {
     var revision : Int
     
     //나의 속성은 어떤지
-    let createDate : Date
+    var createDate : Date
     
     var isPublished : Bool //기출, 원본
     let number : Int
@@ -139,7 +139,6 @@ extension Test {
                 testSubject__test__question__list_attribute["iscOrrect"] = list.iscOrrect
                 testSubject__test__question__list_attribute["isAnswer"] = list.isAnswer
                 testSubject__test__question__list_attribute["selectString"] = list.selectString
-                testSubject__test__question__list_attribute["number"] = list.number
                 
                 
                 var testSubject__test__question__list = [String : Any]()

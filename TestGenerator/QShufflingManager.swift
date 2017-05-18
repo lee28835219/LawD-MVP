@@ -42,13 +42,19 @@ class QShufflingManager : Publishable {
             origialListsNumberString.append(list.getListString())
         }
         
-        //선택지
+        //선택지와 정답
         var selectionsContent = [String]()
         var selsIscOrrect = [Bool?]()
         var selsIsAnswer = [Bool?]()
         var originalSelectionsNumber = [String]()
         
-        for sel in qShuffled.selections {
+        var ansSelContent: String = ""
+        var ansSelIscOrrect: Bool?
+        var ansSelIsAnswer: Bool?
+        var questionAnswer: Int = 0
+        var originalAnsSelectionNumber: String = ""
+        
+        for (index,sel) in qShuffled.selections.enumerated() {
             // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (+)
             var selResult = qShuffled.getModfiedStatementOfCommonStatement(statement: sel)
             
@@ -74,14 +80,27 @@ class QShufflingManager : Publishable {
             selsIscOrrect.append(selResult.iscOrrect)
             selsIsAnswer.append(selResult.isAnswer)
             originalSelectionsNumber.append(sel.number.roundInt)
+            
+            if sel === qShuffled.answerSelectionModifed {
+                ansSelContent = selResult.content
+                ansSelIscOrrect = selResult.iscOrrect
+                ansSelIsAnswer = selResult.isAnswer
+                questionAnswer = (index + 1)
+                originalAnsSelectionNumber = sel.number.roundInt
+            }
         }
         
+        
+        
+        
+        
         //정답
-        var ansSel = qShuffled.getModfiedStatementOfCommonStatement(statement: qShuffled.answerSelectionModifed)
-                     // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
-        if qShuffled.question.questionType == .Find {
-            ansSel = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuffled.answerSelectionModifed)
-        }
+        // 직접 가져오는 것보다 위의 선택지에서 확인하는 것이 더 쉬우므로 없애버림 2017. 5. 18.
+//        var ansSel = qShuffled.getModfiedStatementOfCommonStatement(statement: qShuffled.answerSelectionModifed)
+//                     // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
+//        if qShuffled.question.questionType == .Find {
+//            ansSel = qShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuffled.answerSelectionModifed)
+//        }
         
         
         outputManager.questionPublish(
@@ -114,11 +133,11 @@ class QShufflingManager : Publishable {
             selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
             originalSelectionsNumber : originalSelectionsNumber, // 셔플하면 변경,
             
-            ansSelContent: ansSel.content,  // 셔플하면 변경
-            ansSelIscOrrect: ansSel.iscOrrect,  // 셔플하면 변경
-            ansSelIsAnswer: ansSel.isAnswer,  // 셔플하면 변경
-            questionAnswer: (qShuffled.getAnswerNumber() + 1),
-            originalAnsSelectionNumber: qShuffled.answerSelectionModifed.number.roundInt // 셔플하면 변경
+            ansSelContent: ansSelContent,  // 셔플하면 변경
+            ansSelIscOrrect: ansSelIscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: ansSelIsAnswer,  // 셔플하면 변경
+            questionAnswer: questionAnswer,
+            originalAnsSelectionNumber: originalAnsSelectionNumber
         )
     }
 }

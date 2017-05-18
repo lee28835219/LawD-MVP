@@ -350,7 +350,13 @@ class InputManager {
         } else {
             //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
             print("오답임...정답은")
-            print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content.spacing(3))")
+            var answerContent = ""
+            if question.questionType == .Find {
+                answerContent = qShuWrapped.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuWrapped.answerSelectionModifed).content
+            } else {
+                answerContent = qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content
+            }
+            print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(answerContent.spacing(3))")
             print("확인??", terminator: "")
         }
         
@@ -435,15 +441,17 @@ class InputManager {
         
         print((notContent != nil ? notContent! : "없음"),contentOXCont)
         
-        print("-. 반대\(name) 신규입력 $ ")
+        print("-. 반대\(name) 신규입력 \(targetNumber) $ ")
         let inp = getInput()
         print()
         if inp == "" {
             print("> 아무것도 입력된 것이 없어 반대\(name) 변경없음")
         } else {
             result = inp
-            print("> 반대\(name) 입력완료 : \(targetNumber) \(result!)", contentOXCont)
+            print("> 반대\(name) 입력완료 : \(targetNumber)")
+            print(result!, contentOXCont)
         }
+        
         print("계속()다시(r) $ ", terminator: "")
         let iinp = getInput()
         if iinp == "r" || iinp == "ㄱ" {
@@ -641,7 +649,104 @@ class InputManager {
         return selectedQuestions[0]
     }
     
+    func selectList(_ questionUnwapped : Question?, showNot : Bool = true) -> List? {
+        guard let question = questionUnwapped else {
+            print("> 목록지를 찾을 수 없음")
+            return nil
+        }
+        
+        var lists = question.lists
+        if lists.count == 0 {
+            print("> \(question.key)에 목록지가 하나도 없음")
+            return nil
+        }
+        
+        for (index,list) in lists.enumerated() {
+            var selString = ""
+            if showNot {
+                selString = list.notContent != nil ? list.notContent! : "없음"
+            } else {
+                selString = list.content
+            }
+            print(" [\(index+1)] : \(list.getListString()). \(selString)")
+        }
+        
+        
+        var goon = true
+        while goon {
+            print("목록지 번호 선택 $ ", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print("올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let listNumber = Int(inputWrapped)
+            if listNumber == nil {
+                print("숫자를 입력하세요")
+                continue
+            }
+            lists = lists.filter({$0.number == listNumber})
+            if lists.isEmpty {
+                print("숫자를 입력하세요")
+                continue
+            }
+            goon = false
+        }
+        
+        return lists[0]
+    }
     
+    func selectSelection(_ questionUnwapped : Question?, showNot : Bool = true) -> Selection? {
+        guard let question = questionUnwapped else {
+            print("> 선택지를 찾을 수 없음")
+            return nil
+        }
+        
+        var selections = question.selections
+        if selections.count == 0 {
+            print("> \(question.key)에 선택지가 하나도 없음")
+            return nil
+        }
+        
+        
+        for selection in selections {
+            var selString = ""
+            if showNot {
+                selString = selection.notContent != nil ? selection.notContent! : "없음"
+            } else {
+                selString = selection.content
+            }
+            print(" \(selection.number.roundInt) \(selString)")
+        }
+        
+        
+        var goon = true
+        while goon {
+            print("목록지 번호 선택 $ ", terminator : "")
+            let input = readLine()
+            
+            guard let inputWrapped = input else {
+                print("올바르지 않은 입력, 재입력하세요.")
+                continue
+            }
+            
+            let number = Int(inputWrapped)
+            if number == nil {
+                print("숫자를 입력하세요")
+                continue
+            }
+            selections = selections.filter({$0.number == number!})
+            if selections.isEmpty {
+                print("숫자를 입력하세요")
+                continue
+            }
+            goon = false
+        }
+        
+        return selections[0]
+    }
 }
 
 
@@ -682,7 +787,7 @@ extension InputManager {
     
     func modifyQuestion(_ question: Question) {
         
-        print("수정할 문제의 항목을 선택-모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
+        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
         let input = getInput()
         
         switch input {
@@ -698,6 +803,27 @@ extension InputManager {
             return
             
         // 문제 수정을 시작
+        case "2" :
+            guard let list = selectList(question) else {
+                modifyQuestion(question)
+                return
+            }
+            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
+            
+        case "3" :
+            if question.questionType == QuestionType.Find {
+                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
+                _ = readLine()
+                modifyQuestion(question)
+                return
+            }
+            
+            guard let selection = selectSelection(question) else {
+                modifyQuestion(question)
+                return
+            }
+            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
+            
         case "4" :
             print()
             let listNumber = question.lists.count
@@ -736,7 +862,7 @@ extension InputManager {
             print("<반전된 문제> - 변경됨")
             question.controversalPublish()
             
-            print("변경사항을 저장?()-저장 후 계속(m),종료(e) $ ", terminator: "")
+            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
             
             guard let input = readLine() else {
                 print("유효하지 않은 입력")
@@ -752,6 +878,11 @@ extension InputManager {
                 
                 print(">"+question.key+" 저장완료")
                 _ = outputManager.saveTest(question.test)
+                modifyQuestion(question)
+                return
+                
+            } else if input == "n" || input == "ㅜ" {
+                
                 modifyQuestion(question)
                 return
             }

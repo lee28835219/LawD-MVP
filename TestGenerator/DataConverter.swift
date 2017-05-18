@@ -49,8 +49,8 @@ class DataConverter: NSObject {
         //http://stackoverflow.com/questions/14950440/how-can-i-add-a-file-to-an-existing-mac-os-x-app-bundle
         
         //일단 system의 document폴더 안의 TestGeneratorResource 에서 읽는 것으로 진행
-        if let dirDocumetn = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            var dir = dirDocumetn.appendingPathComponent("Test").appendingPathComponent("Resource")
+        if let dirDocument = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            var dir = dirDocument.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Resource")
             if directory != nil {
                 dir = dir.appendingPathComponent(directory!)
             }
@@ -125,7 +125,7 @@ class DataConverter: NSObject {
         // http://stackoverflow.com/questions/24048430/logging-method-signature-using-swift
         // Logging Method signature using swift
         log = writeLog(log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
-        log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path) 파싱 완료")
+        log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파싱 완료")
         
         return result
     }
@@ -221,7 +221,7 @@ class DataConverter: NSObject {
             
             // 시험별로 쪼개고
             let testStrings = sliceString(regexPattern: testSep, string: wholeTestString)
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path) 파일을 \(testStrings.count)개의 시험으로 나눠 파싱시작")
+            log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파일을 \(testStrings.count)개의 시험으로 나눠 파싱시작")
             
             
             
@@ -302,7 +302,9 @@ class DataConverter: NSObject {
                                                        lists: []  // 3. 목록
                     )
                     
+                
                     
+                
                     
                 // 4. 정답
                     // 문제의 정답을 이미 찾아두었던 메모리상의 값의 리스트에서 찾아가는 과정
@@ -323,12 +325,6 @@ class DataConverter: NSObject {
                     }
                     newQuestion.answer = answer
                     log = writeLog(log, funcName: "\(#function)", outPut: "Q\(newQuestion.number) - 파싱시작 & 정답 \(newQuestion.answer) 입력완료")
-                    
-                    
-                    
-                
-                    
-                    
                     
                     
                     
@@ -447,6 +443,8 @@ class DataConverter: NSObject {
                     }
                     
                     
+                
+                    
                 //5. 질문부가사항
                     // 위치에 대해서 생각해봐야 함, 맨앞? 컨텐트 입력직전?
                     // => 이는 질문 Suffix이고 따라서 질문 앞에서 검토,
@@ -492,96 +490,8 @@ class DataConverter: NSObject {
                     }
                     
                     
-                    // 나) 질문을 분석하여 문제타입 검토
+ 
                     
-                    // content를 잘 분석하면 많은 정보를 얻을 수 잇을 가능성이 많다. 향후 경우의 수를 최대한 많이 생각해서
-                    // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
-                    
-                    // 여기서 newQuestion.content를 검토하는데 사실 raw데이터이다. 편리하기는하나 위험할 수 있다 위험점에 대허서 미리 생각해야 한다.
-                    
-                    
-                    
-//                    if newQuestion.questionType == .Find { // 위에 3에서 list가 존재했음을 의미
-//                        if newQuestion.content.contains("옳은 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 부합하는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 입장에 부합하는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 태도와 부합하는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("허용되는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("되는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("되는 경우를 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당하는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("사례를 모두 모아 놓은 것은?")
-//                            || newQuestion.content.contains("인정할 수 있는 경우를 모두 고른 것은?")
-//                            || newQuestion.content.contains("유죄를 인정할 수 있는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("대상이 될 수 있는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("인정되는 권리를 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당하는 자를 모두 고른 것은?") {
-//                            newQuestion.questionOX = .O
-//                        } else if newQuestion.content.contains("옳지 않은 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 입장에 부합하지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("판례의 태도와 부합하지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("허용되지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("되지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("되지 않는 경우를 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당할 수 없는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당하지 않는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("사례가 아닌 것을 모두 모아 놓은 것은?")
-//                            || newQuestion.content.contains("인정할 수 없는 경우를 모두 고른 것은?")
-//                            || newQuestion.content.contains("유죄를 인정할 수 없는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("적법하지 않은 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("대상이 될 수 있는 것을 모두 고른 것은?")
-//                            || newQuestion.content.contains("인정되지 않는 권리를 모두 고른 것은?")
-//                            || newQuestion.content.contains("해당하지 않는 자를 모두 고른 것은?") {
-//                            newQuestion.questionOX = .X
-//                        } else if newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 올바르게 조합한 것은?")
-//                            || newQuestion.content.contains("옳은 것(o)과 옳지 않은 것(x)을 올바르게 조합한 것은?")
-//                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(× )을 올바르게 조합한 것은?")
-//                            || newQuestion.content.contains("옳은 것(○)과 옳지 않은 것(×)을 바르게 고른 것은?")
-//                            || newQuestion.content.contains("인정되는 경우(○)와 부정되는 경우(×)를 올바르게 짝지은 것은?")
-//                            || newQuestion.content.contains("괄호 안에 들어갈 금액이 모두 옳게 조합된 것은?")
-//                            || newQuestion.content.contains("옳고 그름의 표시(○,× )가 옳게 조합된 것은?") {
-//                            newQuestion.questionOX = .Correct
-//                        }
-//                    } else {
-//                        if newQuestion.content.contains("옳은 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 부합하는 것은?")
-//                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되는 것은?")
-//                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하는는 것은?")
-//                            || newQuestion.content.contains("물을 수 있는 것은?")
-//                            || newQuestion.content.contains("형법이론상의 논점과 관련이 있는 것은?")
-//                            || newQuestion.content.contains("타당한 항변으로 볼 수 있는 것은?")
-//                            || newQuestion.content.contains("있는 자를 모두 고른 것은?")
-//                            || newQuestion.content.contains("허가를 받아야 하는 경우인 것은?")
-//                            || newQuestion.content.contains("인정되는 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 같은 것은?") {
-//                            newQuestion.questionType = .Select
-//                            newQuestion.questionOX = .O
-//                        } else if newQuestion.content.contains("옳지 않은 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 부합하지 않는 것은?")
-//                            || newQuestion.content.contains("헌법재판소 또는 대법원의 판례와 합치되지 않는 것은?")
-//                            || newQuestion.content.contains("취할 수 있는 법적 대응에 해당하지 않는 것은?")
-//                            || newQuestion.content.contains("물을 수 없는 것은?")
-//                            || newQuestion.content.contains("형법이론상의 논점과 관련이 없는 것은?")
-//                            || newQuestion.content.contains("타당한 항변으로 볼 수 없는 것은?")
-//                            || newQuestion.content.contains("없는 자를 모두 고른 것은?")
-//                            || newQuestion.content.contains("허가를 받아야 하는 경우가 아닌 것은?")
-//                            || newQuestion.content.contains("인정되지 않는 것은?")
-//                            || newQuestion.content.contains("판례의 입장과 다른 것은?") {
-//                            newQuestion.questionType = .Select
-//                            newQuestion.questionOX = .X
-//                        } else if newQuestion.content.contains("용어를 올바르게 나열한 것은?")
-//                            || newQuestion.content.contains("바르게 연결된 것은?")
-//                            || newQuestion.content.contains("각 얼마를 지급하여야 하는가?")
-//                            || newQuestion.content.contains("만료된 날짜는 언제인가?")
-//                            || newQuestion.content.contains("생략할 수 있는 절차는?")
-//                            || newQuestion.content.contains("우선적으로 배당받을 금액은?")
-//                            || newQuestion.content.contains("될 수 있는 것은?") {
-//                            newQuestion.questionType = .Select
-//                            newQuestion.questionOX = .Correct
-//                        }
-//                    }
                     
                     
                     
@@ -596,7 +506,18 @@ class DataConverter: NSObject {
                     }
                     
                     
+                    // 질문을 분석하여 문제타입 검토
+                    
+                    // content를 잘 분석하면 많은 정보를 얻을 수 잇을 가능성이 많다. 향후 경우의 수를 최대한 많이 생각해서
+                    // 시간 날때마다 틈틈히 추가해 나가는 것이 필요하다 (+) 2017. 5. 11.
+                    
+                    // 여기서 newQuestion.content를 검토하는데 사실 raw데이터이다. 편리하기는하나 위험할 수 있다 위험점에 대허서 미리 생각해야 한다.
+                    
+                    
+                    
                     let questionContentPairs = DataConverterData().questionContentPair
+                    
+ 
                     
                     
                     // 문제의논리에 매우 중요한 함수이므로 오류가 없는지 다시 확인
