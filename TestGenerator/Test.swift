@@ -47,7 +47,7 @@ class Test : DataStructure {
         
         for test in testSubject.tests {
             if test.key == str {
-                fatalError("\(str)과 똑같은 시험이 이미 testDB \(testCategory.key)에 있음")
+                fatalError("\(str)과 똑같은 시험이 이미 testDB \(testSubject.key)에 있음")
             }
         }
         

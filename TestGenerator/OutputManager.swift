@@ -19,15 +19,15 @@ class OutputManager {
     var url : URL? {
         let path : URL?
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            path = dir.appendingPathComponent("Test").appendingPathComponent("Storage")
+            path = dir.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage")
         } else {
             path = nil
         }
         return path
     }
-    
-    init() {
-    }
+//
+//    init() {
+//    }
     
     
     func questionPublish(
