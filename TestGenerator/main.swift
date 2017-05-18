@@ -16,7 +16,7 @@ print(storageManager.log)
 
 
 let outputManager = OutputManager()
-let instrcutionManger = InstrctionManager(testDatabase : testDatabase, outputManager : outputManager)
+let instrcutionManger = InstructionManager(testDatabase : testDatabase, outputManager : outputManager)
 
 
 if CommandLine.argc > 1 {
@@ -24,6 +24,16 @@ if CommandLine.argc > 1 {
         instrcutionManger.consoleIO.isDebug = true
     }
 }
+
+var testCategory = TestCategory(testDatabase: testDatabase, category: "변호사 시험 샘플(모의고사, 기출)")
+var testSubject = TestSubject(testCategory: testCategory, subject: "민사법")
+testSubject.setSampleTest()
+
+
+let que = testDatabase.categories[1].testSubjects[0].tests[0].questions[0]
+let a = Solver(que)
+print(a.log)
+
 
 instrcutionManger.didInitializationComplete()
 
@@ -34,9 +44,6 @@ print("bye!")
 //var input : String
 
 
-//var testCategory = TestCategory(testDatabase: testDatabase, category: "변호사 시험 샘플(모의고사, 기출)")
-//var testSubject = TestSubject(testCategory: testCategory, subject: "민사법")
-//testSubject.setSampleTest()
 //
 
 

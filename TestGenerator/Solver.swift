@@ -1,5 +1,5 @@
 //
-//  QuestionShuffled.swift
+//  Solver.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 4. 10..
@@ -8,18 +8,17 @@
 
 import Foundation
 
-class QuestionShuffled {
-    var showLog = true
+class Solver {
+    var log = ""
     
-    
-    let question : Question
+    var question : Question
     
     var selections = [Selection]()
     var lists = [List]()
     
     
     //공통, 초기화 단계에서 꼭 정답의 존재를 확인해야 함
-    var answerSelectionModifed : Selection
+    var answerSelectionModifed : Selection?
     var isOXChanged = false
     var isAnswerChanged = false
     
@@ -27,37 +26,75 @@ class QuestionShuffled {
     var originalShuffleMap = [(original : List, shuffled : List)]()
     var answerListSelectionModifed = [List]()
     
-    init?(question : Question, showLog: Bool = true) {
-        self.showLog = showLog
+    
+    // Restore용 초기화함수
+    init(_ question: Question, selections: [Selection], lists: [List], answerSelectionModifed: Selection?, isOXChanged: Bool, isAnswerChanged: Bool, originalShuffleMap: [(List,List)], answerListSelectionModifed : [List]) {
+        self.question = question
+        self.selections = selections
+        self.lists = lists
+        self.answerSelectionModifed = answerSelectionModifed
+        self.isOXChanged = isOXChanged
+        self.isAnswerChanged = isAnswerChanged
+        self.originalShuffleMap = originalShuffleMap
+        self.answerListSelectionModifed = answerListSelectionModifed
+    }
+    
+    
+    
+    
+    // shufflet
+    init(_ question : Question, gonnaShuffle : Bool = true) {
+        log = newLog("\(#file)")
         
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
         //http://stackoverflow.com/questions/31038759/conditional-binding-if-let-error-initializer-for-conditional-binding-must-hav
         //conditional binding에 관하여
 
+        
+        // 0. 문제를 저장하여 초기화 완료
+        self.question = question
         // 주어진 문제에 답이 있는지 확인
         guard let ansSel = question.answerSelection else {
-            print("\(question.key) Shuffling하려하니 문제 정답이 없음")
-            return nil
+            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 정답이 없음")
+            log = closeLog(log, file: "\(#function)")
+            return
         }
-        // 완성 2017. 4. 26.
-
-        guard question.selections.count != 0 else {
-            print("\(question.key) Shuffling하려하니 문제 선택지가 없음")
-            return nil
+        
+        // 완성 2017. 4. 26.  -> 정답은 없을 수 없도록 questiondㅔ서 체크하므로 이 에러체크를 그냥 nil반환에서 리턴으로 수정함 2017. 5. 19.
+        // 그러나 선택지가 없는 것은 가능할 것임 이때에는 그냥 nil말고 질문만 반환하면 될것, 어짜피 selections는 []으로 초기화 되 있으므로 논리에 어긋나지 않음
+        // 가드 구문에서 if문으로 수정해서 로그 찍는 걸로만 끝냄
+        if question.selections.count == 0 {
+            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 선택지가 없음")
+            log = closeLog(log, file: "\(#function)")
+            return
         }
-
-        // 0. 문제, 목록, 선택지, 정답의 주소를 저장
-        self.question = question
+        
+        
+        // 0. 에러체크 끝났으니 목록, 선택지, 정답의 주소를 저장
         self.lists = question.lists //하나도 없어도 셔플링은 가능할 것, Find 유형 문제일 때 에러체크를 하는게 좋을까?
         self.selections = question.selections
         self.answerSelectionModifed = ansSel
         
         // 추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
 
-        if showLog {
-            print("-\(question.key) 문제 변경을 시작함")
+        
+        if !gonnaShuffle {
+            self.answerListSelectionModifed = question.answerLists
+            
+            for list in lists {
+                self.originalShuffleMap.append((list,list))
+            }
+            
+            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) 문제를 온전하게 보존하여 초기화함")
+            log = closeLog(log, file: "\(#function)")
+            return
         }
+        
+
+        log = writeLog(log, funcName: "\(#function)", outPut: "-\(question.key) 문제 변경을 시작함")
+        
+        
         // 문제를 섞는 가장 중요한 함수
         switch question.questionType {
             
@@ -79,17 +116,26 @@ class QuestionShuffled {
         case .Unknown:
             self.selections = changeCommonTypeQuestion() // 선택지 순서만 변경하고 끝나게 됨
         }
-        if showLog {
-            print("-\(question.key) 문제 변경성공")
+        
+        let logstr1 = self.isOXChanged ? "변경하고" : "변경하지 않고"
+        let logstr2 = self.isAnswerChanged ? "변경하였음" : "변경하지 않았음"
+        log = writeLog(log, funcName: "\(#function)", outPut: "문제OX를 \(logstr1) 정답을 \(logstr2)")
+        if question.answer == self.answerSelectionModifed!.number {
+            log = writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 변경하지 않음")
+        } else {
+            log = writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 \(self.answerSelectionModifed!.number)로 변경함")
         }
+        
+        log = closeLog(log, file: "\(#function)")
+        
+        return
     }
+    
     
     // 공통 변경사항
     func changeCommonTypeQuestion() -> [Selection] {
         // 1. 선택지의 순서를 변경
-        if showLog {
-            print("--1. 선택지 순서 변경함")
-        }
+        log = writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
         return selections.shuffled()
     }
     
@@ -205,7 +251,7 @@ class QuestionShuffled {
         let selections = changeCommonTypeQuestion()
         var isOXChanged = false
         var isAnswerChanged = false
-        var answerSelectionModifed : Selection = self.answerSelectionModifed
+        var answerSelectionModifed : Selection = self.answerSelectionModifed!
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.notContent == nil ? false : true
@@ -230,13 +276,9 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                if showLog {
-                    print("--2. 문제와 선택지 OX 변경함")
-                }
+                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경함")
             } else {
-                if showLog {
-                    print("--2. 문제와 선택지 OX 변경안함")
-                }
+                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
@@ -251,9 +293,7 @@ class QuestionShuffled {
 //                print("--\(question.key) 변형문제의 정답찾기 실패")
                 fatalError("--\(question.key) 변형문제의 정답찾기 실패")
             }
-           if showLog {
-                print("--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
-            }
+            log = writeLog(log, funcName: "\(#function)", outPut: "--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
         }
         return (selections, isOXChanged, isAnswerChanged, answerSelectionModifed)
     }
@@ -289,9 +329,7 @@ class QuestionShuffled {
         }
         
         lists.shuffle()
-        if showLog {
-            print("--1. 목록 순서 변경함")
-        }
+        log = writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.notContent == nil ? false : true
@@ -317,13 +355,9 @@ class QuestionShuffled {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                if showLog {
-                    print("--2. 문제와 목록선택지 OX 변경함")
-                }
+                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경함")
             } else {
-                if showLog {
-                    print("--2. 문제와 목록선택지 OX 변경안함")
-                }
+                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
@@ -351,6 +385,7 @@ class QuestionShuffled {
                     tempListSelections.remove(at: ix)
                 }
             }
+            
             for ansSel in answerListSelectionModifed {
                 if let ix = tempListSelectionsShuffled.index(where: {$0 === ansSel}) {
                     tempListSelectionsShuffled.remove(at: ix)
@@ -359,21 +394,20 @@ class QuestionShuffled {
             for index in 0...tempListSelectionsShuffled.count-1 {
                 originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
             }
-            if showLog {
-                print("--3. 목록선택지 정답을 아래와 같이 변경")
-            }
+            log = writeLog(log, funcName: "\(#function)", outPut: "--3. 목록선택지 정답을 아래와 같이 변경")
+            
             for (oriSel, shuSel) in originalShuffleMap {
-                if showLog {
-                    print("      원래 목록선택지:",oriSel.getListString(), " -> 변경:", shuSel.getListString())
-                }
+                let logstr = "      원래 목록선택지:  "+oriSel.getListString()+"   -> 변경:  "+shuSel.getListString()
+                log = writeLog(log, funcName: "\(#function)", outPut: logstr)
+                print()
             }
             isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
             // Array를 멋지게 이용해서 코드를 대폭 줄일 수 있는 방안을 연구해야 한다 (+) 2017. 4. 30.
-            
         }
         return (selections, isOXChanged, answerListSelectionModifed, originalShuffleMap, isAnswerChanged)
     }
+    
     
     // Find유형의 문제의 선택지를 출력하는 함수
     func getModifedListContentStatementInSelectionOfFindTypeQuestion(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
@@ -422,6 +456,137 @@ class QuestionShuffled {
         
         return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
+    
+    
+    
+    
+    
+    func publish(outputManager: OutputManager, showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
+        
+        outputManager.showAnswer = showAnswer
+        outputManager.showTitle = showTitle
+        outputManager.showAttribute = showAttribute
+        outputManager.showOrigSel = showOrigSel
+        
+        //질문
+        let questionModifed = self.getModifedQuestion()  // (questionOX: QuestionOX, content: String)
+        
+        //목록
+        var listsContent = [String]()
+        var listsIscOrrect = [Bool?]()
+        var listsIsAnswer = [Bool?]()
+        var listsNumberString = [String]()
+        var origialListsNumberString = [String]()
+        
+        for (index, list) in self.lists.enumerated() {
+            let listResult = self.getModfiedStatementOfCommonStatement(statement: list)
+            // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
+            listsContent.append(listResult.content)
+            listsIscOrrect.append(listResult.iscOrrect)
+            listsIsAnswer.append(listResult.isAnswer)
+            listsNumberString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
+        }
+        
+        //선택지와 정답
+        var selectionsContent = [String]()
+        var selsIscOrrect = [Bool?]()
+        var selsIsAnswer = [Bool?]()
+        var originalSelectionsNumber = [String]()
+        
+        var ansSelContent: String = ""
+        var ansSelIscOrrect: Bool?
+        var ansSelIsAnswer: Bool?
+        var questionAnswer: Int = 0
+        var originalAnsSelectionNumber: String = ""
+        
+        for (index,sel) in self.selections.enumerated() {
+            // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (+)
+            var selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+            
+            switch self.question.questionType {
+            case .Find:
+                switch self.question.questionOX {
+                case .O:
+                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .X:
+                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .Correct:
+                    _ = true
+                case .Unknown:
+                    _ = true
+                }
+            case .Select:
+                _ = true
+            case .Unknown:
+                _ = true
+            }
+            
+            selectionsContent.append(selResult.content)
+            selsIscOrrect.append(selResult.iscOrrect)
+            selsIsAnswer.append(selResult.isAnswer)
+            originalSelectionsNumber.append(sel.number.roundInt)
+            
+            if sel === self.answerSelectionModifed {
+                ansSelContent = selResult.content
+                ansSelIscOrrect = selResult.iscOrrect
+                ansSelIsAnswer = selResult.isAnswer
+                questionAnswer = (index + 1)
+                originalAnsSelectionNumber = sel.number.roundInt
+            }
+        }
+        
+        
+        
+        
+        
+        //정답
+        // 직접 가져오는 것보다 위의 선택지에서 확인하는 것이 더 쉬우므로 없애버림 2017. 5. 18.
+        //        var ansSel = self.getModfiedStatementOfCommonStatement(statement: self.answerSelectionModifed)
+        //                     // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
+        //        if self.question.questionType == .Find {
+        //            ansSel = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: self.answerSelectionModifed)
+        //        }
+        
+        
+        outputManager.questionPublish(
+            //            testCategroy: self.question.test.testSubject.testCategory.category,
+            //            testCategoryHelper: self.question.test.testSubject.testCategory.catHelper,
+            //            testSubject: self.question.test.testSubject.subject,
+            isPublished: false, // 변형한 문제이므로 false로 항상 입력
+            
+            testKey: self.question.test.key,
+            
+            //            testNumber: self.question.test.number,
+            
+            questionNumber: self.question.number,
+            questionContent: questionModifed.content,  // 셔플하면 변경
+            questionContentNote: self.question.contentNote,
+            questionPassage:  self.question.passage,
+            questionPassageSuffix:  self.question.passageSuffix,
+            questionType: self.question.questionType,
+            questionOX: questionModifed.questionOX ,   // 셔플하면 변경
+            
+            listsContents : listsContent, // 셔플하면 변경
+            listsIscOrrect : listsIscOrrect, // 셔플하면 변경
+            listsNumberString : listsNumberString, // 셔플하면 변경
+            origialListsNumberString : origialListsNumberString, // 셔플하면 변경
+            
+            questionSuffix:  self.question.questionSuffix,
+            
+            selectionsContent : selectionsContent,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber, // 셔플하면 변경,
+            
+            ansSelContent: ansSelContent,  // 셔플하면 변경
+            ansSelIscOrrect: ansSelIscOrrect,  // 셔플하면 변경
+            ansSelIsAnswer: ansSelIsAnswer,  // 셔플하면 변경
+            questionAnswer: questionAnswer,
+            originalAnsSelectionNumber: originalAnsSelectionNumber
+        )
+    }
+
 }
 
 

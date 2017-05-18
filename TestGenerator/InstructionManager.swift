@@ -8,7 +8,7 @@
 
 import Foundation
 
-class InstrctionManager {
+class InstructionManager {
     
     let consoleIO = ConsoleIO()
     
@@ -180,55 +180,9 @@ class InstrctionManager {
         
         
         
-        if isSame(input, targets: ["selta","selt","ㄴ딧ㅁ","ㄴ딧"]) {
-            
-            var showAnswer = false
-            if isSame(input, targets: ["selta","ㄴ딧ㅁ"]) {
-                showAnswer = true
-            }
-            
-            guard let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase))) else {
-                print("선택한 시험을 찾을 수 없었음")
-                return false
-            }
-            
-            if selectedTest.questions.count == 0 {
-                print(">\(selectedTest.key)에 문제가 하나도 없음")
-                return false
-            }
-            
-            for (index, question) in selectedTest.questions.enumerated() {
-                if index == 0 {
-                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
-                } else {
-                    question.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: false, showOrigSel: false)
-                }
-            }
-            
-            return true
-        }
         
         
         
-        
-        if isSame(input, targets: ["seltqa","seltq","ㄴ딧ㅂㅁ","ㄴ딧ㅂ"]) {
-            
-            var showAnswer = false
-            if isSame(input, targets: ["selqa","ㄴㄷㅣㅂㅁ"]) {
-                showAnswer = true
-            }
-            
-            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
-            
-            guard let selectedQuestion = selectQuestion(selectedTest) else {
-                print(">선택한 문제를 찾을 수 없었음")
-                return false
-            }
-            
-            selectedQuestion.publish(showAttribute: showAnswer, showAnswer: showAnswer, showTitle: true, showOrigSel: false)
-            
-            return true
-        }
         
 //        if isSame(input, targets: ["shuffles","노ㅕㄹ릳ㄴ"]) {
 //            let selectedSubject = selectTestSubject(selectTestCategory(testDatabase))
@@ -664,66 +618,36 @@ class InstrctionManager {
     }
 
     
-    
-    func showOrSolveQuestion(_ que : Question, gonnaShuffle : Bool ,gonnaSolve : Bool) {
-        let showAttribute = gonnaSolve ? false : true
-        let showAnswer = gonnaSolve ? false : true
-        let showOrigSel = gonnaSolve ? false : true
-        
-        if gonnaShuffle {
-            if let queShu = QuestionShuffled(question: que) {
-                QShufflingManager(outputManager: outputManager, qShuffled: queShu).publish(showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
-                
-            } else {
-                que.publish(showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
-            }
-        } else {
-            que.publish(showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
-        }
-    }
-    
     // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
     // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
     // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
-    func solveQuestion(_ question : Question, gonnaShuffle:Bool = false) -> (isShuffled : Bool, isRight : Bool, questionShuffled : QuestionShuffled?) {
+    func solveQuestion(_ question : Question, gonnaShuffle:Bool = false) -> (isShuffled : Bool, isRight : Bool, questionShuffled : Solver?) {
         
         var isRight = false
-        var quetionShuffled : QuestionShuffled?
+        let quetionShuffled : Solver = Solver(question, gonnaShuffle: true)
+            
+            
+            
+            
+        quetionShuffled.publish(outputManager: outputManager, showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
+    
+        print("정답은? $ ", terminator : "")
+        input = getInput()
         
-        if gonnaShuffle {
-            
-            
-            quetionShuffled = QuestionShuffled(question: question, showLog: false)
-            
-            guard let qShuWrapped = quetionShuffled else {
-                print("\(question.key) 문제는 변형할 수 없음")
-                return (false, isRight, quetionShuffled)
-            }
-            
-            
-            
-            QShufflingManager(outputManager: outputManager, qShuffled: qShuWrapped).publish(showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
-        
-        
-        
-            print("정답은? $ ", terminator : "")
-            input = getInput()
-            
-            if Int(input) == (quetionShuffled?.getAnswerNumber())! + 1 {
-                print("정답!", terminator: "")
-                isRight = true
+        if Int(input) == quetionShuffled.getAnswerNumber() + 1 {
+            print("정답!", terminator: "")
+            isRight = true
+        } else {
+            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
+            print("오답임...정답은")
+            var answerContent = ""
+            if question.questionType == .Find {
+                answerContent = quetionShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: quetionShuffled.answerSelectionModifed!).content
             } else {
-                //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
-                print("오답임...정답은")
-                var answerContent = ""
-                if question.questionType == .Find {
-                    answerContent = qShuWrapped.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: qShuWrapped.answerSelectionModifed).content
-                } else {
-                    answerContent = qShuWrapped.getModfiedStatementOfCommonStatement(statement: qShuWrapped.answerSelectionModifed).content
-                }
-                print("   \(((quetionShuffled?.getAnswerNumber())! + 1).roundInt) \(answerContent.spacing(3))")
-                print("확인??", terminator: "")
+                answerContent = quetionShuffled.getModfiedStatementOfCommonStatement(statement: quetionShuffled.answerSelectionModifed!).content
             }
+            print("   \((quetionShuffled.getAnswerNumber() + 1).roundInt) \(answerContent.spacing(3))")
+            print("확인??", terminator: "")
         }
         
         
@@ -759,7 +683,7 @@ class InstrctionManager {
     
 }
 
-extension InstrctionManager {
+extension InstructionManager {
     
     
 //    func solveShuffledQuestions(_ questions : [Question]) -> [Question] {
@@ -799,13 +723,20 @@ extension InstrctionManager {
     
     // 함수를 건내줘서 출력하는 것으로 추후 수정 필요 2017. 5. 19.
     func findQuestion(_ instruction : InstShow, value: String, gonnaShuffle : Bool = false, gonnaSolve : Bool = false) {
+        
+        let showAttribute = gonnaSolve ? false : true
+        let showAnswer = gonnaSolve ? false : true
+        let showOrigSel = gonnaSolve ? false : true
+        
+
+        
         switch instruction {
         case .all:
             for testCategory in testDatabase.categories {
                 for testSubject in testCategory.testSubjects {
                     for test in testSubject.tests {
                         for que in test.questions {
-                            showOrSolveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve)
+                            Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
                         }
                     }
                 }
@@ -818,7 +749,8 @@ extension InstrctionManager {
             for testSubject in testCategory.testSubjects {
                 for test in testSubject.tests {
                     for que in test.questions {
-                        showOrSolveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve)
+                        Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+
                     }
                 }
             }
@@ -833,7 +765,8 @@ extension InstrctionManager {
             }
             for test in testSubject.tests {
                 for que in test.questions {
-                    showOrSolveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve)
+                    Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+
                 }
             }
         case .test:
@@ -850,7 +783,7 @@ extension InstrctionManager {
                 return
             }
             for que in test.questions {
-                showOrSolveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve)
+                Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
             }
         case .question:
             guard let testCategory = selectTestCategory(testDatabase) else {
@@ -869,10 +802,11 @@ extension InstrctionManager {
                 consoleIO.writeMessage("문제를 찾을 수 없음", to: .error)
                 return
             }
-            showOrSolveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve)
+            Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
         case .unknown:
             consoleIO.unkown(value)
         }
+        
     }
     
     func modifyQuestion(_ question: Question) {
@@ -885,7 +819,9 @@ extension InstrctionManager {
             return
             
         case "show" :
-            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+            
+            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+
             print()
             print("<반전된 문제>")
             question.controversalPublish()
