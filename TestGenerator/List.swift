@@ -9,6 +9,7 @@
 import Foundation
 
 class List: Statement {
+    var log = ""
     // key가 선택지이면 S접두어, ㄱ,ㄴ,ㄷ, 가,나,다이면 L접두어
     
     var listStringType : SelectStringType = .koreanCharcter
@@ -67,8 +68,8 @@ class List: Statement {
         } else if self.listStringType == .koreanLetter {
             return intToGet.koreanLetterInt
         }
-        print("\(self.question) 문제의 목록 문자열 찾기를 실패함")
-        return "??"
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(self.question) 문제의 목록 문자열 찾기를 실패함")
+        return "목록 문자열 찾기 실패"
     }
 }
 

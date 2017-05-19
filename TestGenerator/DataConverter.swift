@@ -36,7 +36,7 @@ class DataConverter: NSObject {
          questionFileNames : [String],
          directory : String? = nil) {
         
-        self.log = newLog("\(#file)")
+        self.log = ConsoleIO.newLog("\(#file)")
         self.testDatabase = testDatabase
         self.answerFileName = answerFileName
         self.questionFileNames = questionFileNames
@@ -124,8 +124,8 @@ class DataConverter: NSObject {
         
         // http://stackoverflow.com/questions/24048430/logging-method-signature-using-swift
         // Logging Method signature using swift
-        log = writeLog(log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
-        log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파싱 완료")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(result.count)개의 문제와 정답을 찾았음")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파싱 완료")
         
         return result
     }
@@ -184,14 +184,14 @@ class DataConverter: NSObject {
         for cat in self.testCategories {
             for sub in cat.testSubjects {
                 for te in sub.tests {
-                    log = writeLog(log, funcName: "\(#function)", outPut: "\(cat.category), \(sub.subject) 과목 \(te.number)회 시험에서 \(te.answers.count)개의 정답을 확인함")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(cat.category), \(sub.subject) 과목 \(te.number)회 시험에서 \(te.answers.count)개의 정답을 확인함")
                 }
             }
             
         }
     
         
-        log = writeLog(log, funcName: "\(#function)", outPut: "파싱자료를 분석하여 -> \(catCounter)개의 시험명 \(subCounter)개의 과목의 \(testCounter)회의 시험에서 \(answerCounter)개의 정답을 찾았음")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "파싱자료를 분석하여 -> \(catCounter)개의 시험명 \(subCounter)개의 과목의 \(testCounter)회의 시험에서 \(answerCounter)개의 정답을 찾았음")
         
     }
     
@@ -221,7 +221,7 @@ class DataConverter: NSObject {
             
             // 시험별로 쪼개고
             let testStrings = sliceString(regexPattern: testSep, string: wholeTestString)
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파일을 \(testStrings.count)개의 시험으로 나눠 파싱시작")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(path.path.precomposedStringWithCompatibilityMapping) 파일을 \(testStrings.count)개의 시험으로 나눠 파싱시작")
             
             
             
@@ -266,7 +266,7 @@ class DataConverter: NSObject {
                     fatalError("정답파일에서 추출한 과목명이 없는 이상한 시험정보 입력 \(testSep)")
                 }
                 
-                log = writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작")
                 
                 
                 // 그리고 이 시험의 위치 포인터 index, jndex를 찾아낸뒤 문제의 정보를 확인하기 시작함
@@ -324,7 +324,7 @@ class DataConverter: NSObject {
                         fatalError("파싱한 문제에 맞는 전에 입력해두었던 문제의 정답이 없음")
                     }
                     newQuestion.answer = answer
-                    log = writeLog(log, funcName: "\(#function)", outPut: "Q\(newQuestion.number) - 파싱시작 & 정답 \(newQuestion.answer) 입력완료")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "Q\(newQuestion.number) - 파싱시작 & 정답 \(newQuestion.answer) 입력완료")
                     
                     
                     
@@ -336,7 +336,7 @@ class DataConverter: NSObject {
                     if let taggedTest = contentRaw.getTaggedText("p").taggedText {
                         newQuestion.passage = taggedTest
                         contentRaw = contentRaw.getTaggedText("p").modifiedText
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 추가"))
                     }
                     
                 // 1-2. 지문Suffix
@@ -347,7 +347,7 @@ class DataConverter: NSObject {
                         }
                         newQuestion.passageSuffix = taggedTest
                         contentRaw = contentRaw.getTaggedText("d").modifiedText
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 suffix 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 suffix 추가"))
                     }
 
                     
@@ -360,7 +360,7 @@ class DataConverter: NSObject {
                     let contentRawTemp = contentRaw
                     contentRaw = anotherSelectionPaser(contentRaw)
                     if contentRawTemp != contentRaw {
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지에 있는 다른 진술에 관한 정보 태그<anotherStatement>을 반영함"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지에 있는 다른 진술에 관한 정보 태그<anotherStatement>을 반영함"))
                     }
                     
                     
@@ -398,13 +398,12 @@ class DataConverter: NSObject {
                     
                     if let numberOfSelectionsWrapped = numberOfSels {
                         if selectionStringSliced.count != numberOfSelectionsWrapped {
-                            log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지가 필요한 갯수 \(numberOfSelectionsWrapped)와 다른 \(selectionStringSliced.count)개 확인)"))
-                            print(questionString)
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지가 필요한 갯수 \(numberOfSelectionsWrapped)와 다른 \(selectionStringSliced.count)개 확인)"))
                             fatalError("\(testString.key) - \(questionTitle) 에는 선택지가 필요한 갯수인 \(numberOfSelectionsWrapped)개와 다른 \(selectionStringSliced.count)개가 있음")
                         }
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(필요한 개수와 동일)"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(필요한 개수와 동일)"))
                     } else {
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(시험마다 동일한지 체크안함)"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(시험마다 동일한지 체크안함)"))
                     }
                     
                     // 문제텍스트에서 선택지 텍스트를 제거함, 이게 문제의 content가 될 수 있음
@@ -439,7 +438,7 @@ class DataConverter: NSObject {
                     newQuestion.lists = listParserResult.lists
                     if listsString != nil {
                         newQuestion.questionType = .Find
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "목록 선택지 \(newQuestion.lists.count)개 확인"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "목록 선택지 \(newQuestion.lists.count)개 확인"))
                     }
                     
                     
@@ -458,7 +457,7 @@ class DataConverter: NSObject {
                         newQuestion.questionSuffix = contentSuffix?.trimmingCharacters(in: .whitespacesAndNewlines)
                     }
                     if newQuestion.questionSuffix != nil {
-                        log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문 suffix 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문 suffix 추가"))
                     }
                     
                 //6. 질문
@@ -482,7 +481,7 @@ class DataConverter: NSObject {
                             if newQuestion.contentNote == nil {
                                 newQuestion.contentNote = result.textToElimate!
                                 contentRaw = result.elimatedText
-                                log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문에 Note \"\(newQuestion.contentNote!)\" 추출"))
+                                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문에 Note \"\(newQuestion.contentNote!)\" 추출"))
                             } else {
                                 fatalError("\(path.path) 파일 \(testString.key) \(newQuestion.number) 질문에 질문노트가 여러개 발견되었음")
                             }
@@ -555,14 +554,14 @@ class DataConverter: NSObject {
                         }
                     }
                     
-                    log = writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
                     
                     
                     
                     
                     // 질문 로깅
-                    log = writeLog(log, funcName: "\(#function)", outPut: " 질문 : \""+newQuestion.content+"\"")
-                    log = writeLog(log, funcName: "\(#function)", outPut: " 반전 : \""+(newQuestion.notContent != nil ? newQuestion.notContent! : "없음")+"\"")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: " 질문 : \""+newQuestion.content+"\"")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: " 반전 : \""+(newQuestion.notContent != nil ? newQuestion.notContent! : "없음")+"\"")
                     
                     testCategories[index].testSubjects[jndex].tests[kndex].questions.append(newQuestion)
                     // question 정보중에 추가할게 없는지 확인필요 2017. 5. 7.
@@ -570,7 +569,7 @@ class DataConverter: NSObject {
                     
                     
                 }
-                log = writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "* \(testInfo[1]) \(testInfo[2])과목 \(testInfo[3])회 시험파싱 시작 \(questionStrings.count)개 문제로 나누어 정보를 얻는데 성공")
             }
         }
     }
@@ -692,7 +691,7 @@ class DataConverter: NSObject {
                 }
             }
         }
-        log = writeLog(log, funcName: "\(#function)", outPut: "\(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지를 불러오기 완료")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(catCounter)개의 범주 \(subCounter)개의 과목 \(testCounter)개 회차의 시험에서 \(queCounter)개 문제와 \(listCounter)개 목록진술 \(selCounter)개의 선택지를 불러오기 완료")
         return true
     }
 

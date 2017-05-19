@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Solver {
+class Solver : DataStructure {
     var log = ""
     
     var question : Question
@@ -27,6 +27,15 @@ class Solver {
     var answerListSelectionModifed = [List]()
     
     
+    // solver
+    var date : Date? = nil
+    var isRight : Bool? = nil
+    
+    
+    // hirechy 참고용
+    let generator : Generator? = nil
+    
+    
     // Restore용 초기화함수
     init(_ question: Question, selections: [Selection], lists: [List], answerSelectionModifed: Selection?, isOXChanged: Bool, isAnswerChanged: Bool, originalShuffleMap: [(List,List)], answerListSelectionModifed : [List]) {
         self.question = question
@@ -37,14 +46,15 @@ class Solver {
         self.isAnswerChanged = isAnswerChanged
         self.originalShuffleMap = originalShuffleMap
         self.answerListSelectionModifed = answerListSelectionModifed
+        
+        super.init("hey")
     }
     
-    
-    
-    
-    // shufflet
+    // shuffle 및 bypass용 초기화함수
     init(_ question : Question, gonnaShuffle : Bool = true) {
-        log = newLog("\(#file)")
+        let key = "key"
+        
+        log = ConsoleIO.newLog("\(#file)")
         
         // http://stackoverflow.com/questions/34560768/can-i-throw-from-class-init-in-swift-with-constant-string-loaded-from-file
         // Can I throw from class init() in Swift with constant string loaded from file?, 초기화 단계에서 정답의 존재가 없다면 에러를 발생하다록 추후 수정(-) 2017. 4. 26.
@@ -56,8 +66,9 @@ class Solver {
         self.question = question
         // 주어진 문제에 답이 있는지 확인
         guard let ansSel = question.answerSelection else {
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 정답이 없음")
-            log = closeLog(log, file: "\(#function)")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 정답이 없음")
+            log = ConsoleIO.closeLog(log, file: "\(#file)")
+            super.init(key)
             return
         }
         
@@ -65,8 +76,9 @@ class Solver {
         // 그러나 선택지가 없는 것은 가능할 것임 이때에는 그냥 nil말고 질문만 반환하면 될것, 어짜피 selections는 []으로 초기화 되 있으므로 논리에 어긋나지 않음
         // 가드 구문에서 if문으로 수정해서 로그 찍는 걸로만 끝냄
         if question.selections.count == 0 {
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 선택지가 없음")
-            log = closeLog(log, file: "\(#function)")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(question.key) Shuffling하려하니 문제 선택지가 없음")
+            log = ConsoleIO.closeLog(log, file: "\(#file)")
+            super.init(key)
             return
         }
         
@@ -75,6 +87,7 @@ class Solver {
         self.lists = question.lists //하나도 없어도 셔플링은 가능할 것, Find 유형 문제일 때 에러체크를 하는게 좋을까?
         self.selections = question.selections
         self.answerSelectionModifed = ansSel
+        super.init(key)
         
         // 추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
 
@@ -86,13 +99,13 @@ class Solver {
                 self.originalShuffleMap.append((list,list))
             }
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(question.key) 문제를 온전하게 보존하여 초기화함")
-            log = closeLog(log, file: "\(#function)")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(question.key) 문제를 온전하게 보존하여 초기화함")
+            log = ConsoleIO.closeLog(log, file: "\(#file)")
             return
         }
         
 
-        log = writeLog(log, funcName: "\(#function)", outPut: "-\(question.key) 문제 변경을 시작함")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "-\(question.key) 문제 변경을 시작함")
         
         
         // 문제를 섞는 가장 중요한 함수
@@ -119,23 +132,25 @@ class Solver {
         
         let logstr1 = self.isOXChanged ? "변경하고" : "변경하지 않고"
         let logstr2 = self.isAnswerChanged ? "변경하였음" : "변경하지 않았음"
-        log = writeLog(log, funcName: "\(#function)", outPut: "문제OX를 \(logstr1) 정답을 \(logstr2)")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "문제OX를 \(logstr1) 정답을 \(logstr2)")
         if question.answer == self.answerSelectionModifed!.number {
-            log = writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 변경하지 않음")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 변경하지 않음")
         } else {
-            log = writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 \(self.answerSelectionModifed!.number)로 변경함")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "정답은 \(question.answer)에서 \(self.answerSelectionModifed!.number)로 변경함")
         }
         
-        log = closeLog(log, file: "\(#function)")
+        log = ConsoleIO.closeLog(log, file: "\(#file)")
         
         return
     }
     
     
+    
+    
     // 공통 변경사항
     func changeCommonTypeQuestion() -> [Selection] {
         // 1. 선택지의 순서를 변경
-        log = writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
         return selections.shuffled()
     }
     
@@ -276,9 +291,9 @@ class Solver {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경함")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경함")
             } else {
-                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경안함")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
@@ -293,10 +308,12 @@ class Solver {
 //                print("--\(question.key) 변형문제의 정답찾기 실패")
                 fatalError("--\(question.key) 변형문제의 정답찾기 실패")
             }
-            log = writeLog(log, funcName: "\(#function)", outPut: "--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
         }
         return (selections, isOXChanged, isAnswerChanged, answerSelectionModifed)
     }
+    
+    
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
     func getAnswerNumber() -> Int {
         //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
@@ -306,6 +323,9 @@ class Solver {
         }
         return ansNumber
     }
+    
+    
+    
     
     private func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [List], originalShuffleMap : [(List, List)], isAnswerChanged : Bool){
         
@@ -329,7 +349,7 @@ class Solver {
         }
         
         lists.shuffle()
-        log = writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
         
         // 2,3-1. 정오변경 지문이 문제에 있는지 확인
         let isOppositeQuestionExist = question.notContent == nil ? false : true
@@ -355,9 +375,9 @@ class Solver {
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
-                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경함")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경함")
             } else {
-                log = writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경안함")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--2. 문제와 목록선택지 OX 변경안함")
             }
             
             // 3. 임의로 답변을 변경
@@ -394,12 +414,12 @@ class Solver {
             for index in 0...tempListSelectionsShuffled.count-1 {
                 originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
             }
-            log = writeLog(log, funcName: "\(#function)", outPut: "--3. 목록선택지 정답을 아래와 같이 변경")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--3. 목록선택지 정답을 아래와 같이 변경")
             
             for (oriSel, shuSel) in originalShuffleMap {
                 let logstr = "      원래 목록선택지:  "+oriSel.getListString()+"   -> 변경:  "+shuSel.getListString()
-                log = writeLog(log, funcName: "\(#function)", outPut: logstr)
-                print()
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: logstr)
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "")
             }
             isAnswerChanged = true
             // 3. 임의로 답변을 변경 끝
@@ -456,7 +476,6 @@ class Solver {
         
         return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
-    
     
     
     
@@ -586,8 +605,115 @@ class Solver {
             originalAnsSelectionNumber: originalAnsSelectionNumber
         )
     }
+    
+    
+    // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
+    // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
+    // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
+    func solve(consoleIO : ConsoleIO) {
+        let userAnswerString = consoleIO.getInput("정답을 입력하세요 ")
+        let userAnswerUnwrapped = Int(userAnswerString)
+        
+        // 입력이 숫자인지 확인
+        guard let userAnswer = userAnswerUnwrapped else {
+            consoleIO.writeMessage(to: .error, "숫자입력이 필요함")
+            solve(consoleIO: consoleIO)
+            return
+        }
+        
+        // 입력숫자가 선택지 범위인지 확인
+        if userAnswer < 1 || selections.count < userAnswer {
+            consoleIO.writeMessage(to: .error, "선택지 범위를 벗어난 숫자")
+            solve(consoleIO: consoleIO)
+            return
+        }
+        
+        
+        if selections[userAnswer-1] === answerSelectionModifed {
+            consoleIO.writeMessage("정답!!")
+        } else {
+            consoleIO.writeMessage("오답... 정답은,")
+        }
+        
+        var answer = getModfiedStatementOfCommonStatement(statement: answerSelectionModifed!)
+        switch question.questionType {
+        case .Find:
+            answer = getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: answerSelectionModifed!)
+        case .Select, .Unknown:
+            _ = true
+        }
+        consoleIO.writeMessage(answer.content)
+        
+    }
+    
+    
+    //    func solveQuestion(_ question : Question, gonnaShuffle:Bool = false) -> (isShuffled : Bool, isRight : Bool, questionShuffled : Solver?) {
+    //
+    //        var isRight = false
+    //        let quetionShuffled : Solver = Solver(question, gonnaShuffle: true)
+    //
+    //
+    //
+    //
+    //        quetionShuffled.publish(outputManager: outputManager, showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
+    //
+    //        print("정답은? $ ", terminator : "")
+    //        input = getInput()
+    //
+    //        if Int(input) == quetionShuffled.getAnswerNumber() + 1 {
+    //            print("정답!", terminator: "")
+    //            isRight = true
+    //        } else {
+    //            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
+    //            print("오답임...정답은")
+    //            var answerContent = ""
+    //            if question.questionType == .Find {
+    //                answerContent = quetionShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: quetionShuffled.answerSelectionModifed!).content
+    //            } else {
+    //                answerContent = quetionShuffled.getModfiedStatementOfCommonStatement(statement: quetionShuffled.answerSelectionModifed!).content
+    //            }
+    //            print("   \((quetionShuffled.getAnswerNumber() + 1).roundInt) \(answerContent.spacing(3))")
+    //            print("확인??", terminator: "")
+    //        }
+    
+    
+    //        print("-계속(),노트(n),태그(t),문제수정(m),중단(s) $ ", terminator: "")
+    //        input = getInput()
+    //
+    //        if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
+    //            print("노트를 입력하세요>", terminator: "")
+    //            input = getInput()
+    //        } else if input.caseInsensitiveCompare("t") == ComparisonResult.orderedSame || input == "t" {
+    //            print("태그를 입력하세요>", terminator: "")
+    //            // 데이터 추가 필요 2017. 5. 6. (+)
+    //            let tagInput = getInput()
+    //            print("> 태그(\(tagInput)) 입력완료~")
+    //            _ = readLine()
+    //            print()
+    //        } else if input.caseInsensitiveCompare("m") == ComparisonResult.orderedSame || input == "ㅡ" {
+    //            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+    //            print()
+    //            print("<반전된 문제>")
+    //            question.controversalPublish()
+    //            print()
+    //            modifyQuestion(question)
+    //        } else if input.caseInsensitiveCompare("s") == ComparisonResult.orderedSame || input == "ㄴ" {
+    //            print(question.key, "문제 변형을 중단함")
+    //            return (true, isRight, quetionShuffled)
+    //        }
+    //        
+    
+    //        return (true, isRight, quetionShuffled)
+    //    }
+    
 
+    
+    func edit() {
+        
+    }
 }
+
+
 
 
 //http://stackoverflow.com/questions/24026510/how-do-i-shuffle-an-array-in-swift

@@ -68,9 +68,9 @@ class DC변호사시험 : DataConverter {
         
         
         
-        log = closeLog(log, file: "\(#file)")
+        log = ConsoleIO.closeLog(log, file: "\(#file)")
         if printLog {
-//            print(log)
+            print(log)
         }
         
         

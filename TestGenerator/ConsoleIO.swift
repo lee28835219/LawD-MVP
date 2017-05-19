@@ -14,25 +14,35 @@ import Foundation
 
 
 class ConsoleIO {
-    var isDebug = false
     
-    // 헬프
+    
+    static var isDebug = false
+    static let colorLog = ANSIColors.yellow
+    let colorStandard = ANSIColors.white
+    let colorError = ANSIColors.red
+    let colorPublish = ANSIColors.cyan
+    let colorNotice = ANSIColors.magenta
+    let colorHelp = ANSIColors.green
+    let colorInput = ANSIColors.white
+    
     func printHelp(_ instruction : Instruction) {
         
         var values : [Any] = []
-            
+        
         switch instruction {
         case .InstMain:
             values = InstMain.allValues
         case .InstKey:
             values = InstKey.allValues
-        case .InstShow:
-            values = InstShow.allValues
+        case .InstPublish:
+            values = InstPublish.allValues
+        case .InstSave:
+            values = InstSave.allValues
         }
         
         var str = ""
         for (index,value) in values.enumerated() {
-            if isDebug {
+            if ConsoleIO.isDebug {
                 if index == 0 {
                     str = "? \(value)"
                 } else {
@@ -40,13 +50,15 @@ class ConsoleIO {
                 }
             } else {
                 if index == 0 {
-                    str = "\u{001B}[;2m? \(value)"
+                    str = colorHelp + "? \(value)"
                 }
-                str = str + ", \u{001B}[;2m\(value)"
+                str = str + ", \(value)"
             }
         }
         print(str)
     }
+
+    
     
     func getIntstruction(_ value : String) -> (instruction: InstMain, value:String) {
         return (InstMain(value),value)
@@ -56,66 +68,156 @@ class ConsoleIO {
         return (InstKey(value),value)
     }
     
-    func getShow(_ value : String) -> (instruction: InstShow, value:String) {
-        return (InstShow(value),value)
+    func getPublish(_ value : String) -> (instruction: InstPublish, value:String) {
+        return (InstPublish(value),value)
+    }
+    
+    func getSave(_ value : String) -> (instruction: InstSave, value:String) {
+        return (InstSave(value),value)
     }
     
     
-    func writeMessage(_ message: String, to: OutputType = .publish) {
+    
+    func writeMessage(to: OutputType = .standard, _ message: String = "") {
         switch to {
-        case .standard:
-            if isDebug {
-                print("> \(message)")
+        case .notice:
+            if ConsoleIO.isDebug {
+                print(message)
             } else {
-                print("\u{001B}[;m\(message)")
+                print(colorNotice+message)
+            }
+        case .standard:
+            if ConsoleIO.isDebug {
+                print(message)
+            } else {
+                print(colorStandard+message)
             }
         case .publish:
-            if isDebug {
+            if ConsoleIO.isDebug {
                 print(" \(message)")
             } else {
-                print("\u{001B}[0;21m\(message)")
+                print(colorPublish+" \(message)")
             }
         case .error:
             // 어떤 원리로 폰트가 변화하는지 확인해야 한다. 2017. 5. 18.
-            if isDebug {
+            if ConsoleIO.isDebug {
                 fputs("! \(message)\n", stderr)
             } else {
-                fputs("\u{001B}[0;31m\(message)\n", stderr)
+                fputs(colorError+"! \(message)\n", stderr)
             }
         }
     }
     
     
+    
+    
+    // 유효한 입력을 받는 보조함수
+    // 내가짠 함수가 위의 ray 에 있는거보다 더 효윻ㄹ적인 듯~ 2017. 5. 20
     func getInput(_ prefix:String = "") -> String {
-        
-        let keyboard = FileHandle.standardInput
-        
-        if isDebug{
-            print("\(prefix)$ ", terminator: "")
-        } else {
-            print("\u{001B}[;91m\(prefix)$ ", terminator: "")
+        var goon = true
+        while goon {
+            let str = prefix != "" ? "> \(prefix) $ " : "$ "
+            if ConsoleIO.isDebug{
+                print(str, terminator: "")
+            } else {
+                print(colorInput+str, terminator: "")
+            }
+    
+            let inputRaw = readLine()
+            
+            guard let inputRawWrapped = inputRaw else {
+                writeMessage("유효하지 않은 입력")
+                continue
+            }
+            
+            let input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
+            
+            goon = false
+            return input
         }
-        
-        let inputData = keyboard.availableData
-        
-        let strData = String(data: inputData, encoding: String.Encoding.utf8)!
-        
-        return strData.trimmingCharacters(in: CharacterSet.newlines)
     }
     
-    func unkown(_ value: String) {
+    
+    
+    func unkown(_ value: String, _ isMain : Bool = false) {
         if value != "" {
-            if isDebug {
-                fputs("! \(value)은 알 수 없는 명령어\n", stderr)
+            writeMessage(to: .error, "\(value)은 알 수 없는 명령어")
+            return
+        } else {
+            if isMain {
+                return
             } else {
-                fputs("\u{001B}[0;31m\(value)은 알 수 없는 명령어\n", stderr)
+                writeMessage(to: .standard, "명령 종료")
+                return
             }
         }
     }
+    
+    class func newLog(_ file : String) -> String {
+        if isDebug{
+            return "\(file) 시작 \(Date().HHmmSS)\n"
+        } else {
+            return colorLog + "\(file) 시작 \(Date().HHmmSS)\n"
+        }
+    }
+    
+    class func writeLog(_ log : String, funcName : String, outPut : String) -> String {
+        if isDebug{
+            return  log + "  \(funcName) : \(outPut)\n"
+        } else {
+            return colorLog + log + "  \(funcName) : \(outPut)\n"
+        }
+    }
+    
+    class func closeLog(_ log : String, file : String) -> String {
+        if isDebug{
+            return log + "\(file) 종료 \(Date().HHmmSS)\n"
+        } else {
+            return colorLog + log + "\(file) 종료 \(Date().HHmmSS)\n"
+        }
+    }
+    
+    
 }
 
 enum OutputType {
+    case notice
     case standard
     case publish
     case error
+}
+
+
+// Color ouput with Swift command line tool
+// http://stackoverflow.com/questions/27807925/color-ouput-with-swift-command-line-tool
+enum ANSIColors: String {
+    case black = "\u{001B}[0;30m"
+    case red = "\u{001B}[0;31m"
+    case green = "\u{001B}[0;32m"
+    case yellow = "\u{001B}[0;33m"
+    case blue = "\u{001B}[0;34m"
+    case magenta = "\u{001B}[0;35m"
+    case cyan = "\u{001B}[0;36m"
+    case white = "\u{001B}[0;37m"
+    
+    func name() -> String {
+        switch self {
+        case .black: return "Black"
+        case .red: return "Red"
+        case .green: return "Green"
+        case .yellow: return "Yellow"
+        case .blue: return "Blue"
+        case .magenta: return "Magenta"
+        case .cyan: return "Cyan"
+        case .white: return "White"
+        }
+    }
+    
+    static func all() -> [ANSIColors] {
+        return [.black, .red, .green, .yellow, .blue, .magenta, .cyan, .white]
+    }
+}
+
+func + (left: ANSIColors, right: String) -> String {
+    return left.rawValue + right
 }

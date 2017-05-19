@@ -23,16 +23,17 @@ import Foundation
 enum Instruction {
     case InstMain
     case InstKey
-    case InstShow
+    case InstPublish
+    case InstSave
 }
 
 enum InstMain : String {
     
     case help = "help"
     case exit = "exit"
-    case key = "key"
-    case show = "[s]how"
-    case showShuffled = "[s]how[s]huffled"
+    case keys = "[k]eys"
+    case publish = "[p]ublish"
+    case publishShuffled = "[p]ublish[s]huffled"
     case solve = "sol[v]e"
     case solveShuffled = "sol[v]e[s]huffled"
     case edit = "edit"
@@ -43,7 +44,7 @@ enum InstMain : String {
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, key.rawValue, show.rawValue, showShuffled.rawValue, solve.rawValue, edit.rawValue, save.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, edit.rawValue, save.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -59,20 +60,20 @@ enum InstMain : String {
         case "ㄷㅌㅑㅅ":
             self = .exit
             
-        case "key":
-            self = .key
-        case "ㅏㄷㅛ":
-            self = .key
+        case "k":
+            self = .keys
+        case "ㅏ":
+            self = .keys
             
-        case "s":
-            self = .show
-        case "ㄴ":
-            self = .show
+        case "p":
+            self = .publish
+        case "ㅔ":
+            self = .publish
         
-        case "ss":
-            self = .showShuffled
-        case "ㄴㄴ":
-            self = .showShuffled
+        case "ps":
+            self = .publishShuffled
+        case "ㅔㄴ":
+            self = .publishShuffled
             
             
         case "v":
@@ -128,7 +129,7 @@ enum InstKey : String {
     }
 }
 
-enum InstShow : String {
+enum InstPublish : String {
     
     case all = "[a]ll"
     case category = "[c]ategory"
@@ -175,3 +176,30 @@ enum InstShow : String {
         }
     }
 }
+
+enum InstSave : String {
+    
+    case all = "[a]ll"
+    case test = "[t]est"
+    
+    case unknown
+    
+    
+    static let allValues = [all.rawValue, test.rawValue]
+    
+    init(_ value : String) {
+        switch value {
+            
+        case "a":
+            self = .all
+            
+        case "t":
+            self = .test
+            
+        default:
+            self = .unknown
+        }
+    }
+}
+
+

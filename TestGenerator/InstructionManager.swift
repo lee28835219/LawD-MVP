@@ -10,18 +10,19 @@ import Foundation
 
 class InstructionManager {
     
-    let consoleIO = ConsoleIO()
+    let io = ConsoleIO()
     
     let testDatabase : TestDatabase
     let outputManager : OutputManager
     
     var input = ""
     
+    
+    
     init(testDatabase : TestDatabase, outputManager : OutputManager) {
         self.testDatabase = testDatabase
         self.outputManager = outputManager
     }
-    
     
     
     func didInitializationComplete() {
@@ -31,8 +32,8 @@ class InstructionManager {
         
         
         while !shouldExit {
-            
-            let (instruction,value) = consoleIO.getIntstruction(consoleIO.getInput())
+
+            let (instruction,value) = io.getIntstruction(io.getInput())
             
             
             switch instruction {
@@ -42,146 +43,71 @@ class InstructionManager {
                 
                 
             case .help:
-                consoleIO.printHelp(Instruction.InstMain)
+                io.printHelp(Instruction.InstMain)
                 
-            case .key:
-                consoleIO.writeMessage("\(testDatabase.key)의 시험카테고리 모두출력", to: .standard)
-                consoleIO.printHelp(Instruction.InstKey)
-                let (instKey,value) = consoleIO.getKey(consoleIO.getInput("key"))
-                switch instKey {
-                case .all:
-                    for testCategory in testDatabase.categories {
-                        print(" |",testCategory.key)
-                        for testSubject in testCategory.testSubjects {
-                            print("  |",testSubject.key)
-                            for test in testSubject.tests {
-                                print("   |",test.key)
-                                for que in test.questions {
-                                    print("    |", que.key)
-                                    for sel in que.lists {
-                                        print("     |",sel.key)
-                                    }
-                                    for sel in que.selections {
-                                        print("     |",sel.key)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                case .question:
-                    for testCategory in testDatabase.categories {
-                        print(" |",testCategory.key)
-                        for testSubject in testCategory.testSubjects {
-                            print("  |",testSubject.key)
-                            for test in testSubject.tests {
-                                print("   |",test.key)
-                                for que in test.questions {
-                                    print("    |", que.key)
-                                }
-                            }
-                        }
-                    }
-                case .unknown:
-                    consoleIO.unkown(value)
-                }
                 
-            case .show:
-                consoleIO.writeMessage("출력할 형식을 선택", to: .standard)
-                consoleIO.printHelp(Instruction.InstShow)
-                let (inst,value) = consoleIO.getShow(consoleIO.getInput(instruction.rawValue))
-                findQuestion(inst, value : value)
+            case .keys:
+                io.writeMessage(to: .standard, "\(testDatabase.key)의 시험카테고리 모두출력")
+                io.printHelp(Instruction.InstKey)
+                let (inst,value) = io.getKey(io.getInput(instruction.rawValue))
+                showKeys(inst, value : value)
+                
+            case .publish:
+                publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: false)
             
-            case .showShuffled:
-                consoleIO.writeMessage("출력할 형식을 선택", to: .standard)
-                consoleIO.printHelp(Instruction.InstShow)
-                let (inst,value) = consoleIO.getShow(consoleIO.getInput(instruction.rawValue))
-                findQuestion(inst, value : value, gonnaShuffle: true)
+            case .publishShuffled:
+                publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: false)
             
             case .solve:
-                consoleIO.writeMessage("풀 문제 형식을 선택", to: .standard)
-                consoleIO.printHelp(Instruction.InstShow)
-                let (inst,value) = consoleIO.getShow(consoleIO.getInput(instruction.rawValue))
-                findQuestion(inst, value : value, gonnaSolve: true)
+                publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: true)
                 
             case .solveShuffled:
-                consoleIO.writeMessage("풀 문제 형식을 선택", to: .standard)
-                consoleIO.printHelp(Instruction.InstShow)
-                let (inst,value) = consoleIO.getShow(consoleIO.getInput(instruction.rawValue))
-                findQuestion(inst, value : value, gonnaShuffle: true, gonnaSolve: true)
+                publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
                 
                 
             case .save:
-                let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
-                
-                guard let selectedTestWrapped = selectedTest else {
-                    print("선택한 시험이 없어 시험저장 실패")
-                    continue
+                io.writeMessage(to: .standard, "저장할 형식을 선택")
+                io.printHelp(Instruction.InstSave)
+                let (inst,value) = io.getSave(io.getInput(instruction.rawValue))
+                switch inst {
+                case .all:
+                    for testCategory in testDatabase.categories {
+                        for testSubject in testCategory.testSubjects {
+                            for test in testSubject.tests {
+                                saveTest(test)
+                                
+//                                if self.outputManager.saveTest(test) {
+//                                    //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장성공")
+//                                    //outputManager.saveFile()에 에러 로그가 있어 여기서 처리할 필요없음.
+//                                } else {
+//                                    //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장실패")
+//                                    // 정밀한 에러 핸들링 필요 2017. 5. 9. (+)
+//                                }
+                            }
+                        }
+                    }
+
+                case .test:
+                    let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
+                    saveTest(selectedTest)
+                    
+                case .unknown:
+                    _ = true
+//                    consoleIO.unkown(value)
                 }
                 
-                if outputManager.saveTest(selectedTestWrapped) {
-                    continue
-                } else {
-                    continue
-                }
+            case .edit:
+                _ = true
+//                consoleIO.unkown(value)
                 
-            default:
-                consoleIO.unkown(value)
+            case .unknown:
+                _ = io.unkown(value, true)
             }
         }
     }
     
                 
     func execute(_ input : String) -> Bool? {
-        
-        if isSame(input, targets: ["savet","ㄴㅁㅍㄷㅅ"]) {
-            
-            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
-            
-            guard let selectedTestWrapped = selectedTest else {
-                print("선택한 시험이 없어 시험저장 실패")
-                return false
-            }
-            
-            if outputManager.saveTest(selectedTestWrapped) {
-                return true
-            } else {
-                return false
-            }
-            
-            
-        }
-        
-        if isSame(input, targets: ["saveall","ㄴㅁㅍㄷ미ㅣ"]) {
-            
-            for testCategory in testDatabase.categories {
-                for testSubject in testCategory.testSubjects {
-                    for test in testSubject.tests {
-                        
-                        if self.outputManager.saveTest(test) {
-                            //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장성공")
-                            //outputManager.saveFile()에 에러 로그가 있어 여기서 처리할 필요없음.
-                        } else {
-                            //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장실패")
-                            // 정밀한 에러 핸들링 필요 2017. 5. 9. (+)
-                        }
-                    }
-                }
-            }
-            
-            return true
-        }
-        
-        if isSame(input, targets: ["refreshall","ㄱㄷㄹㄱㄷ노"]) {
-            
-//            storageManager.refresh()
-            
-            return true
-        }
-        
-        
-        
-        
-        
         
         
 //        if isSame(input, targets: ["shuffles","노ㅕㄹ릳ㄴ"]) {
@@ -254,28 +180,13 @@ class InstructionManager {
     }
     
     
+    
+    
+    
     //// 내부보조함수
     
     
     
-    // 유효한 입력을 받는 보조함수
-    func getInput() -> String {
-        var goon = true
-        while goon {
-            let inputRaw = readLine()
-            
-            
-            guard let inputRawWrapped = inputRaw else {
-                print(">유효하지 않은 입력\n")
-                continue
-            }
-            
-            input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
-            
-            goon = false
-            return input
-        }
-    }
     
     // 입력이 주어진 값과 동일한지 확인하는 함수
     // 한글로 잘못 입력하는 경우도 동일한 입력으로 고려함
@@ -293,45 +204,72 @@ class InstructionManager {
     
     
     
-    // content를 수정하는 modifyQuestion의 보조함수
-    func modifyControversalContent(name : String, content : String, contentOX : String, notContent : String?, targetNumber : String) -> String? {
+//    // content를 수정하는 modifyQuestion의 보조함수
+//    func modifyControversalContent(name : String, content : String, contentOX : String, notContent : String?, targetNumber : String) -> String? {
+//        
+//        var result : String? = notContent
+//        
+//        print("\(targetNumber)")
+//        print(content, contentOX)
+//        print("\(targetNumber) (!!!반대)")
+//        var contentOXCont = contentOX
+//        if contentOXCont == "(O)" {
+//            contentOXCont = "(X)"
+//        } else if contentOXCont == "(X)" {
+//            contentOXCont = "(O)"
+//        }
+//        
+//        print((notContent != nil ? notContent! : "없음"),contentOXCont)
+//        
+//        print("-. 반대\(name) 신규입력 \(targetNumber) $ ")
+//        let inp = consoleIO.getInput()
+//        print()
+//        if inp == "" {
+//            print("> 아무것도 입력된 것이 없어 반대\(name) 변경없음")
+//        } else {
+//            result = inp
+//            print("> 반대\(name) 입력완료 : \(targetNumber)")
+//            print(result!, contentOXCont)
+//        }
+//        
+//        print("계속()다시(r) $ ", terminator: "")
+//        let iinp = consoleIO.getInput()
+//        if iinp == "r" || iinp == "ㄱ" {
+//            return modifyControversalContent(name : name, content : content, contentOX : contentOX, notContent : notContent, targetNumber : targetNumber)
+//        }
+//        print()
+//        return result
+//        
+//        // 추가 디버깅 사항 2017. 5. 16. (+)
+//        // 1. 문제 반전사항출력(완료)), 2. 문제유형 반전해서 출력, 3. 목록 선택지 문제일 경우 선택지는 손대지 않음
+//        
+//    }
+    
+    //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)
+    //노가다 및 Int(String)으로 완성 2017. 5. 6.
+    // 함수로 엔켑슐레이션 2017. 5. 20.
+    func checkNumberRange(max: Int?, prefix: String) -> Int {
+        let input = io.getInput(prefix)
+        let number = Int(input)
         
-        var result : String? = notContent
-        
-        print("\(targetNumber)")
-        print(content, contentOX)
-        print("\(targetNumber) (!!!반대)")
-        var contentOXCont = contentOX
-        if contentOXCont == "(O)" {
-            contentOXCont = "(X)"
-        } else if contentOXCont == "(X)" {
-            contentOXCont = "(O)"
+        if number == nil {
+            io.writeMessage(to: .error, "숫자를 입력하세요")
+            return checkNumberRange(max: max, prefix: prefix)
         }
         
-        print((notContent != nil ? notContent! : "없음"),contentOXCont)
-        
-        print("-. 반대\(name) 신규입력 \(targetNumber) $ ")
-        let inp = getInput()
-        print()
-        if inp == "" {
-            print("> 아무것도 입력된 것이 없어 반대\(name) 변경없음")
+        if max != nil {
+            if number! - 1 < 0 || number! - 1 >= max! {
+                io.writeMessage(to: .error, "범위에 맞는 숫자를 입력하세요")
+                return checkNumberRange(max: max, prefix: prefix)
+            }
         } else {
-            result = inp
-            print("> 반대\(name) 입력완료 : \(targetNumber)")
-            print(result!, contentOXCont)
+            if number! - 1 < 0 {
+                io.writeMessage(to: .error, "정확한 숫자를 입력하세요")
+                return checkNumberRange(max: max, prefix: prefix)
+            }
         }
         
-        print("계속()다시(r) $ ", terminator: "")
-        let iinp = getInput()
-        if iinp == "r" || iinp == "ㄱ" {
-            return modifyControversalContent(name : name, content : content, contentOX : contentOX, notContent : notContent, targetNumber : targetNumber)
-        }
-        print()
-        return result
-        
-        // 추가 디버깅 사항 2017. 5. 16. (+)
-        // 1. 문제 반전사항출력(완료)), 2. 문제유형 반전해서 출력, 3. 목록 선택지 문제일 경우 선택지는 손대지 않음
-        
+        return number!
     }
     
     
@@ -342,40 +280,17 @@ class InstructionManager {
         let categoryCount = testDatabase.categories.count
         
         if categoryCount == 0 {
-            print("\(database.key)에 아무 시험이 없음")
+            io.writeMessage(to: .error, "\(database.key)에 아무 데이터가 없음")
             return nil
         }
         
+        // 선택할 시험을 출력
         for (index,testCategory) in database.categories.enumerated() {
-            print("[\(index+1)] : \(testCategory.key)")
+            io.writeMessage(to: .notice, "[\(index+1)] : \(testCategory.key)")
         }
         
-        var selectedCategoryIndex : Int = -1
-        var goon = true
-        while goon {
-            print("시험명 선택(1~\(categoryCount))$ ", terminator : "")
-            let input = readLine()
-            
-            guard let inputWrapped = input else {
-                print(">올바르지 않은 입력, 재입력하세요.")
-                continue
-            }
-            
-            let number = Int(inputWrapped)
-            if number == nil {
-                print(">숫자를 입력하세요")
-                continue
-            }
-            
-            if number! - 1 < 0 || number! - 1 >= categoryCount {
-                print(">시험 과목번호 범위에 맞는 숫자를 입력하세요")
-                continue
-            }
-            
-            goon = false
-            selectedCategoryIndex = number!
-        }
-        
+        // 시험명에 맞는 숫자를 선택
+        let selectedCategoryIndex = checkNumberRange(max: categoryCount, prefix: "시험명 선택")
         
         return database.categories[selectedCategoryIndex-1]
     }
@@ -389,42 +304,19 @@ class InstructionManager {
         let subjectCount = selectedCategory.testSubjects.count
         
         if subjectCount == 0 {
-            print(">\(selectedCategory.key)에 시험과목이 하나도 없음")
+            io.writeMessage(to: .error, "\(selectedCategory.key)에 시험과목이 하나도 없음")
             return nil
         }
         
         for (index,test) in selectedCategory.testSubjects.enumerated() {
-            print("(\(index+1)) : \(test.key)")
+            io.writeMessage(to: .notice, "[\(index+1)] : \(test.key)")
         }
         
-        var selectedSubjectIndex : Int = -1
-        var goon = true
-        while goon {
-            print("시험과목 선택(1~\(subjectCount))$ ", terminator : "")
-            let input = readLine()
-            
-            guard let inputWrapped = input else {
-                print(">올바르지 않은 입력, 재입력하세요.")
-                continue
-            }
-            
-            let number = Int(inputWrapped)
-            if number == nil {
-                print(">숫자를 입력하세요")
-                continue
-            }
-            
-            if number! - 1 < 0 || number! - 1 >= subjectCount {
-                print(">시험 과목번호 범위에 맞는 숫자를 입력하세요")
-                continue
-            }
-            
-            goon = false
-            selectedSubjectIndex = number!
-        }
-        
+        let selectedSubjectIndex = checkNumberRange(max: subjectCount, prefix: "시험과목 선택")
+
         return selectedCategory.testSubjects[selectedSubjectIndex-1]
     }
+    
     
     func selectTest(_ selectedSubjectUnwrapped : TestSubject?) -> Test? {
         
@@ -435,45 +327,20 @@ class InstructionManager {
         let testCount = selectedSubject.tests.count
         
         if testCount == 0 {
-            print(">\(selectedSubject.key)에 시험이 하나도 없음")
+            io.writeMessage(to: .error, "\(selectedSubject.key)에 시험이 하나도 없음")
             return nil
         }
         
         for (index,test) in selectedSubject.tests.enumerated() {
-            print("[\(index+1)] : \(test.key)")
+            io.writeMessage(to: .notice, "[\(index+1)] : \(test.key)")
         }
         
         
-        //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)
-        //노가다 및 Int(String)으로 완성 2017. 5. 6.
+        let selectedTest = checkNumberRange(max: testCount, prefix: "시험회차 선택")
         
-        var selectedTest : Int = -1
-        var goon = true
-        while goon {
-            print("시험회차 선택(1~\(testCount))$ ", terminator : "")
-            let input = readLine()
-            
-            guard let inputWrapped = input else {
-                print(">올바르지 않은 입력, 재입력하세요.")
-                continue
-            }
-            
-            let testNumber = Int(inputWrapped)
-            if testNumber == nil {
-                print(">숫자를 입력하세요")
-                continue
-            }
-            
-            if testNumber! - 1 < 0 || testNumber! - 1 >= testCount {
-                print(">시험번호 범위에 맞는 숫자를 입력하세요")
-                continue
-            }
-            
-            goon = false
-            selectedTest = testNumber!
-        }
         return selectedSubject.tests[selectedTest-1]
     }
+    
     
     func selectQuestion(_ selectedTestUnwrapped: Test?) -> Question? {
         
@@ -483,40 +350,29 @@ class InstructionManager {
         
         var selectedQuestions = selectedTest.questions
         if selectedQuestions.count == 0 {
-            print("\(selectedTest.key)에 문제가 하나도 없음")
+            io.writeMessage(to: .error, "\(selectedTest.key)에 문제가 하나도 없음")
             return nil
         }
         
         for question in selectedQuestions {
-            print("[\(question.number)] : \(question.key)")
+            io.writeMessage(to: .notice, "[\(question.number)] : \(question.key)")
         }
         
         
-        var goon = true
-        while goon {
-            print("문제번호 선택 $ ", terminator : "")
-            let input = readLine()
-            
-            guard let inputWrapped = input else {
-                print("올바르지 않은 입력, 재입력하세요.")
-                continue
-            }
-            
-            let questionNumber = Int(inputWrapped)
-            if questionNumber == nil {
-                print("숫자를 입력하세요")
-                continue
-            }
-            selectedQuestions = selectedQuestions.filter({$0.number == questionNumber})
-            if selectedQuestions.isEmpty {
-                print("숫자를 입력하세요")
-                continue
-            }
-            goon = false
+        let selectedQuestionNumber = checkNumberRange(max: nil, prefix: "문제번호 선택")
+        
+        
+        // 문제의 경우 문제번호를 정확하게 선택해야 하므로 어레이의 필터를 확인해서 체크함
+        selectedQuestions = selectedQuestions.filter({$0.number == selectedQuestionNumber})
+        if selectedQuestions.isEmpty {
+            io.writeMessage(to: .error, "정확한 숫자를 입력하세요")
+            return selectQuestion(selectedTestUnwrapped)
         }
         
         return selectedQuestions[0]
     }
+    
+    
     
     func selectList(_ questionUnwapped : Question?, showNot : Bool = true) -> List? {
         guard let question = questionUnwapped else {
@@ -616,75 +472,9 @@ class InstructionManager {
         
         return selections[0]
     }
-
-    
-    // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
-    // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
-    // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
-    func solveQuestion(_ question : Question, gonnaShuffle:Bool = false) -> (isShuffled : Bool, isRight : Bool, questionShuffled : Solver?) {
-        
-        var isRight = false
-        let quetionShuffled : Solver = Solver(question, gonnaShuffle: true)
-            
-            
-            
-            
-        quetionShuffled.publish(outputManager: outputManager, showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
-    
-        print("정답은? $ ", terminator : "")
-        input = getInput()
-        
-        if Int(input) == quetionShuffled.getAnswerNumber() + 1 {
-            print("정답!", terminator: "")
-            isRight = true
-        } else {
-            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
-            print("오답임...정답은")
-            var answerContent = ""
-            if question.questionType == .Find {
-                answerContent = quetionShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: quetionShuffled.answerSelectionModifed!).content
-            } else {
-                answerContent = quetionShuffled.getModfiedStatementOfCommonStatement(statement: quetionShuffled.answerSelectionModifed!).content
-            }
-            print("   \((quetionShuffled.getAnswerNumber() + 1).roundInt) \(answerContent.spacing(3))")
-            print("확인??", terminator: "")
-        }
-        
-        
-//        print("-계속(),노트(n),태그(t),문제수정(m),중단(s) $ ", terminator: "")
-//        input = getInput()
-//        
-//        if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
-//            print("노트를 입력하세요>", terminator: "")
-//            input = getInput()
-//        } else if input.caseInsensitiveCompare("t") == ComparisonResult.orderedSame || input == "t" {
-//            print("태그를 입력하세요>", terminator: "")
-//            // 데이터 추가 필요 2017. 5. 6. (+)
-//            let tagInput = getInput()
-//            print("> 태그(\(tagInput)) 입력완료~")
-//            _ = readLine()
-//            print()
-//        } else if input.caseInsensitiveCompare("m") == ComparisonResult.orderedSame || input == "ㅡ" {
-//            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-//            print()
-//            print("<반전된 문제>")
-//            question.controversalPublish()
-//            print()
-//            modifyQuestion(question)
-//        } else if input.caseInsensitiveCompare("s") == ComparisonResult.orderedSame || input == "ㄴ" {
-//            print(question.key, "문제 변형을 중단함")
-//            return (true, isRight, quetionShuffled)
-//        }
-//        
-        
-        return (true, isRight, quetionShuffled)
-    }
-    
-    
 }
 
 extension InstructionManager {
-    
     
 //    func solveShuffledQuestions(_ questions : [Question]) -> [Question] {
 //        var wrongQuestions = [Question]()
@@ -715,20 +505,65 @@ extension InstructionManager {
 //    }
     
     
+    func showKeys(_ instKey : InstKey, value: String) {
+        switch instKey {
+        case .all:
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
+                    for test in testSubject.tests {
+                        print("   |",test.key)
+                        for que in test.questions {
+                            print("    |", que.key)
+                            for sel in que.lists {
+                                print("     |",sel.key)
+                            }
+                            for sel in que.selections {
+                                print("     |",sel.key)
+                            }
+                        }
+                    }
+                }
+            }
+        case .question:
+            for testCategory in testDatabase.categories {
+                print(" |",testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    print("  |",testSubject.key)
+                    for test in testSubject.tests {
+                        print("   |",test.key)
+                        for que in test.questions {
+                            print("    |", que.key)
+                        }
+                    }
+                }
+            }
+        case .unknown:
+            _ = true
+            io.unkown(value)
+        }
+    }
     
     
-    
-    
+    func publishAndSolver(_ instructionRaw : String, gonnaShuffle: Bool, gonnaSolve: Bool) {
+        if gonnaSolve {
+            io.writeMessage(to: .standard, "풀 문제의 형식을 선택")
+        } else {
+            io.writeMessage(to: .standard, "출력할 형식을 선택")
+        }
+        io.printHelp(Instruction.InstPublish)
+        let (inst,value) = io.getPublish(io.getInput(instructionRaw))
+        if !selectQuestion(inst, value : value, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve) {
+            publishAndSolver(instructionRaw, gonnaShuffle:  gonnaShuffle, gonnaSolve: gonnaSolve)
+            return
+        }
+    }
     
     
     // 함수를 건내줘서 출력하는 것으로 추후 수정 필요 2017. 5. 19.
-    func findQuestion(_ instruction : InstShow, value: String, gonnaShuffle : Bool = false, gonnaSolve : Bool = false) {
-        
-        let showAttribute = gonnaSolve ? false : true
-        let showAnswer = gonnaSolve ? false : true
-        let showOrigSel = gonnaSolve ? false : true
-        
-
+    func selectQuestion(_ instruction : InstPublish, value: String, gonnaShuffle : Bool, gonnaSolve : Bool) -> Bool{
+        var solvers = [Solver]()
         
         switch instruction {
         case .all:
@@ -736,188 +571,219 @@ extension InstructionManager {
                 for testSubject in testCategory.testSubjects {
                     for test in testSubject.tests {
                         for que in test.questions {
-                            Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+                            solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
                         }
                     }
                 }
             }
         case .category:
             guard let testCategory = selectTestCategory(testDatabase) else {
-                consoleIO.writeMessage("시험명을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return true
             }
             for testSubject in testCategory.testSubjects {
                 for test in testSubject.tests {
                     for que in test.questions {
-                        Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
-
+                        solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
                     }
                 }
             }
         case .subject:
             guard let testCategory = selectTestCategory(testDatabase) else {
-                consoleIO.writeMessage("시험명을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return true
             }
             guard let testSubject = selectTestSubject(testCategory) else {
-                consoleIO.writeMessage("시험과목을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return true
             }
             for test in testSubject.tests {
                 for que in test.questions {
-                    Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+                    solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
 
                 }
             }
         case .test:
             guard let testCategory = selectTestCategory(testDatabase) else {
-                consoleIO.writeMessage("시험명을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return true
             }
             guard let testSubject = selectTestSubject(testCategory) else {
-                consoleIO.writeMessage("시험과목을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return true
             }
             guard let test = selectTest(testSubject) else {
-                consoleIO.writeMessage("시험회차를 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
+                return true
             }
             for que in test.questions {
-                Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+                solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
             }
         case .question:
             guard let testCategory = selectTestCategory(testDatabase) else {
-                consoleIO.writeMessage("시험명을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return true
             }
             guard let testSubject = selectTestSubject(testCategory) else {
-                consoleIO.writeMessage("시험과목을 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return true
             }
             guard let test = selectTest(testSubject) else {
-                consoleIO.writeMessage("시험회차를 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
+                return true
             }
             guard let que = selectQuestion(test) else {
-                consoleIO.writeMessage("문제를 찾을 수 없음", to: .error)
-                return
+                io.writeMessage(to: .error, "문제를 찾을 수 없음")
+                return true
             }
-            Solver(que, gonnaShuffle: gonnaShuffle).publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+            solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
+            
         case .unknown:
-            consoleIO.unkown(value)
+            io.unkown(value)
         }
+        return true
         
     }
     
-    func modifyQuestion(_ question: Question) {
+    
+    func solveQuestion(_ question : Question, gonnaShuffle: Bool, gonnaSolve: Bool) -> Solver {
+        let showAttribute = gonnaSolve ? false : true
+        let showAnswer = gonnaSolve ? false : true
+        let showOrigSel = gonnaSolve ? false : true
         
-        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
-        let input = getInput()
+        let solver = Solver(question, gonnaShuffle: gonnaShuffle)
+        solver.publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
         
-        switch input {
-        case "end" :
-            return
-            
-        case "show" :
-            
-            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+        if gonnaSolve {
+            solver.solve(consoleIO : io)
+        }
+        return solver
+    }
 
-            print()
-            print("<반전된 문제>")
-            question.controversalPublish()
-            modifyQuestion(question)
-            return
+    
+//    func modifyQuestion(_ question: Question) {
+//        
+//        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
+//        let input = io.getInput()
+//        
+//        switch input {
+//        case "end" :
+//            return
+//            
+//        case "show" :
+//            
+//            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+//
+//            print()
+//            print("<반전된 문제>")
+//            question.controversalPublish()
+//            modifyQuestion(question)
+//            return
+//            
+//        // 문제 수정을 시작
+//        case "2" :
+//            guard let list = selectList(question) else {
+//                modifyQuestion(question)
+//                return
+//            }
+//            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
+//            
+//        case "3" :
+//            if question.questionType == QuestionType.Find {
+//                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
+//                _ = readLine()
+//                modifyQuestion(question)
+//                return
+//            }
+//            
+//            guard let selection = selectSelection(question) else {
+//                modifyQuestion(question)
+//                return
+//            }
+//            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
+//            
+//        case "4" :
+//            print()
+//            let listNumber = question.lists.count
+//            if listNumber != 0 {
+//                
+//                print("> 목록 \(listNumber)개 수정을 진행")
+//                for (index,list) in question.lists.enumerated() {
+//                    
+//                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+//                    print("> 목록지 \(index+1) / \(listNumber) 수정진행..")
+//                    list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(),notContent: list.notContent, targetNumber: list.getListString()+".")
+//                }
+//            }
+//            
+//            let selNumber = question.selections.count
+//            print("> 선택지 \(selNumber)개 수정을 진행")
+//            
+//            if question.questionType != .Find {
+//                for (index,sel) in question.selections.enumerated() {
+//                    
+//                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+//                    print("> 선택지 \(index+1) / \(selNumber) 수정진행..")
+//                    print("-. 선택지 : \(sel.number.roundInt)")
+//                    sel.notContent = modifyControversalContent(name: "선택지", content: sel.content, contentOX: sel.getOX(),notContent: sel.notContent, targetNumber: sel.number.roundInt)
+//                }
+//            }
+//            
+//            
+//        default:
+//            modifyQuestion(question)
+//            return
+//        }
+//        
+//        var goon = true
+//        while goon {
+//            print("<반전된 문제> - 변경됨")
+//            question.controversalPublish()
+//            
+//            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
+//            
+//            guard let input = readLine() else {
+//                print("유효하지 않은 입력")
+//                continue
+//            }
+//            
+//            if input == "e" || input == "ㄷ" {
+//                
+//                print(">"+question.key+" 저장하지 않음")
+//                return
+//                
+//            } else if input == "m" || input == "ㅡ" {
+//                
+//                print(">"+question.key+" 저장완료")
+//                _ = outputManager.saveTest(question.test)
+//                modifyQuestion(question)
+//                return
+//                
+//            } else if input == "n" || input == "ㅜ" {
+//                
+//                modifyQuestion(question)
+//                return
+//            }
+//            
+//            print(">"+question.key+" 저장완료")
+//            _ = outputManager.saveTest(question.test)
+//            
+//            print("")
+//            goon = false
+//        }
+//    }
+    
+    func saveTest(_ selectedTest : Test?) {
+        guard let selectedTestWrapped = selectedTest else {
             
-        // 문제 수정을 시작
-        case "2" :
-            guard let list = selectList(question) else {
-                modifyQuestion(question)
-                return
-            }
-            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
-            
-        case "3" :
-            if question.questionType == QuestionType.Find {
-                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
-                _ = readLine()
-                modifyQuestion(question)
-                return
-            }
-            
-            guard let selection = selectSelection(question) else {
-                modifyQuestion(question)
-                return
-            }
-            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
-            
-        case "4" :
-            print()
-            let listNumber = question.lists.count
-            if listNumber != 0 {
-                
-                print("> 목록 \(listNumber)개 수정을 진행")
-                for (index,list) in question.lists.enumerated() {
-                    
-                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-                    print("> 목록지 \(index+1) / \(listNumber) 수정진행..")
-                    list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(),notContent: list.notContent, targetNumber: list.getListString()+".")
-                }
-            }
-            
-            let selNumber = question.selections.count
-            print("> 선택지 \(selNumber)개 수정을 진행")
-            
-            if question.questionType != .Find {
-                for (index,sel) in question.selections.enumerated() {
-                    
-                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-                    print("> 선택지 \(index+1) / \(selNumber) 수정진행..")
-                    print("-. 선택지 : \(sel.number.roundInt)")
-                    sel.notContent = modifyControversalContent(name: "선택지", content: sel.content, contentOX: sel.getOX(),notContent: sel.notContent, targetNumber: sel.number.roundInt)
-                }
-            }
-            
-            
-        default:
-            modifyQuestion(question)
+            print("선택한 시험이 없어 시험저장 실패")
             return
         }
         
-        var goon = true
-        while goon {
-            print("<반전된 문제> - 변경됨")
-            question.controversalPublish()
-            
-            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
-            
-            guard let input = readLine() else {
-                print("유효하지 않은 입력")
-                continue
-            }
-            
-            if input == "e" || input == "ㄷ" {
-                
-                print(">"+question.key+" 저장하지 않음")
-                return
-                
-            } else if input == "m" || input == "ㅡ" {
-                
-                print(">"+question.key+" 저장완료")
-                _ = outputManager.saveTest(question.test)
-                modifyQuestion(question)
-                return
-                
-            } else if input == "n" || input == "ㅜ" {
-                
-                modifyQuestion(question)
-                return
-            }
-            
-            print(">"+question.key+" 저장완료")
-            _ = outputManager.saveTest(question.test)
-            
-            print("")
-            goon = false
+        if outputManager.saveTest(selectedTestWrapped) {
+            return
+        } else {
+            return
         }
     }
     

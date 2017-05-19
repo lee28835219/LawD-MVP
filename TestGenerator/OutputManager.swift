@@ -9,6 +9,8 @@
 import Foundation
 
 class OutputManager {
+    let io = ConsoleIO()
+    var log = ""
     
     let fileManager = FileManager.default
     
@@ -25,9 +27,10 @@ class OutputManager {
         }
         return path
     }
-//
-//    init() {
-//    }
+    
+    init() {
+        log = ConsoleIO.newLog("\(#file)")
+    }
     
     
     func questionPublish(
@@ -49,14 +52,14 @@ class OutputManager {
             ) {
         
         //문제
-        print()
+        io.writeMessage("")
         if showTitle {
             let testTitle = (isPublished ? "[기출] " : "[변형] ") + testKey
-            print(testTitle)
-            print()
+            io.writeMessage(to: .publish, testTitle)
+            io.writeMessage("")
         }
         
-        print("문 "+questionNumber.description+". ")
+         io.writeMessage(to: .publish, "문 "+questionNumber.description+". ")
         var queCont = questionContent
         if let contNote = questionContentNote {
             queCont = queCont + " " + contNote
@@ -64,8 +67,8 @@ class OutputManager {
         if showAttribute {
             queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
         }
-        print("  "+queCont.spacing(2))
-        print()
+         io.writeMessage(to: .publish, "  "+queCont.spacing(2))
+         io.writeMessage("")
         
         //지문
         if questionPassage != nil {
@@ -73,12 +76,12 @@ class OutputManager {
             // http://stackoverflow.com/questions/32021712/how-to-split-a-string-by-new-lines-in-swift
             let array = questionPassage!.components(separatedBy: .newlines)
             for st in array {
-                print("   "+st.spacing(3))
+                 io.writeMessage(to: .publish, "   "+st.spacing(3))
             }
-            print()
+             io.writeMessage("")
             if questionPassageSuffix != nil {
-                print("   "+questionPassageSuffix!.spacing(3))
-                print()
+                 io.writeMessage(to: .publish, "   "+questionPassageSuffix!.spacing(3))
+                 io.writeMessage("")
             }
         }
 
@@ -97,35 +100,39 @@ class OutputManager {
                         selectionStr = selectionStr + " (O?,X?)"
                     }
                 }
-                print(" "+listsNumberString[index]+". "+selectionStr.spacing(4))
+                 io.writeMessage(to: .publish, " "+listsNumberString[index]+". "+selectionStr.spacing(4))
             }
-            print()
+             io.writeMessage("")
         }
         
         if questionSuffix != nil {
-            print("  "+questionSuffix!.spacing(2))
-            print()
+             io.writeMessage(to: .publish, "  "+questionSuffix!.spacing(2))
+             io.writeMessage("")
         }
         
         //선택지
         for (index,selCont) in selectionsContent.enumerated() {
-            print("  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
+             io.writeMessage(to: .publish, "  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
         }
-        print()
+         io.writeMessage("")
         
         //정답
         if showAnswer {
-            print("<정답>")
+            io.writeMessage(to: .publish, "<정답>")
             guard let ansSCon = ansSelContent
                 else {
-                    print("  정답이 입력되지 않음")
+                    io.writeMessage(to: .error, "  정답이 입력되지 않음")
                     return
             }
-            print("  " + questionAnswer.roundInt + "  " +
+             io.writeMessage(to: .publish, "  " + questionAnswer.roundInt + "  " +
                 _getSelectionStringForPrinting(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
         }
-        print()
+         io.writeMessage("")
     }
+    
+    
+    
+    
     
     // How to check if a file exists in the Documents directory in Swift?
     // http://stackoverflow.com/questions/24181699/how-to-check-if-a-file-exists-in-the-documents-directory-in-swift
@@ -136,7 +143,7 @@ class OutputManager {
         
         guard let doucmentPathWrapped = url else {
             
-            print("저장할 디렉토리를 찾지 못해서 \(fileName)을 저장하는데 실패하였음")
+            log = ConsoleIO.writeLog(log, funcName: ("\(#function)"), outPut: "저장할 디렉토리를 찾지 못해서 \(fileName)을 저장하는데 실패하였음")
             return false
         }
         
@@ -151,7 +158,7 @@ class OutputManager {
             
             if fileManager.fileExists(atPath: savePath.path, isDirectory: &isDir) {
                 if isDir.boolValue {
-                    //print("\(savePath.path) 디렉토리가 존재함.. 계속진행")
+                    log = ConsoleIO.writeLog(log, funcName: ("\(#function)"), outPut: "\(savePath.path) 디렉토리가 존재함.. 계속진행")
                     continue
                 } else {
                     //fatalError("\(savePath.path) 디렉토리가 존재하지 않는데 filepath가 존재함 뭐지?")
@@ -160,30 +167,30 @@ class OutputManager {
                 //print("\(savePath.path) 디렉토리가 존재하지 않음 어떻게 할까?")
                 do {
                     try fileManager.createDirectory(at: savePath, withIntermediateDirectories: false, attributes: nil)
-                    //print("\(savePath.path) 디렉토리를 생성함")
+                    log = ConsoleIO.writeLog(log, funcName: ("\(#function)"), outPut: "\(savePath.path) 디렉토리를 생성함")
                 } catch let error as NSError {
-                    print(error)
+                    io.writeMessage(to: .error, error.description)
                 }
             }
         }
         
         savePath = savePath.appendingPathComponent(fileName)
         
+        // 파일저장이 일시를 초단위로 명시해서 진행함로 거의 사용될리가 없을것, 아래 분기
         if fileManager.fileExists(atPath: savePath.path) {
-            print("\(fileName)이 \(savePath)에 존재함 계속진행?(y)>", terminator : "")
-            let input = readLine()
+            let input = io.getInput("\(fileName)이 \(savePath)에 존재함 계속진행?(y)")
             if input != "y" && input != "Y" && input != "ㅛ" {
-                print("\(fileName) 저장 안하고 종료")
+                io.writeMessage(to: .error, "\(fileName) 저장 안하고 종료")
                 return false
             }
         }
         
         do {
             try data.write(to: savePath)
-            print("\(fileName) 저장 성공")
+            io.writeMessage(to: .notice, "\(fileName) 저장 성공")
             return true
         } catch {
-            print("\(fileName)을 저장하는데 실패하였음 - \(error)")
+            io.writeMessage(to: .error, "\(fileName)을 저장하는데 실패하였음 - \(error)")
             return false
         }
     }
@@ -199,7 +206,7 @@ class OutputManager {
             testNumber = testNumber + String(format: "%03d", test.number)
         }
         
-        if outputManager._saveFile(
+        if self._saveFile(
             fileDirectories: [test.testSubject.testCategory.testDatabase.key,  //DB
                 test.testSubject.testCategory.category,    //시험명
                 test.testSubject.subject,   //과목

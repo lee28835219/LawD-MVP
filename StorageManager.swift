@@ -19,16 +19,16 @@ class StorageManager {
         
         self.testDatabase = testDatabase
         
-        log = newLog("\(#file)")
+        log = ConsoleIO.newLog("\(#file)")
         
         
         // 작업을 시작할 디렉토리를 설정 Document/Test/Storage/DB의 key
         if let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             self.rootURL = documentURL.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key)
             if FileManager.default.fileExists(atPath: rootURL.path, isDirectory: nil) {
-                log = writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)에서 \(testDatabase.key) testDB를 불러오기 시작")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)에서 \(testDatabase.key) testDB를 불러오기 시작")
             } else {
-                log = writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)가 존재하지 않아 \(testDatabase.key) testDB를 불러오지 않음")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)가 존재하지 않아 \(testDatabase.key) testDB를 불러오지 않음")
                 return
             }
         } else {
@@ -37,18 +37,18 @@ class StorageManager {
         
         
         if !parseJsons(.getNewer) {
-            log = writeLog(log, funcName: "\(#function)", outPut: "초기화 실패!!!")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "초기화 실패!!!")
         } else {
-            log = writeLog(log, funcName: "\(#function)", outPut: "초기화 완료")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "초기화 완료")
         }
-        log = closeLog(log, file: "\(#file)")
+        log = ConsoleIO.closeLog(log, file: "\(#file)")
         
     }
     
     
     func parseJsons(_ parseJsonsOption : ParseJsonsOption) -> Bool {
         let tempTestDatabase = TestDatabase()
-        log = writeLog(log, funcName: "\(#function)", outPut: "옵션 \(parseJsonsOption)")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "옵션 \(parseJsonsOption)")
         
         
         // 시험명을 찾음
@@ -61,7 +61,7 @@ class StorageManager {
             let testCategoryDirectories = try FileManager.default.contentsOfDirectory(at: rootURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
             
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "시험명 확인시작")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "시험명 확인시작")
             var categoryCounter = 0
             for testCategoryURL in testCategoryDirectories {
                 
@@ -85,19 +85,19 @@ class StorageManager {
                         categoryCounter = categoryCounter + 1
                         
                         
-                        log = writeLog(log, funcName: "\(#function)", outPut: " [\(categoryCounter)] \(newTestCategory.key)")
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: " [\(categoryCounter)] \(newTestCategory.key)")
                     }
                 }
             }
             
             if categoryCounter == 0 {
-                log = writeLog(log, funcName: "\(#function)", outPut: "시험명이 하나도 없음")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "시험명이 하나도 없음")
             } else {
-                log = writeLog(log, funcName: "\(#function)", outPut: "총 시험명 \(categoryCounter)개 생성")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "총 시험명 \(categoryCounter)개 생성")
             }
             
         } catch {
-            log = writeLog(log, funcName: "\(#function)", outPut: "시험명을 가져오면서 에러 발생")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "시험명을 가져오면서 에러 발생")
         }
         
         
@@ -107,7 +107,7 @@ class StorageManager {
         // 먼저 임시db에 있는 시험명 디렉토리를 가져옴
         for category in tempTestDatabase.categories {
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 시작")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 시작")
             let categoryURL = rootURL.appendingPathComponent(category.category)
             do {
                 
@@ -117,7 +117,7 @@ class StorageManager {
                 let subjectDirectories = try FileManager.default.contentsOfDirectory(at: categoryURL, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
                 
                 
-                log = writeLog(log, funcName: "\(#function)", outPut: "  과목 확인시작")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  과목 확인시작")
                 var subjectCounter = 0
                 for subjectURL in subjectDirectories {
                     
@@ -133,22 +133,22 @@ class StorageManager {
                             let newTestSubject = TestSubject(testCategory: category, subject: subjectURL.lastPathComponent.precomposedStringWithCompatibilityMapping)
                             subjectCounter = subjectCounter + 1
                             
-                            log = writeLog(log, funcName: "\(#function)", outPut: "   [\(subjectCounter)] \(newTestSubject.key)")
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "   [\(subjectCounter)] \(newTestSubject.key)")
                         }
                     }
                 }
                 
                 if subjectCounter == 0 {
-                    log = writeLog(log, funcName: "\(#function)", outPut: "  과목이 하나도 없어 \(category.key) 제거")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  과목이 하나도 없어 \(category.key) 제거")
                     tempTestDatabase.categories.remove(at: tempTestDatabase.categories.index(of: category)!)
                 } else {
-                    log = writeLog(log, funcName: "\(#function)", outPut: "  총 과목 \(subjectCounter)개 생성")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  총 과목 \(subjectCounter)개 생성")
                 }
                 
             } catch {
-                log = writeLog(log, funcName: "\(#function)", outPut: "  과목을 가져오면서 에러 발생")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  과목을 가져오면서 에러 발생")
             }
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 종료")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 종료")
         }
         
         
@@ -158,11 +158,11 @@ class StorageManager {
         var totalTestCounter = 0
         for category in tempTestDatabase.categories {
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 시작")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 시작")
             
             for subject in category.testSubjects {
                 
-                log = writeLog(log, funcName: "\(#function)", outPut: "  \(subject.key) 시험회차가져오기 시작")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  \(subject.key) 시험회차가져오기 시작")
                 
                 let subjectURL = rootURL.appendingPathComponent(category.category).appendingPathComponent(subject.subject)
                 do {
@@ -174,7 +174,7 @@ class StorageManager {
                     
                     
                     
-                    log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차 확인시작")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "    시험회차 확인시작")
                     var testCounter = 0
                     var testFailureCounter = 0
                     for testURL in testDirectories {
@@ -215,19 +215,19 @@ class StorageManager {
                                     }
                                     
                                     guard let jsonFileURL = validJsonFiles.first else {
-                                        log = writeLog(log, funcName: "\(#function)", outPut: "        json파일을 찾을 수 없음")
+                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        json파일을 찾을 수 없음")
                                         continue
                                     }
                                     
                                     guard let testNumber = Int(testURL.lastPathComponent.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) else {
-                                        log = writeLog(log, funcName: "\(#function)", outPut: "        잘못된 시험회차 디렉토리 이름")
+                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        잘못된 시험회차 디렉토리 이름")
                                         continue
                                     }
                                     
                                     let newTest = Test(createDate: Date(), testSubject: subject, revision: 0, isPublished: true, number: testNumber)
                                     
                                     guard let jsonData = FileManager.default.contents(atPath: jsonFileURL.path) else {
-                                        log = writeLog(log, funcName: "\(#function)", outPut: "        \(jsonFileURL.path)이 올바른 Data가 아님")
+                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        \(jsonFileURL.path)이 올바른 Data가 아님")
                                         continue
                                     }
                                     
@@ -235,8 +235,8 @@ class StorageManager {
                                     // json 파싱에 관한 부분
                                     // json 파싱결과를 확인해서 성공이면 카운터를 늘리고, 실패면 이미 만들어놓은 시험 오브젝트를 삭제함
                                     
-                                    log = writeLog(log, funcName: "\(#function)", outPut: "     [\(testCounter)] \(newTest.key) 파싱시작")
-                                    log = writeLog(log, funcName: "\(#function)", outPut: "       \(jsonFileURL.lastPathComponent.precomposedStringWithCompatibilityMapping)")
+                                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "     [\(testCounter)] \(newTest.key) 파싱시작")
+                                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "       \(jsonFileURL.lastPathComponent.precomposedStringWithCompatibilityMapping)")
                                     
                                     
                                     if jsonToClass(jsonData, newTest) {
@@ -246,7 +246,7 @@ class StorageManager {
 
                                     } else {
                                     
-                                        log = writeLog(log, funcName: "\(#function)", outPut: "     !!!! \(newTest.key) 파싱실패")
+                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "     !!!! \(newTest.key) 파싱실패")
                                         subject.tests.remove(at: subject.tests.index(of: newTest)!)
                                         testFailureCounter = testFailureCounter + 1
                                     
@@ -255,7 +255,7 @@ class StorageManager {
                                 
                                 } catch {
                                     
-                                    log = writeLog(log, funcName: "\(#function)", outPut: "       시험을 찾을 수 없음")
+                                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "       시험을 찾을 수 없음")
                                     
                                 }
                                 
@@ -264,37 +264,37 @@ class StorageManager {
                     }
                     
                     if testCounter == 0 {
-                        log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차가 하나도 없어 \(subject.key) 제거")
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "    시험회차가 하나도 없어 \(subject.key) 제거")
                         category.testSubjects.remove(at: category.testSubjects.index(of: subject)!)
                         if category.testSubjects.count == 0 {
-                            log = writeLog(log, funcName: "\(#function)", outPut: "  과목이 하나도 없어 \(category.key) 제거")
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "  과목이 하나도 없어 \(category.key) 제거")
                             tempTestDatabase.categories.remove(at: tempTestDatabase.categories.index(of: category)!)
                             if tempTestDatabase.categories.count == 0 {
-                                log = writeLog(log, funcName: "\(#function)", outPut: "json파일이 없음")
+                                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "json파일이 없음")
                                 return false
                             }
                         }
                     } else {
                         let testFailureResult = testFailureCounter == 0 ? "실패한 파싱없음" : "시험회차 실패 : \(testFailureCounter)"
-                        log = writeLog(log, funcName: "\(#function)", outPut: "    시험회차 생성 : \(testCounter)개, \(testFailureResult)")
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "    시험회차 생성 : \(testCounter)개, \(testFailureResult)")
                         
                     }
                     
                 } catch {
                     
-                    log = writeLog(log, funcName: "\(#function)", outPut: "    시험 회차를 가져오면서 에러 발생")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "    시험 회차를 가져오면서 에러 발생")
                     
                 }
                 
                 
-                log = writeLog(log, funcName: "\(#function)", outPut: "    \(subject.key) 시험회차가져오기 종료")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "    \(subject.key) 시험회차가져오기 종료")
             }
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 종료")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(category.key) 과목가져오기 종료")
             
         }
         
-        log = writeLog(log, funcName: "\(#function)", outPut: "총 \(totalTestCounter)개의 json파일을 가져오기 성공")
+        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "총 \(totalTestCounter)개의 json파일을 가져오기 성공")
         
         testDatabase.categories.append(contentsOf: tempTestDatabase.categories)
         
@@ -310,29 +310,29 @@ class StorageManager {
             
             //전체
             guard let testSubject__test = json as? [String : Any] else {
-                log = writeLog(log, funcName: "\(#function)", outPut: "        test 키를 찾을 수 없음")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test 키를 찾을 수 없음")
                 return false
             }
             
             
             //시험을 파싱
             
-            guard let testSubject__test_key = testSubject__test["key"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        문제의 key 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute = testSubject__test["attribute"] as? [String : Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 attribute 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_specification = testSubject__test_attribute["specification"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 specification 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_modifiedDate = testSubject__test_attribute["modifiedDate"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 modifiedDate 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_tags = testSubject__test_attribute["tags"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 tags 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_revision = testSubject__test_attribute["revision"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 revision 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_createDate = testSubject__test_attribute["createDate"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 createDate 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_isPublished = testSubject__test_attribute["isPublished"] as? Bool else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 isPublished 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_number = testSubject__test_attribute["number"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 number 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_numHelper = testSubject__test_attribute["numHelper"] as? Int? else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 numHelper 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_date = testSubject__test_attribute["date"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 date 찾을 수 없음"); return false}
-            guard let testSubject__test_attribute_raw = testSubject__test_attribute["raw"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        test의 raw 찾을 수 없음"); return false}
+            guard let testSubject__test_key = testSubject__test["key"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        문제의 key 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute = testSubject__test["attribute"] as? [String : Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 attribute 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_specification = testSubject__test_attribute["specification"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 specification 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_modifiedDate = testSubject__test_attribute["modifiedDate"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 modifiedDate 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_tags = testSubject__test_attribute["tags"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 tags 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_revision = testSubject__test_attribute["revision"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 revision 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_createDate = testSubject__test_attribute["createDate"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 createDate 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_isPublished = testSubject__test_attribute["isPublished"] as? Bool else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 isPublished 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_number = testSubject__test_attribute["number"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 number 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_numHelper = testSubject__test_attribute["numHelper"] as? Int? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 numHelper 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_date = testSubject__test_attribute["date"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 date 찾을 수 없음"); return false}
+            guard let testSubject__test_attribute_raw = testSubject__test_attribute["raw"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        test의 raw 찾을 수 없음"); return false}
             
             
             if new_test.key == testSubject__test_key && new_test.number == testSubject__test_attribute_number && new_test.numHelper == testSubject__test_attribute_numHelper {
-                log = writeLog(log, funcName: "\(#function)", outPut: "        유효한 키입력 - \(new_test.key)")
+                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효한 키입력 - \(new_test.key)")
             } else {
                 return false
             }
@@ -350,33 +350,33 @@ class StorageManager {
             
             // 문제를 파싱
             
-            guard let questionArray = testSubject__test["question"] as? [Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        questions 찾을 수 없음"); return false}
+            guard let questionArray = testSubject__test["question"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        questions 찾을 수 없음"); return false}
             
             for question in questionArray {
                 
-                guard let testSubject__test__question = question as? [String:Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        question 찾을 수 없음"); return false}
+                guard let testSubject__test__question = question as? [String:Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question 찾을 수 없음"); return false}
                 
-                guard let testSubject__test__question_attribute = testSubject__test__question["attribute"] as? [String : Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 attribute 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_specification = testSubject__test__question_attribute["specification"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 specification 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_modifiedDate = testSubject__test__question_attribute["modifiedDate"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 modifiedDate 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_tags = testSubject__test__question_attribute["tags"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 tags 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_cases = testSubject__test__question_attribute["cases"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 cases 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_revision = testSubject__test__question_attribute["revision"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 revision 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_number = testSubject__test__question_attribute["number"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 number 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_subjectDetails = testSubject__test__question_attribute["subjectDetails"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 subjectDetails 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_questionType = testSubject__test__question_attribute["questionType"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 questionType 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_questionOX = testSubject__test__question_attribute["questionOX"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 questionOX 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_contentPrefix = testSubject__test__question_attribute["contentPrefix"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 contentPrefix 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_content = testSubject__test__question_attribute["content"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 content 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_notContent = testSubject__test__question_attribute["notContent"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 notContent 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_contentNote = testSubject__test__question_attribute["contentNote"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 contentNote 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_passage = testSubject__test__question_attribute["passage"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 passage 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_passageSuffix = testSubject__test__question_attribute["passageSuffix"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 passageSuffix 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_questionSuffix = testSubject__test__question_attribute["questionSuffix"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 questionSuffix 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_answer = testSubject__test__question_attribute["answer"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 answer 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_raw = testSubject__test__question_attribute["raw"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 raw 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_rawSelections = testSubject__test__question_attribute["rawSelections"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 rawSelections 찾을 수 없음"); return false}
-                guard let testSubject__test__question_attribute_rawLists = testSubject__test__question_attribute["rawLists"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        question의 rawLists 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute = testSubject__test__question["attribute"] as? [String : Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 attribute 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_specification = testSubject__test__question_attribute["specification"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 specification 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_modifiedDate = testSubject__test__question_attribute["modifiedDate"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 modifiedDate 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_tags = testSubject__test__question_attribute["tags"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 tags 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_cases = testSubject__test__question_attribute["cases"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 cases 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_revision = testSubject__test__question_attribute["revision"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 revision 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_number = testSubject__test__question_attribute["number"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 number 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_subjectDetails = testSubject__test__question_attribute["subjectDetails"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 subjectDetails 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_questionType = testSubject__test__question_attribute["questionType"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 questionType 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_questionOX = testSubject__test__question_attribute["questionOX"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 questionOX 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_contentPrefix = testSubject__test__question_attribute["contentPrefix"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 contentPrefix 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_content = testSubject__test__question_attribute["content"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 content 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_notContent = testSubject__test__question_attribute["notContent"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 notContent 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_contentNote = testSubject__test__question_attribute["contentNote"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 contentNote 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_passage = testSubject__test__question_attribute["passage"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 passage 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_passageSuffix = testSubject__test__question_attribute["passageSuffix"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 passageSuffix 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_questionSuffix = testSubject__test__question_attribute["questionSuffix"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 questionSuffix 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_answer = testSubject__test__question_attribute["answer"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 answer 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_raw = testSubject__test__question_attribute["raw"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 raw 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_rawSelections = testSubject__test__question_attribute["rawSelections"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 rawSelections 찾을 수 없음"); return false}
+                guard let testSubject__test__question_attribute_rawLists = testSubject__test__question_attribute["rawLists"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        question의 rawLists 찾을 수 없음"); return false}
                 
                 let new_question = Question(
                     revision: testSubject__test__question_attribute_revision,
@@ -397,7 +397,7 @@ class StorageManager {
                 case "Unknown":
                     testSubject__test__question_attribute_questionType_enum = .Select
                 default:
-                    log = writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 QuestionType \(testSubject__test__question_attribute_questionType)")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 QuestionType \(testSubject__test__question_attribute_questionType)")
                     return false
                 }
                 
@@ -412,7 +412,7 @@ class StorageManager {
                 case "Unknown":
                     testSubject__test__question_attribute_questionOX_enum = .Unknown
                 default:
-                    log = writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 QuestionType \(testSubject__test__question_attribute_questionOX)")
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 QuestionType \(testSubject__test__question_attribute_questionOX)")
                     return false
                 }
                 
@@ -440,23 +440,23 @@ class StorageManager {
                 new_question.rawLists = testSubject__test__question_attribute_rawLists
                 
                 
-                guard let selectionArray = testSubject__test__question["selection"] as? [Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        selections 찾을 수 없음"); return false}
+                guard let selectionArray = testSubject__test__question["selection"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selections 찾을 수 없음"); return false}
                 
                 for selection in selectionArray {
-                    guard let testSubject__test__question__selection = selection as? [String:Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection = selection as? [String:Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection 찾을 수 없음"); return false}
                     
-                    guard let selection_key = testSubject__test__question__selection["key"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        선택지의 key 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute = testSubject__test__question__selection["attribute"] as? [String : Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 attribute 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_specification = testSubject__test__question__selection_attribute["specification"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 specification 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_modifiedDate = testSubject__test__question__selection_attribute["modifiedDate"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 modifiedDate 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_tags = testSubject__test__question__selection_attribute["tags"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 tags 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_cases = testSubject__test__question__selection_attribute["cases"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 cases 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_revision = testSubject__test__question__selection_attribute["revision"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 revision 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_content = testSubject__test__question__selection_attribute["content"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 content 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_notContent = testSubject__test__question__selection_attribute["notContent"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 notContent 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_iscOrrect = testSubject__test__question__selection_attribute["iscOrrect"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 iscOrrect 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_isAnswer = testSubject__test__question__selection_attribute["isAnswer"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 isAnswer 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__selection_attribute_number = testSubject__test__question__selection_attribute["number"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        selection의 number 찾을 수 없음"); return false}
+                    guard let selection_key = testSubject__test__question__selection["key"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        선택지의 key 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute = testSubject__test__question__selection["attribute"] as? [String : Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 attribute 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_specification = testSubject__test__question__selection_attribute["specification"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 specification 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_modifiedDate = testSubject__test__question__selection_attribute["modifiedDate"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 modifiedDate 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_tags = testSubject__test__question__selection_attribute["tags"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 tags 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_cases = testSubject__test__question__selection_attribute["cases"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 cases 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_revision = testSubject__test__question__selection_attribute["revision"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 revision 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_content = testSubject__test__question__selection_attribute["content"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 content 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_notContent = testSubject__test__question__selection_attribute["notContent"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 notContent 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_iscOrrect = testSubject__test__question__selection_attribute["iscOrrect"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 iscOrrect 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_isAnswer = testSubject__test__question__selection_attribute["isAnswer"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 isAnswer 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__selection_attribute_number = testSubject__test__question__selection_attribute["number"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        selection의 number 찾을 수 없음"); return false}
                     
                     
                     let new_selection = Selection(
@@ -466,7 +466,7 @@ class StorageManager {
                         content: testSubject__test__question__selection_attribute_content)
                     
                     if new_selection.key != selection_key {
-                        log = writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 Selection 키입력")
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 Selection 키입력")
                         return false
                     }
                     
@@ -485,29 +485,29 @@ class StorageManager {
                 
                 
                 
-                guard let listArray = testSubject__test__question["list"] as? [Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        lists 찾을 수 없음"); return false}
+                guard let listArray = testSubject__test__question["list"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        lists 찾을 수 없음"); return false}
                 
                 for list in listArray {
                     
-                    guard let testSubject__test__question__list = list as? [String:Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        list 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list = list as? [String:Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list 찾을 수 없음"); return false}
                     
-                    guard let list_key = testSubject__test__question__list["key"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        선택지의 key 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute = testSubject__test__question__list["attribute"] as? [String : Any] else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 attribute 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_specification = testSubject__test__question__list_attribute["specification"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 specification 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_modifiedDate = testSubject__test__question__list_attribute["modifiedDate"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 modifiedDate 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_tags = testSubject__test__question__list_attribute["tags"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 tags 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_cases = testSubject__test__question__list_attribute["cases"] as? [String] else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 cases 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_revision = testSubject__test__question__list_attribute["revision"] as? Int else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 revision 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_content = testSubject__test__question__list_attribute["content"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 content 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_notContent = testSubject__test__question__list_attribute["notContent"] as? String? else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 notContent 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_iscOrrect = testSubject__test__question__list_attribute["iscOrrect"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 iscOrrect 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_isAnswer = testSubject__test__question__list_attribute["isAnswer"] as? Bool? else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 isAnswer 찾을 수 없음"); return false}
-                    guard let testSubject__test__question__list_attribute_selectStirng = testSubject__test__question__list_attribute["selectString"] as? String else {log = writeLog(log, funcName: "\(#function)", outPut: "        list의 selectString 찾을 수 없음"); return false}
+                    guard let list_key = testSubject__test__question__list["key"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        선택지의 key 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute = testSubject__test__question__list["attribute"] as? [String : Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 attribute 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_specification = testSubject__test__question__list_attribute["specification"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 specification 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_modifiedDate = testSubject__test__question__list_attribute["modifiedDate"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 modifiedDate 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_tags = testSubject__test__question__list_attribute["tags"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 tags 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_cases = testSubject__test__question__list_attribute["cases"] as? [String] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 cases 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_revision = testSubject__test__question__list_attribute["revision"] as? Int else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 revision 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_content = testSubject__test__question__list_attribute["content"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 content 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_notContent = testSubject__test__question__list_attribute["notContent"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 notContent 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_iscOrrect = testSubject__test__question__list_attribute["iscOrrect"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 iscOrrect 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_isAnswer = testSubject__test__question__list_attribute["isAnswer"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 isAnswer 찾을 수 없음"); return false}
+                    guard let testSubject__test__question__list_attribute_selectStirng = testSubject__test__question__list_attribute["selectString"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 selectString 찾을 수 없음"); return false}
                     
                     let new_list = List(revision: testSubject__test__question__list_attribute_revision, question: new_question, content: testSubject__test__question__list_attribute_content, selectString: testSubject__test__question__list_attribute_selectStirng)
                     
                     if new_list.key != list_key {
-                        log = writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 Selection 키입력")
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 Selection 키입력")
                         return false
                     }
                     
@@ -534,7 +534,7 @@ class StorageManager {
             }
             
             
-            log = writeLog(log, funcName: "\(#function)", outPut: "     - \(testSubject__test_key) 파싱종료")
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "     - \(testSubject__test_key) 파싱종료")
             
             
             

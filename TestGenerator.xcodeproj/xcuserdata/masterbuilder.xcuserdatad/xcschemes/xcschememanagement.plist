@@ -14,10 +14,20 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>asdfsdf.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>395BF6CE1E82BA36004BE198</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>39B1003E1ECF4FB600C632EA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
