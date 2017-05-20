@@ -15,4 +15,13 @@ class Generator {
     var timeConsume : Int? = nil
     
     
+    func seperateWorngSolve() -> (correct : [Solver],wrong : [Solver]) {
+        let wrong = solvers.filter(){$0.isRight == false}
+        let right = solvers.filter(){$0.isRight == true}
+        
+        
+        return (right,wrong)
+    }
+    
+    
 }

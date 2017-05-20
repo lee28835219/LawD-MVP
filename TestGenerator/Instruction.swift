@@ -26,6 +26,7 @@ enum HelpInstruction {
     case InstPublish
     case InstSave
     case InstGoon
+    case InstSolve
 }
 
 enum InstMain : String {
@@ -34,9 +35,10 @@ enum InstMain : String {
     case exit = "exit"
     case keys = "keys"
     case publish = "publish"
-    case publishShuffled = "publishshuffled"
+    case publishShuffled = "publish shuffled"
     case solve = "solve"
     case solveShuffled = "solve shuffled"
+    case solveControversal = "solve controversl"
     case edit = "edit"
     case save = "save"
     case refresh = "refresh"
@@ -46,7 +48,7 @@ enum InstMain : String {
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -88,10 +90,15 @@ enum InstMain : String {
         case "ㅍㄴ":
             self = .solveShuffled
             
+        case "vc":
+            self = .solveControversal
+        case "ㅍㅊ":
+            self = .solveControversal
             
-        case "edit":
+            
+        case "e":
             self = .edit
-        case "ㄷㅇㅑㅅ":
+        case "ㄷ":
             self = .edit
             
             
@@ -249,6 +256,59 @@ enum InstGoon : String {
         case "ㅁㅣㅣ":
             self = .all
             
+        default:
+            self = .unknown
+        }
+    }
+}
+
+enum InstSolve : String {
+    
+    case resolve = "[r]esolve"
+    case noteQuestion = "[n]ote question"
+    case tagQuestion = "[t]ag question"
+    case modifyQuestoin = "[m]odify question"
+    case next = "next[]"
+    case exit = "e[x]it"
+    
+    case unknown
+    
+    
+    static let allValues = [resolve.rawValue, noteQuestion.rawValue, tagQuestion.rawValue, modifyQuestoin.rawValue, next.rawValue, exit.rawValue]
+    
+    init(_ value : String) {
+        switch value {
+            
+        case "r":
+            self = .resolve
+        case "ㄱ":
+            self = .resolve
+            
+        case "n":
+            self = .noteQuestion
+        case "ㅜ":
+            self = .noteQuestion
+            
+        case "t":
+            self = .tagQuestion
+        case "ㅅ":
+            self = .tagQuestion
+            
+        case "m":
+            self = .modifyQuestoin
+        case "ㅡ":
+            self = .modifyQuestoin
+            
+        case "":
+            self = .next
+        case "":
+            self = .next
+        
+        case "x":
+            self = .exit
+        case "ㅌ":
+            self = .exit
+        
         default:
             self = .unknown
         }

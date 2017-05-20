@@ -13,11 +13,14 @@ class OutputManager {
     var log = ""
     
     let fileManager = FileManager.default
-    
-    var showAttribute : Bool = false
-    var showAnswer : Bool = false
+
     var showTitle : Bool = true
+    var showQuestion : Bool = true
+    var showAnswer : Bool = false
+    var showHistory : Bool = false
+    var showAttribute : Bool = false
     var showOrigSel : Bool = false
+    
     var url : URL? {
         let path : URL?
         if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
@@ -48,73 +51,79 @@ class OutputManager {
             //선택지
             selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool?],originalSelectionsNumber : [String],
             //정답
-            ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String
+            ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String,
+            //풀이이력
+            solveDate: [Date?], isRight : [Bool?], comment : [String], answerRate : Float, totalNumber : Int, rightNumber : Int
             ) {
         
-        //문제
         io.writeMessage("")
+        
+        //제목
         if showTitle {
             let testTitle = (isPublished ? "[기출] " : "[변형] ") + testKey
             io.writeMessage(to: .publish, testTitle)
             io.writeMessage("")
         }
         
-         io.writeMessage(to: .publish, "문 "+questionNumber.description+". ")
-        var queCont = questionContent
-        if let contNote = questionContentNote {
-            queCont = queCont + " " + contNote
-        }
-        if showAttribute {
-            queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
-        }
-         io.writeMessage(to: .publish, "  "+queCont.spacing(2))
-         io.writeMessage("")
-        
-        //지문
-        if questionPassage != nil {
-            // How to split a string by new lines in Swift
-            // http://stackoverflow.com/questions/32021712/how-to-split-a-string-by-new-lines-in-swift
-            let array = questionPassage!.components(separatedBy: .newlines)
-            for st in array {
-                 io.writeMessage(to: .publish, "   "+st.spacing(3))
+        //문제와 선택지 - 향후 statementPublish 개발필요 왜냐? OX문제 생성을 위함~ 2017. 5. 20.
+        if showQuestion {
+            io.writeMessage(to: .publish, "문 "+questionNumber.description+". ")
+            var queCont = questionContent
+            if let contNote = questionContentNote {
+                queCont = queCont + " " + contNote
             }
+            if showAttribute {
+                queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
+            }
+             io.writeMessage(to: .publish, "  "+queCont.spacing(2))
              io.writeMessage("")
-            if questionPassageSuffix != nil {
-                 io.writeMessage(to: .publish, "   "+questionPassageSuffix!.spacing(3))
+            
+            //지문
+            if questionPassage != nil {
+                // How to split a string by new lines in Swift
+                // http://stackoverflow.com/questions/32021712/how-to-split-a-string-by-new-lines-in-swift
+                let array = questionPassage!.components(separatedBy: .newlines)
+                for st in array {
+                     io.writeMessage(to: .publish, "   "+st.spacing(3))
+                }
+                 io.writeMessage("")
+                if questionPassageSuffix != nil {
+                     io.writeMessage(to: .publish, "   "+questionPassageSuffix!.spacing(3))
+                     io.writeMessage("")
+                }
+            }
+
+            
+            //목록
+            if listsContents.count > 0 {
+                for (index,listSelCont) in listsContents.enumerated() {
+                    var selectionStr = listSelCont
+                    if showOrigSel {
+                        selectionStr = "[\(origialListsNumberString[index])] " + selectionStr
+                    }
+                    if showAttribute {
+                        if let OX = listsIscOrrect[index] {
+                            selectionStr = selectionStr + (OX ? " (O)" : " (X)")
+                        } else {
+                            selectionStr = selectionStr + " (O?,X?)"
+                        }
+                    }
+                     io.writeMessage(to: .publish, " "+listsNumberString[index]+". "+selectionStr.spacing(4))
+                }
                  io.writeMessage("")
             }
-        }
-
-        
-        //목록
-        if listsContents.count > 0 {
-            for (index,listSelCont) in listsContents.enumerated() {
-                var selectionStr = listSelCont
-                if showOrigSel {
-                    selectionStr = "[\(origialListsNumberString[index])] " + selectionStr
-                }
-                if showAttribute {
-                    if let OX = listsIscOrrect[index] {
-                        selectionStr = selectionStr + (OX ? " (O)" : " (X)")
-                    } else {
-                        selectionStr = selectionStr + " (O?,X?)"
-                    }
-                }
-                 io.writeMessage(to: .publish, " "+listsNumberString[index]+". "+selectionStr.spacing(4))
+            
+            if questionSuffix != nil {
+                 io.writeMessage(to: .publish, "  "+questionSuffix!.spacing(2))
+                 io.writeMessage("")
+            }
+            
+            //선택지
+            for (index,selCont) in selectionsContent.enumerated() {
+                 io.writeMessage(to: .publish, "  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
             }
              io.writeMessage("")
         }
-        
-        if questionSuffix != nil {
-             io.writeMessage(to: .publish, "  "+questionSuffix!.spacing(2))
-             io.writeMessage("")
-        }
-        
-        //선택지
-        for (index,selCont) in selectionsContent.enumerated() {
-             io.writeMessage(to: .publish, "  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
-        }
-         io.writeMessage("")
         
         //정답
         if showAnswer {
@@ -127,10 +136,50 @@ class OutputManager {
              io.writeMessage(to: .publish, "  " + questionAnswer.roundInt + "  " +
                 _getSelectionStringForPrinting(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
         }
-         io.writeMessage("")
+        
+        //이력
+        if showHistory {
+            io.writeMessage(to: .publish, "<풀이이력 :  정답률 \(answerRate)  (\(rightNumber) / \(totalNumber)) >")
+            for (index,date) in solveDate.enumerated() {
+                if date == nil || isRight[index] == nil {
+                    continue
+                }
+                let str = isRight[index]! ? "(O) " : "(X) "
+                io.writeMessage(to: .publish, str + "-" + date!.yyyymmdd + " : " + comment[index])
+            }
+            io.writeMessage()
+        }
+        io.writeMessage("")
     }
     
     
+    
+    private func _getSelectionStringForPrinting(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
+        var selectionStr = ""
+        if showOrigSel {
+            selectionStr = selectionStr + "[" + originalSelectionNumber + "] "
+        }
+        selectionStr = selectionStr + selContent
+        if showAttribute {
+            if let OX = selIscOrrect {
+                selectionStr = selectionStr+(OX ? " (O)" : " (X)")
+            } else {
+                if questionType != .Select {
+                    if let ans = selIsAnswer {
+                        if ans {
+                            selectionStr = selectionStr+" (O)"
+                        } else {
+                            selectionStr = selectionStr+" (X)"
+                        }
+                    }
+                } else {
+                    selectionStr = selectionStr+" (O,X)?"
+                }
+            }
+        }
+        return selectionStr
+    }
+
     
     
     
@@ -220,32 +269,7 @@ class OutputManager {
         }
     }
     
-    private func _getSelectionStringForPrinting(selContent : String, selIscOrrect : Bool?, selIsAnswer : Bool?, showAttribute : Bool, questionType : QuestionType, originalSelectionNumber : String) -> String {
-        var selectionStr = ""
-        if showOrigSel {
-            selectionStr = selectionStr + "[" + originalSelectionNumber + "] "
-        }
-        selectionStr = selectionStr + selContent
-        if showAttribute {
-            if let OX = selIscOrrect {
-                selectionStr = selectionStr+(OX ? " (O)" : " (X)")
-            } else {
-                if questionType != .Select {
-                    if let ans = selIsAnswer {
-                        if ans {
-                            selectionStr = selectionStr+" (O)"
-                        } else {
-                            selectionStr = selectionStr+" (X)"
-                        }
-                    }
-                } else {
-                    selectionStr = selectionStr+" (O,X)?"
-                }
-            }
-        }
-        return selectionStr
-    }
-
+    
 }
 
 protocol Publishable {

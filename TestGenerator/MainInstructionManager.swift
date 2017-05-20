@@ -49,21 +49,26 @@ class MainInstructionManager {
                 
                 
             case .keys:
-                let (inst,value) = io.getKey(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstKey)))
+                let (inst,value) = io.getPublish(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstPublish)))
                 showKeys(inst, value : value)
                 
             case .publish:
-                publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: false)
+                _ = publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: false)
             
             case .publishShuffled:
-                publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: false)
+                _ = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: false)
             
             case .solve:
-                publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: true)
+                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
+                handleGenerator(generatorUnwrapped)
                 
             case .solveShuffled:
-                publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
-                
+                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
+                handleGenerator(generatorUnwrapped)
+            
+            case .solveControversal:
+                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true, gonnaControversal: true)
+                handleGenerator(generatorUnwrapped)
                 
             case .save:
                 let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
@@ -505,8 +510,8 @@ extension MainInstructionManager {
 //    }
     
     
-    func showKeys(_ instKey : InstKey, value: String) {
-        switch instKey {
+    func showKeys(_ instruction : InstPublish, value: String) {
+        switch instruction {
         case .all:
             for testCategory in testDatabase.categories {
                 io.writeMessage(to: .publish, " | " + testCategory.key)
@@ -526,6 +531,27 @@ extension MainInstructionManager {
                     }
                 }
             }
+        case .category:
+            for testCategory in testDatabase.categories {
+                io.writeMessage(to: .publish, " | " + testCategory.key)
+            }
+        case .subject:
+            for testCategory in testDatabase.categories {
+                io.writeMessage(to: .publish, " | " + testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    io.writeMessage(to: .publish, "  | " + testSubject.key)
+                }
+            }
+        case .test:
+            for testCategory in testDatabase.categories {
+                io.writeMessage(to: .publish, " | " + testCategory.key)
+                for testSubject in testCategory.testSubjects {
+                    io.writeMessage(to: .publish, "  | " + testSubject.key)
+                    for test in testSubject.tests {
+                        io.writeMessage(to: .publish, "   | " + test.key)
+                    }
+                }
+            }
         case .question:
             for testCategory in testDatabase.categories {
                 io.writeMessage(to: .publish, " | " + testCategory.key)
@@ -540,30 +566,22 @@ extension MainInstructionManager {
                 }
             }
         case .unknown:
-            _ = true
             io.unkown(value)
         }
     }
     
     
-    func publishAndSolver(_ instructionRaw : String, gonnaShuffle: Bool, gonnaSolve: Bool) {
+    func publishAndSolver(_ instructionRaw : String, gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal: Bool = false) -> Generator? {
+        let generator = Generator()
+        
         var str = ""
         if gonnaSolve {
             str = "풀 문제의 형식을 선택"
         } else {
             str = "출력할 형식을 선택"
         }
-        let (inst,value) = io.getPublish(io.getInput(str+io.getHelp(.InstPublish)))
-        if !selectQuestion(inst, value : value, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve) {
-            publishAndSolver(instructionRaw, gonnaShuffle:  gonnaShuffle, gonnaSolve: gonnaSolve)
-            return
-        }
-    }
-    
-    
-    // 함수를 건내줘서 출력하는 것으로 추후 수정 필요 2017. 5. 19.
-    func selectQuestion(_ instruction : InstPublish, value: String, gonnaShuffle : Bool, gonnaSolve : Bool) -> Bool{
-        var solvers = [Solver]()
+        let (instruction,value) = io.getPublish(io.getInput(str+io.getHelp(.InstPublish)))
+        
         
         switch instruction {
         case .all:
@@ -571,7 +589,10 @@ extension MainInstructionManager {
                 for testSubject in testCategory.testSubjects {
                     for test in testSubject.tests {
                         for que in test.questions {
-                            solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
+                            let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
+                            if gonnaExit {
+                                return generator
+                            }
                         }
                     }
                 }
@@ -579,199 +600,149 @@ extension MainInstructionManager {
         case .category:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return true
+                return nil
             }
             for testSubject in testCategory.testSubjects {
                 for test in testSubject.tests {
                     for que in test.questions {
-                        solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
+                        let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
+                        if gonnaExit {
+                            return generator
+                        }
                     }
                 }
             }
         case .subject:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return true
+                return nil
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return true
+                return nil
             }
             for test in testSubject.tests {
                 for que in test.questions {
-                    solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
-
+                    let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
+                    if gonnaExit {
+                        return generator
+                    }
                 }
             }
         case .test:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return true
+                return nil
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return true
+                return nil
             }
             guard let test = selectTest(testSubject) else {
                 io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
-                return true
+                return nil
             }
             for que in test.questions {
-                solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
+                let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
+                if gonnaExit {
+                    return generator
+                }
             }
+            
         case .question:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return true
+                return nil
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return true
+                return nil
             }
             guard let test = selectTest(testSubject) else {
                 io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
-                return true
+                return nil
             }
             guard let que = selectQuestion(test) else {
                 io.writeMessage(to: .error, "문제를 찾을 수 없음")
-                return true
+                return nil
             }
-            solvers.append(solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve))
+            let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
+            if gonnaExit {
+                return generator
+            }
             
         case .unknown:
             io.unkown(value)
         }
-        return true
+        
+        return generator
         
     }
     
     
-    func solveQuestion(_ question : Question, gonnaShuffle: Bool, gonnaSolve: Bool) -> Solver {
-        let showAttribute = gonnaSolve ? false : true
+    func solveQuestion(_ question : Question, gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal : Bool, generator: Generator) -> (Generator, Bool) {
+        
         let showAnswer = gonnaSolve ? false : true
-        let showOrigSel = gonnaSolve ? false : true
+        let showHistory = gonnaSolve ? false : true
+        let showAttribute = gonnaSolve ? false : true
+        var showOrigSel = true
+        if gonnaSolve {
+            showOrigSel = false
+        } else {
+            showOrigSel ? true : false
+        }
         
         let solver = Solver(question, gonnaShuffle: gonnaShuffle)
-        solver.publish(outputManager: outputManager, showAttribute: showAttribute, showAnswer: showAnswer, showTitle: true, showOrigSel: showOrigSel)
+        
+        if !solver.isOXChangable && gonnaControversal {
+            return (generator, false)
+        }
+        
+        solver.publish(outputManager: outputManager, showTitle: true, showAnswer: showAnswer, showHistory : showHistory, showAttribute: showAttribute, showOrigSel: showOrigSel)
+        
         
         if gonnaSolve {
             solver.solve(consoleIO : io)
+            solver.comment = io.getInput("남기고 싶은 코멘트")
+            
+            var goon = true
+            while goon {
+                let (instruction, value) = io.getSolve(io.getInput(io.getHelp(.InstSolve)))
+                switch instruction {
+                case .resolve:
+                    generator.solvers.append(solver)
+                    return solveQuestion(question, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal: gonnaControversal, generator: generator)
+                case .noteQuestion:
+                    let note = io.getInput("\(question.key)에 대한 태그입력")
+                case .tagQuestion:
+                    let tag = io.getInput("\(question.key)에 대한 태그입력")
+                case .modifyQuestoin:
+                    let instruction = io.getInput("\(question.key) 문제수정진행")
+                case .next:
+                    generator.solvers.append(solver)
+                    goon = false
+                case .exit:
+                    generator.solvers.append(solver)
+                    return (generator, true)
+                case .unknown:
+                    generator.solvers.append(solver)
+                    goon = false
+                }
+            }
         }
-        return solver
+        
+        return (generator,false)
     }
-
     
-//    func modifyQuestion(_ question: Question) {
-//        
-//        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
-//        let input = io.getInput()
-//        
-//        switch input {
-//        case "end" :
-//            return
-//            
-//        case "show" :
-//            
-//            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-//
-//            print()
-//            print("<반전된 문제>")
-//            question.controversalPublish()
-//            modifyQuestion(question)
-//            return
-//            
-//        // 문제 수정을 시작
-//        case "2" :
-//            guard let list = selectList(question) else {
-//                modifyQuestion(question)
-//                return
-//            }
-//            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
-//            
-//        case "3" :
-//            if question.questionType == QuestionType.Find {
-//                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
-//                _ = readLine()
-//                modifyQuestion(question)
-//                return
-//            }
-//            
-//            guard let selection = selectSelection(question) else {
-//                modifyQuestion(question)
-//                return
-//            }
-//            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
-//            
-//        case "4" :
-//            print()
-//            let listNumber = question.lists.count
-//            if listNumber != 0 {
-//                
-//                print("> 목록 \(listNumber)개 수정을 진행")
-//                for (index,list) in question.lists.enumerated() {
-//                    
-//                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-//                    print("> 목록지 \(index+1) / \(listNumber) 수정진행..")
-//                    list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(),notContent: list.notContent, targetNumber: list.getListString()+".")
-//                }
-//            }
-//            
-//            let selNumber = question.selections.count
-//            print("> 선택지 \(selNumber)개 수정을 진행")
-//            
-//            if question.questionType != .Find {
-//                for (index,sel) in question.selections.enumerated() {
-//                    
-//                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-//                    print("> 선택지 \(index+1) / \(selNumber) 수정진행..")
-//                    print("-. 선택지 : \(sel.number.roundInt)")
-//                    sel.notContent = modifyControversalContent(name: "선택지", content: sel.content, contentOX: sel.getOX(),notContent: sel.notContent, targetNumber: sel.number.roundInt)
-//                }
-//            }
-//            
-//            
-//        default:
-//            modifyQuestion(question)
-//            return
-//        }
-//        
-//        var goon = true
-//        while goon {
-//            print("<반전된 문제> - 변경됨")
-//            question.controversalPublish()
-//            
-//            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
-//            
-//            guard let input = readLine() else {
-//                print("유효하지 않은 입력")
-//                continue
-//            }
-//            
-//            if input == "e" || input == "ㄷ" {
-//                
-//                print(">"+question.key+" 저장하지 않음")
-//                return
-//                
-//            } else if input == "m" || input == "ㅡ" {
-//                
-//                print(">"+question.key+" 저장완료")
-//                _ = outputManager.saveTest(question.test)
-//                modifyQuestion(question)
-//                return
-//                
-//            } else if input == "n" || input == "ㅜ" {
-//                
-//                modifyQuestion(question)
-//                return
-//            }
-//            
-//            print(">"+question.key+" 저장완료")
-//            _ = outputManager.saveTest(question.test)
-//            
-//            print("")
-//            goon = false
-//        }
-//    }
+    func handleGenerator(_ generator : Generator?) {
+        if let generator = generator {
+            let (r,w) = generator.seperateWorngSolve()
+            io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
+        } else {
+            io.writeMessage(to: .error, "문제를 찾을 수 없음")
+        }
+    }
+    
     
     func saveTest(_ selectedTest : Test?) {
         guard let selectedTestWrapped = selectedTest else {

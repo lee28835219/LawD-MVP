@@ -22,8 +22,8 @@ if CommandLine.argc > 1 {
 let g_testDatabase = TestDatabase()
 let g_storageManager = StorageManager(g_testDatabase)
 print(g_storageManager.log)
-let g_new_storageManager = StorageManager(g_testDatabase)
-print(g_new_storageManager.log)
+//let g_new_storageManager = StorageManager(g_testDatabase)
+//print(g_new_storageManager.log)
 let g_outputManager = OutputManager()
 let g_instrcutionManger = MainInstructionManager(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager)
 
@@ -37,6 +37,9 @@ var temp_testSubject = TestSubject(testCategory: temp_testCategory, subject: "�
 temp_testSubject.setSampleTest()
 
 
+
+
+
 //
 //let dddd = DCDD(g_testDatabase)
 //
@@ -46,6 +49,7 @@ temp_testSubject.setSampleTest()
 //print(firstBarExam!.log)
 //let HouseExam = DC공인중개사(g_testDatabase)
 //print(HouseExam!.log)
+
 
 
 //// EXEC

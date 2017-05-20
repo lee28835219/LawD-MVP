@@ -288,8 +288,8 @@
 		39DF734E1EAFB820005AD7D7 /* ProcessingData */ = {
 			isa = PBXGroup;
 			children = (
-				39633DDE1E9B134B00F9FD4D /* Solver.swift */,
 				39E7E2AD1EBB263700087D73 /* Generator.swift */,
+				39633DDE1E9B134B00F9FD4D /* Solver.swift */,
 			);
 			name = ProcessingData;
 			sourceTree = "<group>";

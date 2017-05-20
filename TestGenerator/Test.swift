@@ -150,11 +150,24 @@ extension Test {
                 listArray.append(testSubject__test__question__list)
             }
             
+            var solveArray = [Any]()
+            for solve in question.solvers {
+                var testSubject__test__question__solve = [String : Any]()
+                
+                
+                testSubject__test__question__solve["date"] = solve.date?.jsonFormat
+                testSubject__test__question__solve["isRight"] = solve.isRight
+                testSubject__test__question__solve["comment"] = solve.comment
+                
+                solveArray.append(testSubject__test__question__solve)
+            }
+            
             var testSubject__test__question = [String : Any]()
             testSubject__test__question[key] = question.key
             testSubject__test__question[attribute] = testSubject__test__question_attribute
             testSubject__test__question["selection"] = selectionArray
             testSubject__test__question["list"] = listArray
+            testSubject__test__question["Solves"] = solveArray
             questionArray.append(testSubject__test__question)
         }
         var testSubject__test = [String : Any]()

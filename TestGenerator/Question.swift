@@ -52,11 +52,15 @@ class Question : DataStructure {
     var answerLists = [List]()
     
     
-////내 식구들은 누구인지
+    ////내 식구들은 누구인지
     var selections = [Selection]() //원본
     var lists = [List]() //원본
     
     
+    // 문제풀이 이력 드디어 추가 2017. 5. 20.
+    // 먼저는 맞았는지 틀렸지와 푼날짜, 노트를 아카이브 할 것임
+    // 향후 추가정보를 다룰 수 잇도록 수정 필요 (+)
+    var solvers = [Solver]()
     
     
     init(revision : Int, test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
@@ -289,105 +293,7 @@ extension Question {
 //        }
 //    
 
-    func controversalPublish() {
-        let oManager = OutputManager()
-        oManager.showAnswer = true
-        oManager.showTitle = false
-        oManager.showAttribute = true
-        oManager.showOrigSel = false
-        
-        
-        
-        var selectionsNotContent = [String]()
-        var selsIscOrrectControversal = [Bool?]()
-        var selsIsAnswer = [Bool?]()
-        var originalSelectionsNumber = [String]()
-        
-        for sel in selections {
-            selectionsNotContent.append(sel.notContent != nil ? sel.notContent! : "없음")
-            var selIscOrrectControversal : Bool? = nil
-            switch sel.iscOrrect {
-            case nil:
-                selIscOrrectControversal = nil
-            case .some(true):
-                selIscOrrectControversal = false
-            case .some(false):
-                selIscOrrectControversal = true
-            }
-            selsIscOrrectControversal.append(selIscOrrectControversal)
-            selsIsAnswer.append(sel.isAnswer)
-            originalSelectionsNumber.append(sel.number.roundInt)
-        }
-        
-        var listSelectionsNotContent = [String]()
-        var listSelsIscOrrectControversal = [Bool?]()
-        var listSelsIntString = [String]()
-        var origialListsNumberString = [String]()
-        
-        for (index,list) in lists.enumerated() {
-            listSelectionsNotContent.append(list.notContent != nil ? list.notContent! : "없음")
-            var listIscOrrectControversal : Bool? = nil
-            switch list.iscOrrect {
-            case nil:
-                listIscOrrectControversal = nil
-            case .some(true):
-                listIscOrrectControversal = false
-            case .some(false):
-                listIscOrrectControversal = true
-            }
-            listSelsIscOrrectControversal.append(listIscOrrectControversal)
-            listSelsIntString.append(list.getListString(int: index+1))
-            origialListsNumberString.append(list.getListString())
-        }
     
-        var answerIscOrrect : Bool? = nil
-        switch answerSelection?.iscOrrect {
-        case nil:
-            answerIscOrrect = nil
-        case .some(true):
-            answerIscOrrect = false
-        case .some(false):
-            answerIscOrrect = true
-        }
-        
-        oManager.questionPublish(
-            //            testCategroy: test.testSubject.testCategory.category,
-            //            testCategoryHelper : test.testSubject.testCategory.catHelper,
-            //            testSubject: test.testSubject.subject,
-            isPublished: test.isPublished,
-            
-            //            testNumber: test.number,
-            testKey: test.key,
-            
-            questionNumber: number,
-            
-            questionContent: notContent != nil ? notContent! : "없음",  // 셔플하면 변경
-            questionContentNote: contentNote,
-            questionPassage: passage,
-            questionPassageSuffix: passageSuffix,
-            
-            questionType: questionType,
-            questionOX: self.getNotOX(),   // 셔플하면 변경
-            
-            listsContents : listSelectionsNotContent,
-            listsIscOrrect : listSelsIscOrrectControversal,
-            listsNumberString : listSelsIntString,
-            origialListsNumberString : origialListsNumberString,
-            
-            questionSuffix: questionSuffix,
-            
-            selectionsContent : selectionsNotContent,  // 셔플하면 변경
-            selsIscOrrect : selsIscOrrectControversal,  // 셔플하면 변경
-            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
-            originalSelectionsNumber : originalSelectionsNumber,
-            
-            ansSelContent: answerSelection?.notContent != nil ? answerSelection?.notContent : "없음",  // 셔플하면 변경
-            ansSelIscOrrect: answerIscOrrect,  // 셔플하면 변경
-            ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
-            questionAnswer: answer,  // 셔플하면 변경
-            originalAnsSelectionNumber: answerSelection!.number.roundInt
-        )
-    }
     
     
     
@@ -400,6 +306,122 @@ extension Question {
         }
         return result
     }
+    
+    
+    
+    
+    //    func modifyQuestion(_ question: Question) {
+    //
+    //        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
+    //        let input = io.getInput()
+    //
+    //        switch input {
+    //        case "end" :
+    //            return
+    //
+    //        case "show" :
+    //
+    //            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
+    //
+    //            print()
+    //            print("<반전된 문제>")
+    //            question.controversalPublish()
+    //            modifyQuestion(question)
+    //            return
+    //
+    //        // 문제 수정을 시작
+    //        case "2" :
+    //            guard let list = selectList(question) else {
+    //                modifyQuestion(question)
+    //                return
+    //            }
+    //            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
+    //
+    //        case "3" :
+    //            if question.questionType == QuestionType.Find {
+    //                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
+    //                _ = readLine()
+    //                modifyQuestion(question)
+    //                return
+    //            }
+    //
+    //            guard let selection = selectSelection(question) else {
+    //                modifyQuestion(question)
+    //                return
+    //            }
+    //            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
+    //
+    //        case "4" :
+    //            print()
+    //            let listNumber = question.lists.count
+    //            if listNumber != 0 {
+    //
+    //                print("> 목록 \(listNumber)개 수정을 진행")
+    //                for (index,list) in question.lists.enumerated() {
+    //
+    //                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+    //                    print("> 목록지 \(index+1) / \(listNumber) 수정진행..")
+    //                    list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(),notContent: list.notContent, targetNumber: list.getListString()+".")
+    //                }
+    //            }
+    //
+    //            let selNumber = question.selections.count
+    //            print("> 선택지 \(selNumber)개 수정을 진행")
+    //
+    //            if question.questionType != .Find {
+    //                for (index,sel) in question.selections.enumerated() {
+    //
+    //                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
+    //                    print("> 선택지 \(index+1) / \(selNumber) 수정진행..")
+    //                    print("-. 선택지 : \(sel.number.roundInt)")
+    //                    sel.notContent = modifyControversalContent(name: "선택지", content: sel.content, contentOX: sel.getOX(),notContent: sel.notContent, targetNumber: sel.number.roundInt)
+    //                }
+    //            }
+    //
+    //
+    //        default:
+    //            modifyQuestion(question)
+    //            return
+    //        }
+    //
+    //        var goon = true
+    //        while goon {
+    //            print("<반전된 문제> - 변경됨")
+    //            question.controversalPublish()
+    //
+    //            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
+    //
+    //            guard let input = readLine() else {
+    //                print("유효하지 않은 입력")
+    //                continue
+    //            }
+    //
+    //            if input == "e" || input == "ㄷ" {
+    //
+    //                print(">"+question.key+" 저장하지 않음")
+    //                return
+    //
+    //            } else if input == "m" || input == "ㅡ" {
+    //
+    //                print(">"+question.key+" 저장완료")
+    //                _ = outputManager.saveTest(question.test)
+    //                modifyQuestion(question)
+    //                return
+    //                
+    //            } else if input == "n" || input == "ㅜ" {
+    //                
+    //                modifyQuestion(question)
+    //                return
+    //            }
+    //            
+    //            print(">"+question.key+" 저장완료")
+    //            _ = outputManager.saveTest(question.test)
+    //            
+    //            print("")
+    //            goon = false
+    //        }
+    //    }
+
 }
 
 

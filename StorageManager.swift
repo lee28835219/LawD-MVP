@@ -631,11 +631,29 @@ class StorageManager {
                 }
                 
                 
+                guard let solverArray = testSubject__test__question["Solves"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solves 찾을 수 없음"); return false}
+                
+                
+                
+                for solver in solverArray {
+                    guard let solverDictionary = solver as? [String:Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solver 찾을 수 없음"); return false}
+                    
+                    guard let date = solverDictionary["date"] as? String? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solver의 date 찾을 수 없음"); return false}
+                    guard let isRight = solverDictionary["isRight"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solver의 isRight 찾을 수 없음"); return false}
+                    guard let comment = solverDictionary["comment"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solver의 comment 찾을 수 없음"); return false}
+                    
+                    let new_solver = Solver(new_question)
+                    new_solver.date = date?.jsonDateFormat
+                    new_solver.isRight = isRight
+                    new_solver.comment = comment
+                    
+                    new_question.solvers.append(new_solver)
+                }
                 
                 
                 
                 _ = new_question.findAnswer()
-                
+            
                 // 초기화시 자동으로 추가되므로 필요없음
                 // new_test.questions.append(new_question)
             }

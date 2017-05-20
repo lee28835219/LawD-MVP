@@ -52,7 +52,7 @@ class ConsoleIO {
             let input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
             
             goon = false
-            return input
+            return input.precomposedStringWithCompatibilityMapping
         }
     }
 
@@ -77,6 +77,10 @@ class ConsoleIO {
         return (InstGoon(value),value)
     }
     
+    func getSolve(_ value : String) -> (instruction: InstSolve, value:String) {
+        return (InstSolve(value),value)
+    }
+    
     
     /* Output */
     
@@ -95,6 +99,8 @@ class ConsoleIO {
             values = InstSave.allValues
         case .InstGoon:
             values = InstGoon.allValues
+        case .InstSolve:
+            values = InstSolve.allValues
         }
         
         var str = ""

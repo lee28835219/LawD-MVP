@@ -21,16 +21,17 @@ class Solver : DataStructure {
     var answerSelectionModifed : Selection?
     var isOXChanged = false
     var isAnswerChanged = false
+    var isOXChangable = false
     
     //Find유형 문제용
     var originalShuffleMap = [(original : List, shuffled : List)]()
     var answerListSelectionModifed = [List]()
     
     
-    // solver
+    // 문제를 푼 뒤에 입력하는 항목
     var date : Date? = nil
     var isRight : Bool? = nil
-    
+    var comment : String = ""
     
     // hirechy 참고용
     let generator : Generator? = nil
@@ -343,6 +344,7 @@ class Solver : DataStructure {
         // 2,3-4. 문제와 지문 모두가 OX가 없으면 작업할 수 없음, 문제 타입도 OX타입이어야 함
         if isOppositeQuestionExist, isAllSelectionControversalExist,
             isGonnaOXConvert {
+            isOXChangable = true
             
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
@@ -423,6 +425,8 @@ class Solver : DataStructure {
         if isOppositeQuestionExist, isAllSelectionListControversalExist,
             isGonnaOXConvert {
             
+            isOXChangable = true
+            
             // 2. 문제와 지문 OX변경을 실행
             if Bool.random() {
                 isOXChanged = true
@@ -484,10 +488,13 @@ class Solver : DataStructure {
     
     
     
-    func publish(outputManager: OutputManager, showAttribute: Bool = true, showAnswer: Bool = true, showTitle: Bool = true, showOrigSel : Bool = true) {
+    func publish(outputManager: OutputManager, showTitle: Bool = true, showQuestion : Bool = true, showAnswer: Bool = true, showHistory : Bool = false, showAttribute: Bool = true, showOrigSel : Bool = true) {
         
-        outputManager.showAnswer = showAnswer
         outputManager.showTitle = showTitle
+        outputManager.showQuestion = showQuestion
+        outputManager.showAnswer = showAnswer
+        outputManager.showHistory = showHistory
+        
         outputManager.showAttribute = showAttribute
         outputManager.showOrigSel = showOrigSel
         
@@ -571,6 +578,11 @@ class Solver : DataStructure {
         //            ansSel = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: self.answerSelectionModifed)
         //        }
         
+        let generator = Generator()
+        generator.solvers = question.solvers
+        let (c,w) = generator.seperateWorngSolve()
+        let totalNumber = c.count + w.count
+        let rightNumber = c.count
         
         outputManager.questionPublish(
             //            testCategroy: self.question.test.testSubject.testCategory.category,
@@ -606,7 +618,123 @@ class Solver : DataStructure {
             ansSelIscOrrect: ansSelIscOrrect,  // 셔플하면 변경
             ansSelIsAnswer: ansSelIsAnswer,  // 셔플하면 변경
             questionAnswer: questionAnswer,
-            originalAnsSelectionNumber: originalAnsSelectionNumber
+            originalAnsSelectionNumber: originalAnsSelectionNumber,
+            
+            solveDate: question.solvers.map {$0.date},
+            isRight: question.solvers.map {$0.isRight},
+            comment: question.solvers.map {$0.comment},
+            
+            answerRate: Float(rightNumber)/Float(totalNumber)/100,
+            totalNumber: totalNumber,
+            rightNumber: rightNumber
+        )
+        
+    }
+    
+    func controversalPublish() {
+        let oManager = OutputManager()
+        oManager.showAnswer = true
+        oManager.showTitle = false
+        oManager.showAttribute = true
+        oManager.showOrigSel = false
+        oManager.showHistory = false
+        
+        
+        var selectionsNotContent = [String]()
+        var selsIscOrrectControversal = [Bool?]()
+        var selsIsAnswer = [Bool?]()
+        var originalSelectionsNumber = [String]()
+        
+        for sel in question.selections {
+            selectionsNotContent.append(sel.notContent != nil ? sel.notContent! : "없음")
+            var selIscOrrectControversal : Bool? = nil
+            switch sel.iscOrrect {
+            case nil:
+                selIscOrrectControversal = nil
+            case .some(true):
+                selIscOrrectControversal = false
+            case .some(false):
+                selIscOrrectControversal = true
+            }
+            selsIscOrrectControversal.append(selIscOrrectControversal)
+            selsIsAnswer.append(sel.isAnswer)
+            originalSelectionsNumber.append(sel.number.roundInt)
+        }
+        
+        var listSelectionsNotContent = [String]()
+        var listSelsIscOrrectControversal = [Bool?]()
+        var listSelsIntString = [String]()
+        var origialListsNumberString = [String]()
+        
+        for (index,list) in question.lists.enumerated() {
+            listSelectionsNotContent.append(list.notContent != nil ? list.notContent! : "없음")
+            var listIscOrrectControversal : Bool? = nil
+            switch list.iscOrrect {
+            case nil:
+                listIscOrrectControversal = nil
+            case .some(true):
+                listIscOrrectControversal = false
+            case .some(false):
+                listIscOrrectControversal = true
+            }
+            listSelsIscOrrectControversal.append(listIscOrrectControversal)
+            listSelsIntString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
+        }
+        
+        var answerIscOrrect : Bool? = nil
+        switch question.answerSelection?.iscOrrect {
+        case nil:
+            answerIscOrrect = nil
+        case .some(true):
+            answerIscOrrect = false
+        case .some(false):
+            answerIscOrrect = true
+        }
+        
+        oManager.questionPublish(
+            //            testCategroy: test.testSubject.testCategory.category,
+            //            testCategoryHelper : test.testSubject.testCategory.catHelper,
+            //            testSubject: test.testSubject.subject,
+            isPublished: question.test.isPublished,
+            
+            //            testNumber: test.number,
+            testKey: question.test.key,
+            
+            questionNumber: question.number,
+            
+            questionContent: question.notContent != nil ? question.notContent! : "없음",  // 셔플하면 변경
+            questionContentNote: question.contentNote,
+            questionPassage: question.passage,
+            questionPassageSuffix: question.passageSuffix,
+            
+            questionType: question.questionType,
+            questionOX: question.getNotOX(),   // 셔플하면 변경
+            
+            listsContents : listSelectionsNotContent,
+            listsIscOrrect : listSelsIscOrrectControversal,
+            listsNumberString : listSelsIntString,
+            origialListsNumberString : origialListsNumberString,
+            
+            questionSuffix: question.questionSuffix,
+            
+            selectionsContent : selectionsNotContent,  // 셔플하면 변경
+            selsIscOrrect : selsIscOrrectControversal,  // 셔플하면 변경
+            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
+            originalSelectionsNumber : originalSelectionsNumber,
+            
+            ansSelContent: question.answerSelection?.notContent != nil ? question.answerSelection?.notContent : "없음",  // 셔플하면 변경
+            ansSelIscOrrect: question.answerSelection?.iscOrrect != nil ? question.answerSelection!.iscOrrect : nil,  // 셔플하면 변경
+            ansSelIsAnswer: question.answerSelection?.isAnswer,  // 셔플하면 변경
+            questionAnswer: question.answer,  // 셔플하면 변경
+            originalAnsSelectionNumber: question.answerSelection!.number.roundInt,
+            
+            solveDate:  [],
+            isRight: [],
+            comment: [],
+            answerRate: 0,
+            totalNumber: 0,
+            rightNumber: 0
         )
     }
     
@@ -633,85 +761,27 @@ class Solver : DataStructure {
             return
         }
         
+        consoleIO.writeMessage("")
         
         if selections[userAnswer-1] === answerSelectionModifed {
             consoleIO.writeMessage(to: .notice, "정답!!")
+            isRight = true
         } else {
-            consoleIO.writeMessage(to: .notice, "오답... 정답은,")
+            consoleIO.writeMessage(to: .error, "오답...XXXXX")
+            isRight = false
         }
+        date = Date()
         
-        var answer = getModfiedStatementOfCommonStatement(statement: answerSelectionModifed!)
-        switch question.questionType {
-        case .Find:
-            answer = getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: answerSelectionModifed!)
-        case .Select, .Unknown:
-            _ = true
-        }
-        consoleIO.writeMessage(answer.content)
+        
+        self.publish(outputManager: OutputManager(), showTitle: false, showQuestion: false, showAnswer: true, showAttribute: true, showOrigSel: false)
+        
+        self.publish(outputManager: OutputManager(), showTitle: false, showQuestion: false, showAnswer: false, showHistory: true, showAttribute: true, showOrigSel: false)
+        
+        // 문제를 solve한 이 시점에 원 question에 풀이 이력을 추가
+        question.solvers.append(self)
         
     }
     
-    
-    //    func solveQuestion(_ question : Question, gonnaShuffle:Bool = false) -> (isShuffled : Bool, isRight : Bool, questionShuffled : Solver?) {
-    //
-    //        var isRight = false
-    //        let quetionShuffled : Solver = Solver(question, gonnaShuffle: true)
-    //
-    //
-    //
-    //
-    //        quetionShuffled.publish(outputManager: outputManager, showAttribute: false, showAnswer: false, showTitle: true, showOrigSel: false)
-    //
-    //        print("정답은? $ ", terminator : "")
-    //        input = getInput()
-    //
-    //        if Int(input) == quetionShuffled.getAnswerNumber() + 1 {
-    //            print("정답!", terminator: "")
-    //            isRight = true
-    //        } else {
-    //            //(+)자꾸 오답이라서 정답출력할 때 optional이 출력되는데 추후 확인 필요 2017. 4. 29. 수정완료 2017. 5. 8.
-    //            print("오답임...정답은")
-    //            var answerContent = ""
-    //            if question.questionType == .Find {
-    //                answerContent = quetionShuffled.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: quetionShuffled.answerSelectionModifed!).content
-    //            } else {
-    //                answerContent = quetionShuffled.getModfiedStatementOfCommonStatement(statement: quetionShuffled.answerSelectionModifed!).content
-    //            }
-    //            print("   \((quetionShuffled.getAnswerNumber() + 1).roundInt) \(answerContent.spacing(3))")
-    //            print("확인??", terminator: "")
-    //        }
-    
-    
-    //        print("-계속(),노트(n),태그(t),문제수정(m),중단(s) $ ", terminator: "")
-    //        input = getInput()
-    //
-    //        if input.caseInsensitiveCompare("n") == ComparisonResult.orderedSame || input == "ㅜ" {
-    //            print("노트를 입력하세요>", terminator: "")
-    //            input = getInput()
-    //        } else if input.caseInsensitiveCompare("t") == ComparisonResult.orderedSame || input == "t" {
-    //            print("태그를 입력하세요>", terminator: "")
-    //            // 데이터 추가 필요 2017. 5. 6. (+)
-    //            let tagInput = getInput()
-    //            print("> 태그(\(tagInput)) 입력완료~")
-    //            _ = readLine()
-    //            print()
-    //        } else if input.caseInsensitiveCompare("m") == ComparisonResult.orderedSame || input == "ㅡ" {
-    //            question.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-    //            print()
-    //            print("<반전된 문제>")
-    //            question.controversalPublish()
-    //            print()
-    //            modifyQuestion(question)
-    //        } else if input.caseInsensitiveCompare("s") == ComparisonResult.orderedSame || input == "ㄴ" {
-    //            print(question.key, "문제 변형을 중단함")
-    //            return (true, isRight, quetionShuffled)
-    //        }
-    //        
-    
-    //        return (true, isRight, quetionShuffled)
-    //    }
-    
-
     
     func edit() {
         
