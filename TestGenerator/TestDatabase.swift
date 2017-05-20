@@ -10,6 +10,8 @@ import Cocoa
 
 class TestDatabase: DataStructure {
     
+    var log = ""
+    
     let createDate	: Date = Date()
     
     var categories : [TestCategory] = []
@@ -18,6 +20,39 @@ class TestDatabase: DataStructure {
     
     override init(_ key: String = "Default") {
         super.init(key)
+    }
+    
+    func removeVoidPointer() -> [String] {
+        var result = [String]()
+        
+        for cat in categories {
+            for sub in cat.testSubjects {
+                if sub.tests.count == 0 {
+                    result.append(sub.key)
+                }
+            }
+        }
+        
+        for cat in categories {
+            if cat.testSubjects.count == 0 {
+                result.append(cat.key)
+            }
+        }
+        
+        for removeKey in result {
+            self.categories = self.categories.filter(){$0.key != removeKey}
+        }
+        
+        for removeKey in result {
+            for (index,cat) in categories.enumerated() {
+//                categories[index] = categories[index].testSubjects.
+                print(cat.testSubjects.filter(){$0.key != removeKey})
+            }
+        }
+        
+        
+        
+        return result
     }
     
 }

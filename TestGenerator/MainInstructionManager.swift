@@ -1,5 +1,5 @@
 //
-//  InstrctionManager.swift
+//  MainInstrctionManager.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 3. 22..
@@ -8,20 +8,22 @@
 
 import Foundation
 
-class InstructionManager {
+class MainInstructionManager {
     
     let io = ConsoleIO()
     
     let testDatabase : TestDatabase
     let outputManager : OutputManager
+    let storageManager : StorageManager
     
     var input = ""
     
     
     
-    init(testDatabase : TestDatabase, outputManager : OutputManager) {
+    init(testDatabase : TestDatabase, outputManager : OutputManager, storageManager : StorageManager) {
         self.testDatabase = testDatabase
         self.outputManager = outputManager
+        self.storageManager = storageManager
     }
     
     
@@ -43,13 +45,11 @@ class InstructionManager {
                 
                 
             case .help:
-                io.printHelp(Instruction.InstMain)
+                io.writeMessage(to: .notice, io.getHelp(.InstMain))
                 
                 
             case .keys:
-                io.writeMessage(to: .standard, "\(testDatabase.key)의 시험카테고리 모두출력")
-                io.printHelp(Instruction.InstKey)
-                let (inst,value) = io.getKey(io.getInput(instruction.rawValue))
+                let (inst,value) = io.getKey(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstKey)))
                 showKeys(inst, value : value)
                 
             case .publish:
@@ -66,9 +66,7 @@ class InstructionManager {
                 
                 
             case .save:
-                io.writeMessage(to: .standard, "저장할 형식을 선택")
-                io.printHelp(Instruction.InstSave)
-                let (inst,value) = io.getSave(io.getInput(instruction.rawValue))
+                let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
                 switch inst {
                 case .all:
                     for testCategory in testDatabase.categories {
@@ -92,14 +90,15 @@ class InstructionManager {
                     saveTest(selectedTest)
                     
                 case .unknown:
-                    _ = true
-//                    consoleIO.unkown(value)
+                    io.unkown(value)
                 }
                 
             case .edit:
-                _ = true
-//                consoleIO.unkown(value)
+                io.unkown(value)
                 
+            case .refresh:
+                storageManager.refresh(io: io)
+            
             case .unknown:
                 _ = io.unkown(value, true)
             }
@@ -474,7 +473,7 @@ class InstructionManager {
     }
 }
 
-extension InstructionManager {
+extension MainInstructionManager {
     
 //    func solveShuffledQuestions(_ questions : [Question]) -> [Question] {
 //        var wrongQuestions = [Question]()
@@ -509,18 +508,18 @@ extension InstructionManager {
         switch instKey {
         case .all:
             for testCategory in testDatabase.categories {
-                print(" |",testCategory.key)
+                io.writeMessage(to: .publish, " | " + testCategory.key)
                 for testSubject in testCategory.testSubjects {
-                    print("  |",testSubject.key)
+                    io.writeMessage(to: .publish, "  | " + testSubject.key)
                     for test in testSubject.tests {
-                        print("   |",test.key)
+                        io.writeMessage(to: .publish, "   | " + test.key)
                         for que in test.questions {
-                            print("    |", que.key)
+                            io.writeMessage(to: .publish, "    | " +  que.key)
                             for sel in que.lists {
-                                print("     |",sel.key)
+                                io.writeMessage(to: .publish, "     | " + sel.key)
                             }
                             for sel in que.selections {
-                                print("     |",sel.key)
+                                io.writeMessage(to: .publish, "     | " + sel.key)
                             }
                         }
                     }
@@ -528,13 +527,13 @@ extension InstructionManager {
             }
         case .question:
             for testCategory in testDatabase.categories {
-                print(" |",testCategory.key)
+                io.writeMessage(to: .publish, " | " + testCategory.key)
                 for testSubject in testCategory.testSubjects {
-                    print("  |",testSubject.key)
+                    io.writeMessage(to: .publish, "  | " + testSubject.key)
                     for test in testSubject.tests {
-                        print("   |",test.key)
+                        io.writeMessage(to: .publish, "   | " + test.key)
                         for que in test.questions {
-                            print("    |", que.key)
+                            io.writeMessage(to: .publish, "    | " +  que.key)
                         }
                     }
                 }
@@ -547,13 +546,13 @@ extension InstructionManager {
     
     
     func publishAndSolver(_ instructionRaw : String, gonnaShuffle: Bool, gonnaSolve: Bool) {
+        var str = ""
         if gonnaSolve {
-            io.writeMessage(to: .standard, "풀 문제의 형식을 선택")
+            str = "풀 문제의 형식을 선택"
         } else {
-            io.writeMessage(to: .standard, "출력할 형식을 선택")
+            str = "출력할 형식을 선택"
         }
-        io.printHelp(Instruction.InstPublish)
-        let (inst,value) = io.getPublish(io.getInput(instructionRaw))
+        let (inst,value) = io.getPublish(io.getInput(str+io.getHelp(.InstPublish)))
         if !selectQuestion(inst, value : value, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve) {
             publishAndSolver(instructionRaw, gonnaShuffle:  gonnaShuffle, gonnaSolve: gonnaSolve)
             return

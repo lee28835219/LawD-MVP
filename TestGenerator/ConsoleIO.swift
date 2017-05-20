@@ -25,40 +25,37 @@ class ConsoleIO {
     let colorHelp = ANSIColors.green
     let colorInput = ANSIColors.white
     
-    func printHelp(_ instruction : Instruction) {
-        
-        var values : [Any] = []
-        
-        switch instruction {
-        case .InstMain:
-            values = InstMain.allValues
-        case .InstKey:
-            values = InstKey.allValues
-        case .InstPublish:
-            values = InstPublish.allValues
-        case .InstSave:
-            values = InstSave.allValues
-        }
-        
-        var str = ""
-        for (index,value) in values.enumerated() {
-            if ConsoleIO.isDebug {
-                if index == 0 {
-                    str = "? \(value)"
-                } else {
-                    str = str + ", \(value)"
-                }
-            } else {
-                if index == 0 {
-                    str = colorHelp + "? \(value)"
-                }
-                str = str + ", \(value)"
-            }
-        }
-        print(str)
-    }
+    
 
     
+    /* Input */
+    
+    // 유효한 입력을 받는 보조함수
+    // 내가짠 함수가 위의 ray 에 있는거보다 더 효윻ㄹ적인 듯~ 2017. 5. 20
+    func getInput(_ prefix:String = "") -> String {
+        var goon = true
+        while goon {
+            let str = prefix != "" ? "> \(prefix) $ " : "$ "
+            if ConsoleIO.isDebug{
+                print(str, terminator: "")
+            } else {
+                print(colorInput+str, terminator: "")
+            }
+            
+            let inputRaw = readLine()
+            
+            guard let inputRawWrapped = inputRaw else {
+                writeMessage("유효하지 않은 입력")
+                continue
+            }
+            
+            let input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
+            
+            goon = false
+            return input
+        }
+    }
+
     
     func getIntstruction(_ value : String) -> (instruction: InstMain, value:String) {
         return (InstMain(value),value)
@@ -76,10 +73,58 @@ class ConsoleIO {
         return (InstSave(value),value)
     }
     
+    func getInstGoon(_ value : String) -> (instruction: InstGoon, value:String) {
+        return (InstGoon(value),value)
+    }
+    
+    
+    /* Output */
+    
+    func getHelp(_ instruction : HelpInstruction) -> String {
+        
+        var values : [Any] = []
+        
+        switch instruction {
+        case .InstMain:
+            values = InstMain.allValues
+        case .InstKey:
+            values = InstKey.allValues
+        case .InstPublish:
+            values = InstPublish.allValues
+        case .InstSave:
+            values = InstSave.allValues
+        case .InstGoon:
+            values = InstGoon.allValues
+        }
+        
+        var str = ""
+        for (index,value) in values.enumerated() {
+            if ConsoleIO.isDebug {
+                if index == 0 {
+                    str = "? \(value)"
+                } else {
+                    str = str + ", \(value)"
+                }
+            } else {
+                if index == 0 {
+                    str = "? \(value)"
+                } else {
+                    str = str + ", \(value)"
+                }
+            }
+        }
+        return str
+    }
     
     
     func writeMessage(to: OutputType = .standard, _ message: String = "") {
         switch to {
+        case .input:
+            if ConsoleIO.isDebug {
+                print(message)
+            } else {
+                print(colorInput+message)
+            }
         case .notice:
             if ConsoleIO.isDebug {
                 print(message)
@@ -105,35 +150,6 @@ class ConsoleIO {
             } else {
                 fputs(colorError+"! \(message)\n", stderr)
             }
-        }
-    }
-    
-    
-    
-    
-    // 유효한 입력을 받는 보조함수
-    // 내가짠 함수가 위의 ray 에 있는거보다 더 효윻ㄹ적인 듯~ 2017. 5. 20
-    func getInput(_ prefix:String = "") -> String {
-        var goon = true
-        while goon {
-            let str = prefix != "" ? "> \(prefix) $ " : "$ "
-            if ConsoleIO.isDebug{
-                print(str, terminator: "")
-            } else {
-                print(colorInput+str, terminator: "")
-            }
-    
-            let inputRaw = readLine()
-            
-            guard let inputRawWrapped = inputRaw else {
-                writeMessage("유효하지 않은 입력")
-                continue
-            }
-            
-            let input = inputRawWrapped.trimmingCharacters(in: .illegalCharacters)
-            
-            goon = false
-            return input
         }
     }
     
@@ -181,6 +197,7 @@ class ConsoleIO {
 }
 
 enum OutputType {
+    case input
     case notice
     case standard
     case publish

@@ -948,14 +948,17 @@ class DataConverter: NSObject {
     // 문제텍스트에서 목록을 가져오는 기능을 함수화 2017. 5. 12. 버그는 없으려나?
     func getListString(contentRaw: String, contentSuffix: String?) -> (contentRaw: String, contentSuffix: String?, lists: String?, listType: SelectStringType?) {
         
-        var regex : String? = nil
+        
+        var regexStr : String?
+        regexStr = nil
+        
         var listRange : Range<String.Index>? = nil
         var listType : SelectStringType? = nil
         
         
         if let range = contentRaw.range(of: "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}", options: .regularExpression) {
             listType = SelectStringType.koreanLetter
-            regex = "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}"
+            regexStr = "(가(\\..+\\n{0,}\\s{0,}))((나|다|라|마|바|사|아|자|차|카|타|파|하)(\\..+\\n{0,}\\s{0,})){1,14}"
             listRange = range
         }
         
@@ -964,9 +967,10 @@ class DataConverter: NSObject {
                 fatalError("파싱한 문자에 목록 선택지가 여래개 존재할 수 없음, 텍스트 입력의 오류가 의심됨")
             }
             listType = SelectStringType.koreanCharcter
-            regex = "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}"
+            regexStr = "((ㄱ|ㄴ|ㄷ|ㄹ|ㅁ|ㅂ|ㅅ|ㅇ|ㅈ|ㅊ|ㅋ|ㅌ|ㅍ|ㅎ)(\\..+\\n{0,}\\s{0,})){1,14}"
             listRange = range
         }
+        
         
         var lists : String? = nil
         var contRawOut = contentRaw

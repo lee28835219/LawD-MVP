@@ -20,31 +20,33 @@ import Foundation
 //        return ["tcat"]
 //}
 
-enum Instruction {
+enum HelpInstruction {
     case InstMain
     case InstKey
     case InstPublish
     case InstSave
+    case InstGoon
 }
 
 enum InstMain : String {
     
     case help = "help"
     case exit = "exit"
-    case keys = "[k]eys"
-    case publish = "[p]ublish"
-    case publishShuffled = "[p]ublish[s]huffled"
-    case solve = "sol[v]e"
-    case solveShuffled = "sol[v]e[s]huffled"
+    case keys = "keys"
+    case publish = "publish"
+    case publishShuffled = "publishshuffled"
+    case solve = "solve"
+    case solveShuffled = "solve shuffled"
     case edit = "edit"
     case save = "save"
+    case refresh = "refresh"
     
     case unknown
     
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, edit.rawValue, save.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -92,10 +94,17 @@ enum InstMain : String {
         case "ㄷㅇㅑㅅ":
             self = .edit
             
+            
         case "ㄴㅁㅍㄷ":
             self = .save
         case "save":
             self = .save
+            
+            
+        case "refresh":
+            self = .refresh
+        case "ㄱㄷㄹㄱㄷㄴㅗ":
+            self = .refresh
             
             
         default:
@@ -201,5 +210,50 @@ enum InstSave : String {
         }
     }
 }
+
+
+
+
+enum InstGoon : String {
+    
+    case yes = "[y]es"
+    case skip = "s[k]ip"
+    case stop = "[s]top"
+    case all = "all"
+    
+    case unknown
+    
+    
+    static let allValues = [yes.rawValue, skip.rawValue, stop.rawValue, all.rawValue]
+    
+    init(_ value : String) {
+        switch value {
+            
+        case "y":
+            self = .yes
+        case "ㅛ":
+            self = .yes
+            
+        case "k":
+            self = .skip
+        case "ㅏ":
+            self = .skip
+            
+        case "s":
+            self = .stop
+        case "ㄴ":
+            self = .stop
+        
+        case "all":
+            self = .all
+        case "ㅁㅣㅣ":
+            self = .all
+            
+        default:
+            self = .unknown
+        }
+    }
+}
+
 
 

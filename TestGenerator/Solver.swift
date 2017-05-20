@@ -50,6 +50,7 @@ class Solver : DataStructure {
         super.init("hey")
     }
     
+    
     // shuffle 및 bypass용 초기화함수
     init(_ question : Question, gonnaShuffle : Bool = true) {
         let key = "key"
@@ -146,13 +147,13 @@ class Solver : DataStructure {
     
     
     
-    
     // 공통 변경사항
     func changeCommonTypeQuestion() -> [Selection] {
         // 1. 선택지의 순서를 변경
         log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--1. 선택지 순서 변경함")
         return selections.shuffled()
     }
+    
     
     // 문제를 논리에 맞게 변경하여 반환
     func getModifedQuestion() -> (questionOX : QuestionOX, content : String) {
@@ -170,6 +171,10 @@ class Solver : DataStructure {
         }
         return (questionShuffledOX,questionContent)
     }
+    
+    
+    
+    
     
     // 선택지를 문제의 논리에 맞게 변경하여 반환
     // 필요한 입력 - 반환해서 돌려줄 선택지(함수입력), OX를 변환한 문제인지(isOXChanged, 클래스의 프로퍼티), 변경한 정답(answerSelectionModifed, 클래스의 프로퍼티)
@@ -221,6 +226,57 @@ class Solver : DataStructure {
         }
         return (statementContentShuffled, iscOrrectShuffled, isAnswerShuffled)
     }
+    
+    
+    // Find유형의 문제의 선택지를 출력하는 함수
+    func getModifedListContentStatementInSelectionOfFindTypeQuestion(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
+        // 1. 기본
+        var selectionContentShuffled = ""
+        var selectionContentShuffledArray = [String]()
+        var listSelInSelectionContentShuffled = [List]()
+        let iscOrrectShuffled : Bool? = nil
+        
+        // 조금더 정밀하게 고민 필요 2017. 5. 5. 일단 정답에다가 참을 찍어주도록 하였음
+        var isAnswerShuffled : Bool?
+        if statementIsAnswer(selection) {
+            isAnswerShuffled = true
+        } else {
+            isAnswerShuffled = false
+        }
+        
+        
+        for listSel in selection.listInContentOfSelection {
+            if originalShuffleMap.count > 0 {
+                for (ori, shu) in originalShuffleMap {
+                    if ori === listSel {
+                        listSelInSelectionContentShuffled.append(shu)
+                    }
+                }
+            } else {
+                listSelInSelectionContentShuffled.append(listSel)
+            }
+        }
+        
+        for listSel in listSelInSelectionContentShuffled {
+            //            print("listSel.getListString()",listSel.getListString())
+            if let index = lists.index(where: {$0 === listSel}) {
+                selectionContentShuffledArray.append(listSel.getListString(int: index + 1))
+            }
+        }
+        selectionContentShuffledArray.sort()
+        
+        for (index, selCon) in selectionContentShuffledArray.enumerated() {
+            if index == 0 {
+                selectionContentShuffled = selCon
+            } else {
+                selectionContentShuffled = "\(selectionContentShuffled), \(selCon)"
+            }
+        }
+        
+        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
+    }
+    
+    
     
     // getModfiedStatement에서 사용하는 statement가 정답인지 아닌지를 확인하는 함수
     // 하나라도 있기만 하면 true반환이니 병렬적으로 체크하나 좀 찝찝하긴 하나 크게 상관 없을 듯
@@ -305,14 +361,12 @@ class Solver : DataStructure {
             //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
             //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
             guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
-//                print("--\(question.key) 변형문제의 정답찾기 실패")
                 fatalError("--\(question.key) 변형문제의 정답찾기 실패")
             }
             log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--3. 정답을 \(answerSelectionModifed.number)(원본 문제기준), \(ansNumber+1)(섞인 문제기준)으로 변경함")
         }
         return (selections, isOXChanged, isAnswerChanged, answerSelectionModifed)
     }
-    
     
     // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
     func getAnswerNumber() -> Int {
@@ -323,9 +377,6 @@ class Solver : DataStructure {
         }
         return ansNumber
     }
-    
-    
-    
     
     private func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [List], originalShuffleMap : [(List, List)], isAnswerChanged : Bool){
         
@@ -429,53 +480,6 @@ class Solver : DataStructure {
     }
     
     
-    // Find유형의 문제의 선택지를 출력하는 함수
-    func getModifedListContentStatementInSelectionOfFindTypeQuestion(selection : Selection) -> (content :String, iscOrrect : Bool?, isAnswer : Bool?) {
-        // 1. 기본
-        var selectionContentShuffled = ""
-        var selectionContentShuffledArray = [String]()
-        var listSelInSelectionContentShuffled = [List]()
-        let iscOrrectShuffled : Bool? = nil
-        
-        // 조금더 정밀하게 고민 필요 2017. 5. 5. 일단 정답에다가 참을 찍어주도록 하였음
-        var isAnswerShuffled : Bool?
-        if statementIsAnswer(selection) {
-            isAnswerShuffled = true
-        } else {
-            isAnswerShuffled = false
-        }
-        
-        
-        for listSel in selection.listInContentOfSelection {
-            if originalShuffleMap.count > 0 {
-                for (ori, shu) in originalShuffleMap {
-                    if ori === listSel {
-                        listSelInSelectionContentShuffled.append(shu)
-                    }
-                }
-            } else {
-                listSelInSelectionContentShuffled.append(listSel)
-            }
-        }
-        
-        for listSel in listSelInSelectionContentShuffled {
-            //            print("listSel.getListString()",listSel.getListString())
-            if let index = lists.index(where: {$0 === listSel}) {
-                selectionContentShuffledArray.append(listSel.getListString(int: index + 1))
-            }
-        }
-        selectionContentShuffledArray.sort()
-        
-        for (index, selCon) in selectionContentShuffledArray.enumerated() {
-            if index == 0 {
-                selectionContentShuffled = selCon
-            } else {
-                selectionContentShuffled = "\(selectionContentShuffled), \(selCon)"
-            }
-        }
-        
-        return (selectionContentShuffled, iscOrrectShuffled, isAnswerShuffled)
-    }
     
     
     
@@ -611,6 +615,7 @@ class Solver : DataStructure {
     // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
     // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
     func solve(consoleIO : ConsoleIO) {
+        
         let userAnswerString = consoleIO.getInput("정답을 입력하세요 ")
         let userAnswerUnwrapped = Int(userAnswerString)
         
@@ -630,9 +635,9 @@ class Solver : DataStructure {
         
         
         if selections[userAnswer-1] === answerSelectionModifed {
-            consoleIO.writeMessage("정답!!")
+            consoleIO.writeMessage(to: .notice, "정답!!")
         } else {
-            consoleIO.writeMessage("오답... 정답은,")
+            consoleIO.writeMessage(to: .notice, "오답... 정답은,")
         }
         
         var answer = getModfiedStatementOfCommonStatement(statement: answerSelectionModifed!)

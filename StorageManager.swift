@@ -9,6 +9,7 @@
 import Foundation
 
 class StorageManager {
+    
     let testDatabase : TestDatabase
     let rootURL : URL
     
@@ -36,17 +37,121 @@ class StorageManager {
         }
         
         
-        if !parseJsons(.getNewer) {
-            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "초기화 실패!!!")
-        } else {
-            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "초기화 완료")
+        guard let tempDatabase =  _parseJsons(.getNewer) else {
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 Json 파일 파싱실패")
+            log = ConsoleIO.closeLog(log, file: "\(#file)")
+            return
         }
+        
+        let databaseSameKeyRemoved = _defineRangeOfTestToBeRefresh(of: tempDatabase, ioU : nil)
+        let removeResult = databaseSameKeyRemoved.removeVoidPointer()
+        for str in removeResult {
+            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(str) 키는 시험회차가 없어서 제거함")
+        }
+        
+        testDatabase.categories.append(contentsOf: databaseSameKeyRemoved.categories)
+        
         log = ConsoleIO.closeLog(log, file: "\(#file)")
         
     }
     
+    func _defineRangeOfTestToBeRefresh(of: TestDatabase, ioU : ConsoleIO?, _ gonnaForcedRefershAll : Bool = false) -> TestDatabase {
+        // 내부함수용, 수시 업데이트용, 향후 쓸일이 잇으려나?
+        if gonnaForcedRefershAll {
+            return of
+        }
+        
+        var refreshAll = false
+        for category in of.categories {
+            for subject in category.testSubjects {
+                for newTest in subject.tests {
+                    let originalTest = Test.checkSameKey(test: newTest, with: testDatabase)
+                    
+                    // io 도움없이 동일 키 있을 경우엔 자동으로 스킵하는 분기
+                    // 초기화때에 사용
+                    if originalTest == nil {
+                        // tempTestDatabase에는 jsonFileName이 없을 수 없으므로 강제 !사용
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(newTest.jsonFileName!) 신규 추가")
+                    } else {
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재하여 추가하지 않음")
+                        // tempDatabase에 있는 테스트를 삭제해야 한다. 이것이 곧 refresh입장에선 skip
+                        subject.tests.remove(at: subject.tests.index(of: newTest)!)
+                        //                            for ss in subject.tests {
+                        print("\(subject.key)의 현재 시험회차",subject.tests)
+                        //                            }
+                    }
+                    
+                }
+            }
+        }
+    }
     
-    func parseJsons(_ parseJsonsOption : ParseJsonsOption) -> Bool {
+    return of
+}
+
+
+
+//    func refresh(io : ConsoleIO) {
+//        guard let tempDatabase = _parseJsons(.getNewer) else {
+//            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json파일에서 초기화 데이터를 추출하려했으나 에러가 발생!!!")
+//            return
+//        }
+//        
+//        
+//        let databaseSameKeyRemoved = _defineRangeOfTestToBeRefresh(of: tempDatabase, ioU: io)
+//        databaseSameKeyRemoved.removeVoidPointer()
+//        
+//        testDatabase.categories.append(contentsOf: databaseSameKeyRemoved.categories)
+//        
+//        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json 파싱 완료")
+//    }
+    
+    
+    
+    
+
+//if let io = ioU {
+//    if originalTest == nil || refreshAll {
+//        io.writeMessage(to: .notice, "\(newTest.jsonFileName!) 신규 추가")
+//    } else {
+//        
+//        var goon = true
+//        while goon {
+//            io.writeMessage(to: .input, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재함")
+//            let (instGoon, value) = io.getInstGoon(io.getInput("refresh 진행함"+io.getHelp(.InstGoon)))
+//            
+//            
+//            switch instGoon {
+//            case .yes:
+//                io.writeMessage(to: .notice, "refresh")
+//                // tempDatabase에 잇는 테스트를 보존해야 한다. 이것이 곧 refresh입장에선 덮어쓰기
+//                continue
+//            case .skip:
+//                io.writeMessage(to: .notice, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재하여 추가하지 않음")
+//                // tempDatabase에 있는 테스트를 삭제해야 한다. 이것이 곧 refresh입장에선 skip
+//                subject.tests.remove(at: subject.tests.index(of: newTest)!)
+//                
+//            case .stop:
+//                io.writeMessage(to: .notice, "refresh를 중단함")
+//                let voidDB = TestDatabase()
+//                return voidDB
+//                
+//            case .all:
+//                io.writeMessage(to: .notice, "모두 refresh 진행")
+//                refreshAll = true
+//                
+//            case .unknown:
+//                io.unkown(value, true)
+//                continue
+//            }
+//            goon = false
+//        }
+//        
+//    }
+//} else {
+
+    
+    func _parseJsons(_ parseJsonsOption : ParseJsonsOption) -> TestDatabase? {
         let tempTestDatabase = TestDatabase()
         log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "옵션 \(parseJsonsOption)")
         
@@ -76,6 +181,9 @@ class StorageManager {
                         
                         // 일단 디렉토리가 존재하면 새로운 클래스를 만들고 밑에 디렉토리/파일이 없을 경우 삭제를 해줘야 함
                         // 원래 데이터베이스를 지키기 위해 tempTestDatabase에서 일단 작업 시작
+                        
+                        // 하지만 이경우 중복되는 test key가 있는데도 테스트 추가 시점에선 키의 유일성 체크를 안하므로 부당
+                        // 그래서 테스트 키 생성시점에서 이를 체크할지, 아니면 tempTestDatabase 추가 시점에서 이를 체크할지를 생각해야 함
                         
                         // lastPathComponent만을 가지고 string입력하면 한글이 깨지므로 잘 챙겨주는것 필요
                         // https://coderwall.com/p/mj_zma/korean-characters
@@ -227,10 +335,10 @@ class StorageManager {
                                     let newTest = Test(createDate: Date(), testSubject: subject, revision: 0, isPublished: true, number: testNumber)
                                     
                                     guard let jsonData = FileManager.default.contents(atPath: jsonFileURL.path) else {
-                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        \(jsonFileURL.path)이 올바른 Data가 아님")
+                                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        \(jsonFileURL.path.precomposedStringWithCompatibilityMapping)이 올바른 Data가 아님")
                                         continue
                                     }
-                                    
+                                    newTest.jsonFileName = jsonFileURL.lastPathComponent.precomposedStringWithCompatibilityMapping
                                     
                                     // json 파싱에 관한 부분
                                     // json 파싱결과를 확인해서 성공이면 카운터를 늘리고, 실패면 이미 만들어놓은 시험 오브젝트를 삭제함
@@ -239,7 +347,7 @@ class StorageManager {
                                     log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "       \(jsonFileURL.lastPathComponent.precomposedStringWithCompatibilityMapping)")
                                     
                                     
-                                    if jsonToClass(jsonData, newTest) {
+                                    if _jsonToClass(jsonData, newTest) {
                                         
                                         testCounter = testCounter + 1
                                         totalTestCounter = totalTestCounter + 1
@@ -271,7 +379,7 @@ class StorageManager {
                             tempTestDatabase.categories.remove(at: tempTestDatabase.categories.index(of: category)!)
                             if tempTestDatabase.categories.count == 0 {
                                 log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "json파일이 없음")
-                                return false
+                                return nil
                             }
                         }
                     } else {
@@ -296,13 +404,15 @@ class StorageManager {
         
         log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "총 \(totalTestCounter)개의 json파일을 가져오기 성공")
         
-        testDatabase.categories.append(contentsOf: tempTestDatabase.categories)
+        // 아무런 에러 테크 없이 모든 tempTestDatabase의 내용을 원 DB로 입력하는 중대한 문제가 잇어 수정필요 2017. 5. 21
+        // testDatabase.categories.append(contentsOf: tempTestDatabase.categories)
         
         
-        return true
+        return tempTestDatabase
     }
     
-    func jsonToClass(_ jsonData : Data, _ new_test : Test)  -> Bool{
+    
+    func _jsonToClass(_ jsonData : Data, _ new_test : Test)  -> Bool{
         do {
             
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -547,9 +657,6 @@ class StorageManager {
         return true
     }
     
-    func refresh() {
-        return
-    }
     
 }
 

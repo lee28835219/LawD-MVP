@@ -21,10 +21,13 @@ if CommandLine.argc > 1 {
 
 let g_testDatabase = TestDatabase()
 let g_storageManager = StorageManager(g_testDatabase)
-let g_outputManager = OutputManager()
-let g_instrcutionManger = InstructionManager(testDatabase : g_testDatabase, outputManager : g_outputManager)
-
 print(g_storageManager.log)
+let g_new_storageManager = StorageManager(g_testDatabase)
+print(g_new_storageManager.log)
+let g_outputManager = OutputManager()
+let g_instrcutionManger = MainInstructionManager(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager)
+
+
 
 
 

@@ -25,6 +25,9 @@ class Test : DataStructure {
     //내 식구들은 누구인지
     var questions = [Question]()
     
+    // 아카이브 하지않는 파싱 및 디버깅 에서만 사용하는 임시함수
+    var jsonFileName : String? = nil
+    
     init(createDate : Date, testSubject : TestSubject, revision : Int, isPublished: Bool, number: Int, numHelper: Int? = nil) {
         self.createDate = createDate
         self.testSubject = testSubject
@@ -179,4 +182,18 @@ extension Test {
     
     return data
     }
+    
+    class func checkSameKey(test : Test, with : TestDatabase) -> Test? {
+        for category in with.categories {
+            for subject in category.testSubjects {
+                for originalTest in subject.tests {
+                    if originalTest.key == test.key {
+                        return originalTest
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
 }
