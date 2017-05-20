@@ -751,7 +751,7 @@ extension MainInstructionManager {
             return
         }
         
-        if outputManager.saveTest(selectedTestWrapped) {
+        if selectedTestWrapped.save() {
             return
         } else {
             return

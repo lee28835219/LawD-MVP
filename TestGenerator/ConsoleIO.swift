@@ -20,9 +20,10 @@ class ConsoleIO {
     static let colorLog = ANSIColors.yellow
     let colorStandard = ANSIColors.white
     let colorError = ANSIColors.red
+    let colorTitle = ANSIColors.green
     let colorPublish = ANSIColors.cyan
     let colorNotice = ANSIColors.magenta
-    let colorHelp = ANSIColors.green
+    let colorHelp = ANSIColors.blue
     let colorInput = ANSIColors.white
     
     
@@ -143,6 +144,12 @@ class ConsoleIO {
             } else {
                 print(colorStandard+message)
             }
+        case .title:
+            if ConsoleIO.isDebug {
+                print(" \(message)")
+            } else {
+                print(colorTitle+"\(message)")
+            }
         case .publish:
             if ConsoleIO.isDebug {
                 print(" \(message)")
@@ -206,6 +213,7 @@ enum OutputType {
     case input
     case notice
     case standard
+    case title
     case publish
     case error
 }

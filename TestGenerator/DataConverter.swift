@@ -679,6 +679,8 @@ class DataConverter: NSObject {
                             }
                             
                             let newList = List(revision: list.revision, question: newQuestion, content: list.content, selectString: listCharacter)
+                            // 아래 반전지문 넣어주는게 꼭 필요한 작업인가?
+                            // 실수로 목록지가 안들어간 문제에 반전지문이 들어가버리는 문제가 발생했었다. 2017. 5. 20.
                             newList.notContent = list.notContent
                             newList.specification = list.specification
                             listCounter = listCounter + 1

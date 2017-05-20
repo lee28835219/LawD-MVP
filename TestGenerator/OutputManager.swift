@@ -61,13 +61,13 @@ class OutputManager {
         //제목
         if showTitle {
             let testTitle = (isPublished ? "[기출] " : "[변형] ") + testKey
-            io.writeMessage(to: .publish, testTitle)
+            io.writeMessage(to: .title, testTitle)
             io.writeMessage("")
         }
         
         //문제와 선택지 - 향후 statementPublish 개발필요 왜냐? OX문제 생성을 위함~ 2017. 5. 20.
         if showQuestion {
-            io.writeMessage(to: .publish, "문 "+questionNumber.description+". ")
+            io.writeMessage(to: .title, "문 "+questionNumber.description+". ")
             var queCont = questionContent
             if let contNote = questionContentNote {
                 queCont = queCont + " " + contNote
@@ -84,11 +84,11 @@ class OutputManager {
                 // http://stackoverflow.com/questions/32021712/how-to-split-a-string-by-new-lines-in-swift
                 let array = questionPassage!.components(separatedBy: .newlines)
                 for st in array {
-                     io.writeMessage(to: .publish, "   "+st.spacing(3))
+                     io.writeMessage(to: .publish, st.spacing(3))
                 }
                  io.writeMessage("")
                 if questionPassageSuffix != nil {
-                     io.writeMessage(to: .publish, "   "+questionPassageSuffix!.spacing(3))
+                     io.writeMessage(to: .publish, questionPassageSuffix!.spacing(3))
                      io.writeMessage("")
                 }
             }
@@ -114,42 +114,51 @@ class OutputManager {
             }
             
             if questionSuffix != nil {
-                 io.writeMessage(to: .publish, "  "+questionSuffix!.spacing(2))
+                 io.writeMessage(to: .publish, questionSuffix!.spacing(2))
                  io.writeMessage("")
             }
             
             //선택지
             for (index,selCont) in selectionsContent.enumerated() {
-                 io.writeMessage(to: .publish, "  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(selContent : selCont, selIscOrrect : selsIscOrrect[index], selIsAnswer : selsIsAnswer[index], showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalSelectionsNumber[index]).spacing(5))
+                 io.writeMessage(to: .publish,
+                                 "  "+(index+1).roundInt+"  "+_getSelectionStringForPrinting(
+                                                                                            selContent : selCont,
+                                                                                            selIscOrrect : selsIscOrrect[index],
+                                                                                            selIsAnswer : selsIsAnswer[index],
+                                                                                            showAttribute : showAttribute,
+                                                                                            questionType : questionType,
+                                                                                            originalSelectionNumber : originalSelectionsNumber[index]
+                                                                                            ).spacing(5))
             }
              io.writeMessage("")
         }
         
         //정답
         if showAnswer {
-            io.writeMessage(to: .publish, "<정답>")
+            io.writeMessage(to: .title, "<정답>")
             guard let ansSCon = ansSelContent
                 else {
-                    io.writeMessage(to: .error, "  정답이 입력되지 않음")
+                    io.writeMessage(to: .error, "정답이 입력되지 않음")
                     return
             }
              io.writeMessage(to: .publish, "  " + questionAnswer.roundInt + "  " +
                 _getSelectionStringForPrinting(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
+            io.writeMessage("")
         }
         
         //이력
         if showHistory {
-            io.writeMessage(to: .publish, "<풀이이력 :  정답률 \(answerRate)  (\(rightNumber) / \(totalNumber)) >")
+            io.writeMessage(to: .title, "[풀이이력] " + (totalNumber ==  0 ? "없음" : "정답율 \(answerRate.description)%, (\(rightNumber) / \(totalNumber))"))
             for (index,date) in solveDate.enumerated() {
                 if date == nil || isRight[index] == nil {
                     continue
                 }
-                let str = isRight[index]! ? "(O) " : "(X) "
-                io.writeMessage(to: .publish, str + "-" + date!.yyyymmdd + " : " + comment[index])
+                let str = isRight[index]! ? "(O)" : "(X)"
+                io.writeMessage(to: .title, (" " + date!.yyyymmdd + " " + str))
+                io.writeMessage(to: .publish, "   " + comment[index].spacing(3, 60))
             }
             io.writeMessage()
         }
-        io.writeMessage("")
     }
     
     
@@ -188,7 +197,7 @@ class OutputManager {
     // How to save an array as a json file in Swift?
     // http://stackoverflow.com/questions/28768015/how-to-save-an-array-as-a-json-file-in-swift
     
-    private func _saveFile(fileDirectories: [String], fileName: String, data: Data) -> Bool {
+    func saveFile(fileDirectories: [String], fileName: String, data: Data) -> Bool {
         
         guard let doucmentPathWrapped = url else {
             
@@ -255,7 +264,7 @@ class OutputManager {
             testNumber = testNumber + String(format: "%03d", test.number)
         }
         
-        if self._saveFile(
+        if self.saveFile(
             fileDirectories: [test.testSubject.testCategory.testDatabase.key,  //DB
                 test.testSubject.testCategory.category,    //시험명
                 test.testSubject.subject,   //과목

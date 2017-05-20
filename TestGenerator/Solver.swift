@@ -439,7 +439,7 @@ class Solver : DataStructure {
             let numberOfListSel = lists.count //5
             let numberOfAnsListSel = question.answerLists.count //3
             
-            for index in 0...numberOfAnsListSel-1 {
+            for index in 0..<numberOfAnsListSel {
                 var cont = true
                 while cont {
                     let randomNumber = Int(arc4random_uniform(UInt32(numberOfListSel)))
@@ -466,7 +466,7 @@ class Solver : DataStructure {
                     tempListSelectionsShuffled.remove(at: ix)
                 }
             }
-            for index in 0...tempListSelectionsShuffled.count-1 {
+            for index in 0..<tempListSelectionsShuffled.count {
                 originalShuffleMap.append((tempListSelections[index], tempListSelectionsShuffled[index]))
             }
             log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "--3. 목록선택지 정답을 아래와 같이 변경")
@@ -624,7 +624,7 @@ class Solver : DataStructure {
             isRight: question.solvers.map {$0.isRight},
             comment: question.solvers.map {$0.comment},
             
-            answerRate: Float(rightNumber)/Float(totalNumber)/100,
+            answerRate: Float(rightNumber)/Float(totalNumber)*100,
             totalNumber: totalNumber,
             rightNumber: rightNumber
         )

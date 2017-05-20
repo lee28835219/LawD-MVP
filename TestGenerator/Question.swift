@@ -221,82 +221,6 @@ class Question : DataStructure {
 
 extension Question {
     
-//    
-//    func publish(showAttribute: Bool = false, showAnswer: Bool = false, showTitle: Bool = true, showOrigSel : Bool = false) {
-//        let oManager = OutputManager()
-//        oManager.showAnswer = showAnswer
-//        oManager.showTitle = showTitle
-//        oManager.showAttribute = showAttribute
-//        oManager.showOrigSel = showOrigSel
-//        
-//        var selectionsContent = [String]()
-//        var selsIscOrrect = [Bool?]()
-//        var selsIsAnswer = [Bool?]()
-//        var originalSelectionsNumber = [String]()
-//        
-//        for sel in selections {
-//            selectionsContent.append(sel.content)
-//            selsIscOrrect.append(sel.iscOrrect)
-//            selsIsAnswer.append(sel.isAnswer)
-//            originalSelectionsNumber.append(sel.number.roundInt)
-//        }
-//        
-//        var listSelectionsContent = [String]()
-//        var listSelsIscOrrect = [Bool?]()
-//        var listSelsIntString = [String]()
-//        var origialListsNumberString = [String]()
-//        
-//        for (index,list) in lists.enumerated() {
-//            listSelectionsContent.append(list.content)
-//            listSelsIscOrrect.append(list.iscOrrect)
-//            listSelsIntString.append(list.getListString(int: index+1))
-//            origialListsNumberString.append(list.getListString())
-//        }
-//        
-//        oManager.questionPublish(
-////            testCategroy: test.testSubject.testCategory.category,
-////            testCategoryHelper : test.testSubject.testCategory.catHelper,
-////            testSubject: test.testSubject.subject,
-//            isPublished: test.isPublished,
-//            
-////            testNumber: test.number,
-//            testKey: test.key,
-//            
-//            questionNumber: number,
-//            
-//            questionContent: content,  // 셔플하면 변경
-//            questionContentNote: contentNote,
-//            questionPassage: passage,
-//            questionPassageSuffix: passageSuffix,
-//            
-//            questionType: questionType,
-//            questionOX: questionOX,   // 셔플하면 변경
-//            
-//            listsContents : listSelectionsContent,
-//            listsIscOrrect : listSelsIscOrrect,
-//            listsNumberString : listSelsIntString,
-//            origialListsNumberString : origialListsNumberString,
-//            
-//            questionSuffix: questionSuffix,
-//            
-//            selectionsContent : selectionsContent,  // 셔플하면 변경
-//            selsIscOrrect : selsIscOrrect,  // 셔플하면 변경
-//            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
-//            originalSelectionsNumber : originalSelectionsNumber,
-//            
-//            ansSelContent: answerSelection?.content,  // 셔플하면 변경
-//            ansSelIscOrrect: answerSelection?.iscOrrect,  // 셔플하면 변경
-//            ansSelIsAnswer: answerSelection?.isAnswer,  // 셔플하면 변경
-//            questionAnswer: answer,  // 셔플하면 변경
-//            originalAnsSelectionNumber: answerSelection!.number.roundInt
-//            )
-//        }
-//    
-
-    
-    
-    
-    
     func getNotOX() -> QuestionOX {
         var result = self.questionOX
         if result == .O {
@@ -449,18 +373,43 @@ extension String {
         var str = ""
         let chars = self.characters
         
+        var pointer = 0
         for (index,char) in chars.enumerated() {
-            if index+1 < cutLength-space {
-                str = str + char.description
-            } else if (index+1) % (cutLength-space) == 0 {
-                str = str + "\n" + String(repeating: " ", count: space)
-                if char == " " {
+            
+            pointer = pointer + 1
+            
+            if char == "\n" {
+                str = str + "\n" + String(repeating: " ", count: space+1)
+                continue
+            }
+            if pointer == cutLength {
+                if char.description != " " {
+                    str = str + "\n" + String(repeating: " ", count: space) + char.description
+                    pointer = 0
+                    continue
+                } else {
+                    str = str + "\n" + String(repeating: " ", count: space)
+                    pointer = 0
                     continue
                 }
-                str = str + char.description
-            } else {
-                str = str + char.description
             }
+            str = str + char.description
+            
+//            if char != "\n" {
+//                if index+1 < cutLength-space {
+//                    str = str + char.description
+//                } else if (index+1) % (cutLength-space) == 0 {
+//                    str = str + "\n" + String(repeating: " ", count: space)
+//                    if char == " " {
+//                        continue
+//                    }
+//                    str = str + char.description
+//                } else {
+//                    str = str + char.description
+//                }
+//            } else {
+//                str = str + char.description + String(repeating: " ", count: space + 1)
+//            }
         }
         return str
     }

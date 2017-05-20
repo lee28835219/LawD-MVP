@@ -209,4 +209,32 @@ extension Test {
         return nil
     }
     
+    
+    
+    
+    func save() -> Bool {
+        
+        let data = self.createJsonObject()
+        
+        var testNumber : String = ""
+        if let numHeplerWrapped = self.numHelper {
+            testNumber = testNumber + String(format: "%04d",numHeplerWrapped) + "-" + String(format: "%03d", self.number)
+        } else {
+            testNumber = testNumber + String(format: "%03d", self.number)
+        }
+        
+        if OutputManager().saveFile(
+            fileDirectories: [self.testSubject.testCategory.testDatabase.key,  //DB
+                self.testSubject.testCategory.category,    //시험명
+                self.testSubject.subject,   //과목
+                testNumber //회차
+            ],
+            fileName: "[\(Date().HHmmSS)]\(self.testSubject.testCategory.testDatabase.key)=\(self.key).json",
+            data: data) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
 }
