@@ -80,14 +80,11 @@ class StorageManager {
                         print("\(subject.key)의 현재 시험회차",subject.tests)
                         //                            }
                     }
-                    
                 }
             }
         }
+        return of
     }
-    
-    return of
-}
 
 
 

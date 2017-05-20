@@ -97,7 +97,8 @@ class MainInstructionManager {
                 io.unkown(value)
                 
             case .refresh:
-                storageManager.refresh(io: io)
+//                storageManager.refresh(io: io)
+                io.unkown(value)
             
             case .unknown:
                 _ = io.unkown(value, true)
