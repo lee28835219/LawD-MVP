@@ -231,7 +231,7 @@ extension Test {
                 self.testSubject.subject,   //과목
                 testNumber //회차
             ],
-            fileName: "[\(Date().HHmm)]\(self.testSubject.testCategory.testDatabase.key)=\(self.key).json",
+            fileName: "[\(Date().HHmmSS)]\(self.testSubject.testCategory.testDatabase.key)=\(self.key).json",
             data: data) {
             return true
         } else {

@@ -488,35 +488,34 @@ class Solver : DataStructure {
     
     
     
-    func publish(outputManager: OutputManager, showTitle: Bool = true, showQuestion : Bool = true, showAnswer: Bool = true, showHistory : Bool = false, showAttribute: Bool = true, showOrigSel : Bool = true) {
+    func publish(om: OutputManager,
+                 type: QuestionPublishType,
+                 showTitle: Bool, showQuestion : Bool, showAnswer: Bool, showHistory : Bool,
+                 showAttribute: Bool = true, showOrigSel : Bool = true)
+    {
         
-        outputManager.showTitle = showTitle
-        outputManager.showQuestion = showQuestion
-        outputManager.showAnswer = showAnswer
-        outputManager.showHistory = showHistory
+        om.showTitle = showTitle
+        om.showQuestion = showQuestion
+        om.showAnswer = showAnswer
+        om.showHistory = showHistory
         
-        outputManager.showAttribute = showAttribute
-        outputManager.showOrigSel = showOrigSel
+        om.showAttribute = showAttribute
+        om.showOrigSel = showOrigSel
         
-        //질문
-        let questionModifed = self.getModifedQuestion()  // (questionOX: QuestionOX, content: String)
+        // publish
+        var isPublished = false
         
-        //목록
+        // 문제
+        var questionContent = ""
+        var questionOX : QuestionOX = .Unknown
+        
+        
+        //목록지
         var listsContent = [String]()
         var listsIscOrrect = [Bool?]()
         var listsIsAnswer = [Bool?]()
         var listsNumberString = [String]()
         var origialListsNumberString = [String]()
-        
-        for (index, list) in self.lists.enumerated() {
-            let listResult = self.getModfiedStatementOfCommonStatement(statement: list)
-            // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
-            listsContent.append(listResult.content)
-            listsIscOrrect.append(listResult.iscOrrect)
-            listsIsAnswer.append(listResult.isAnswer)
-            listsNumberString.append(list.getListString(int: index+1))
-            origialListsNumberString.append(list.getListString())
-        }
         
         //선택지와 정답
         var selectionsContent = [String]()
@@ -530,45 +529,144 @@ class Solver : DataStructure {
         var questionAnswer: Int = 0
         var originalAnsSelectionNumber: String = ""
         
-        for (index,sel) in self.selections.enumerated() {
-            // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (+)
-            var selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+        
+        
+        // isPublish에 따라 question에서 혹은 solver에서 값을 가져오게 됨
+        switch type {
             
-            switch self.question.questionType {
-            case .Find:
-                switch self.question.questionOX {
-                case .O:
-                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
-                case .X:
-                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
-                case .Correct:
-                    _ = true
-                case .Unknown:
-                    _ = true
-                }
-            case .Select:
-                _ = true
-            case .Unknown:
-                _ = true
+        case .original:
+            //publish
+            isPublished = true
+            
+            //질문
+            questionContent = self.question.content  // (questionOX: QuestionOX, content: String)
+            questionOX = self.question.questionOX
+            
+            //목록
+            for (_, list) in self.question.lists.enumerated() {
+                listsContent.append(list.content)
+                listsIscOrrect.append(list.iscOrrect)
+                listsIsAnswer.append(list.isAnswer)
+                listsNumberString.append(list.getListString())
+                origialListsNumberString.append(list.getListString())
             }
             
-            selectionsContent.append(selResult.content)
-            selsIscOrrect.append(selResult.iscOrrect)
-            selsIsAnswer.append(selResult.isAnswer)
-            originalSelectionsNumber.append(sel.number.roundInt)
+            //선택지
+            for (index,sel) in self.question.selections.enumerated() {
+                
+                selectionsContent.append(sel.content)
+                selsIscOrrect.append(sel.iscOrrect)
+                selsIsAnswer.append(sel.isAnswer)
+                originalSelectionsNumber.append(sel.number.roundInt)
+                
+                if sel === self.question.answerSelection {
+                    ansSelContent = sel.content
+                    ansSelIscOrrect = sel.iscOrrect
+                    ansSelIsAnswer = sel.isAnswer
+                    questionAnswer = (index + 1)
+                    originalAnsSelectionNumber = sel.number.roundInt
+                }
+            }
             
-            if sel === self.answerSelectionModifed {
-                ansSelContent = selResult.content
-                ansSelIscOrrect = selResult.iscOrrect
-                ansSelIsAnswer = selResult.isAnswer
-                questionAnswer = (index + 1)
-                originalAnsSelectionNumber = sel.number.roundInt
+        case .originalNot:
+            
+            // publish
+            isPublished = true
+            
+            //질문
+            questionContent = getWrappedContent(self.question.notContent)
+            questionOX = getNotQuestionOX(self.question.questionOX)
+            
+            //목록
+            for (_, list) in self.question.lists.enumerated() {
+                listsContent.append(getWrappedContent(list.notContent))
+                listsIscOrrect.append(getNotWrappedBool(list.iscOrrect))
+                listsIsAnswer.append(list.isAnswer)
+                listsNumberString.append(list.getListString())
+                origialListsNumberString.append(list.getListString())
+            }
+            
+            
+            //선택지
+            for (index,sel) in self.question.selections.enumerated() {
+                
+                selectionsContent.append(getWrappedContent(sel.notContent))
+                selsIscOrrect.append(getNotWrappedBool(sel.iscOrrect))
+                selsIsAnswer.append(sel.isAnswer)
+                originalSelectionsNumber.append(sel.number.roundInt)
+                
+                if sel === self.question.answerSelection {
+                    ansSelContent = getWrappedContent(sel.notContent)
+                    ansSelIscOrrect = getNotWrappedBool(sel.iscOrrect)
+                    ansSelIsAnswer = sel.isAnswer
+                    questionAnswer = (index + 1)
+                    originalAnsSelectionNumber = sel.number.roundInt
+                }
+            }
+
+            
+        case .solver:
+            
+            // publish
+            isPublished = true
+            
+            //질문
+            let (OX, content) = self.getModifedQuestion()
+            
+            questionContent = content
+            questionOX = OX
+            
+            //목록
+            for (index, list) in self.lists.enumerated() {
+                let listResult = self.getModfiedStatementOfCommonStatement(statement: list)
+                // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
+                listsContent.append(listResult.content)
+                listsIscOrrect.append(listResult.iscOrrect)
+                listsIsAnswer.append(listResult.isAnswer)
+                listsNumberString.append(list.getListString(int: index+1))
+                origialListsNumberString.append(list.getListString())
+            }
+            
+            //선택지와 정답
+            for (index,sel) in self.selections.enumerated() {
+                // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (-)
+                // var selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                
+                // let (,,)형식으로 해결 2017. 5. 21.
+                var selResult : (content: String, iscOrrect: Bool?, isAnswer: Bool?) = ("", nil, nil)
+                
+                switch self.question.questionType {
+                case .Find:
+                    switch self.question.questionOX {
+                    case .O:
+                        selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                    case .X:
+                        selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                    case .Correct:
+                        selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                    case .Unknown:
+                        selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                    }
+                case .Select:
+                    selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                case .Unknown:
+                    selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                }
+                
+                selectionsContent.append(selResult.content)
+                selsIscOrrect.append(selResult.iscOrrect)
+                selsIsAnswer.append(selResult.isAnswer)
+                originalSelectionsNumber.append(sel.number.roundInt)
+                
+                if sel === self.answerSelectionModifed {
+                    ansSelContent = selResult.content
+                    ansSelIscOrrect = selResult.iscOrrect
+                    ansSelIsAnswer = selResult.isAnswer
+                    questionAnswer = (index + 1)
+                    originalAnsSelectionNumber = sel.number.roundInt
+                }
             }
         }
-        
-        
-        
-        
         
         //정답
         // 직접 가져오는 것보다 위의 선택지에서 확인하는 것이 더 쉬우므로 없애버림 2017. 5. 18.
@@ -584,23 +682,25 @@ class Solver : DataStructure {
         let totalNumber = c.count + w.count
         let rightNumber = c.count
         
-        outputManager.questionPublish(
+        
+        
+        om.questionPublish(
             //            testCategroy: self.question.test.testSubject.testCategory.category,
             //            testCategoryHelper: self.question.test.testSubject.testCategory.catHelper,
             //            testSubject: self.question.test.testSubject.subject,
-            isPublished: false, // 변형한 문제이므로 false로 항상 입력
+            isPublished: isPublished, // 변형한 문제이므로 false로 항상 입력 -> solver안으로 question 도 들어와서 이제는 아니다 수정함 2017. 5. 21.
             
             testKey: self.question.test.key,
             
             //            testNumber: self.question.test.number,
             
             questionNumber: self.question.number,
-            questionContent: questionModifed.content,  // 셔플하면 변경
+            questionContent: questionContent,  // 셔플하면 변경
             questionContentNote: self.question.contentNote,
             questionPassage:  self.question.passage,
             questionPassageSuffix:  self.question.passageSuffix,
             questionType: self.question.questionType,
-            questionOX: questionModifed.questionOX ,   // 셔플하면 변경
+            questionOX: questionOX ,   // 셔플하면 변경
             
             listsContents : listsContent, // 셔플하면 변경
             listsIscOrrect : listsIscOrrect, // 셔플하면 변경
@@ -631,164 +731,45 @@ class Solver : DataStructure {
         
     }
     
-    func controversalPublish() {
-        let oManager = OutputManager()
-        oManager.showAnswer = true
-        oManager.showTitle = false
-        oManager.showAttribute = true
-        oManager.showOrigSel = false
-        oManager.showHistory = false
-        
-        
-        var selectionsNotContent = [String]()
-        var selsIscOrrectControversal = [Bool?]()
-        var selsIsAnswer = [Bool?]()
-        var originalSelectionsNumber = [String]()
-        
-        for sel in question.selections {
-            selectionsNotContent.append(sel.notContent != nil ? sel.notContent! : "없음")
-            var selIscOrrectControversal : Bool? = nil
-            switch sel.iscOrrect {
-            case nil:
-                selIscOrrectControversal = nil
-            case .some(true):
-                selIscOrrectControversal = false
-            case .some(false):
-                selIscOrrectControversal = true
-            }
-            selsIscOrrectControversal.append(selIscOrrectControversal)
-            selsIsAnswer.append(sel.isAnswer)
-            originalSelectionsNumber.append(sel.number.roundInt)
-        }
-        
-        var listSelectionsNotContent = [String]()
-        var listSelsIscOrrectControversal = [Bool?]()
-        var listSelsIntString = [String]()
-        var origialListsNumberString = [String]()
-        
-        for (index,list) in question.lists.enumerated() {
-            listSelectionsNotContent.append(list.notContent != nil ? list.notContent! : "없음")
-            var listIscOrrectControversal : Bool? = nil
-            switch list.iscOrrect {
-            case nil:
-                listIscOrrectControversal = nil
-            case .some(true):
-                listIscOrrectControversal = false
-            case .some(false):
-                listIscOrrectControversal = true
-            }
-            listSelsIscOrrectControversal.append(listIscOrrectControversal)
-            listSelsIntString.append(list.getListString(int: index+1))
-            origialListsNumberString.append(list.getListString())
-        }
-        
-        var answerIscOrrect : Bool? = nil
-        switch question.answerSelection?.iscOrrect {
-        case nil:
-            answerIscOrrect = nil
-        case .some(true):
-            answerIscOrrect = false
-        case .some(false):
-            answerIscOrrect = true
-        }
-        
-        oManager.questionPublish(
-            //            testCategroy: test.testSubject.testCategory.category,
-            //            testCategoryHelper : test.testSubject.testCategory.catHelper,
-            //            testSubject: test.testSubject.subject,
-            isPublished: question.test.isPublished,
-            
-            //            testNumber: test.number,
-            testKey: question.test.key,
-            
-            questionNumber: question.number,
-            
-            questionContent: question.notContent != nil ? question.notContent! : "없음",  // 셔플하면 변경
-            questionContentNote: question.contentNote,
-            questionPassage: question.passage,
-            questionPassageSuffix: question.passageSuffix,
-            
-            questionType: question.questionType,
-            questionOX: question.getNotOX(),   // 셔플하면 변경
-            
-            listsContents : listSelectionsNotContent,
-            listsIscOrrect : listSelsIscOrrectControversal,
-            listsNumberString : listSelsIntString,
-            origialListsNumberString : origialListsNumberString,
-            
-            questionSuffix: question.questionSuffix,
-            
-            selectionsContent : selectionsNotContent,  // 셔플하면 변경
-            selsIscOrrect : selsIscOrrectControversal,  // 셔플하면 변경
-            selsIsAnswer : selsIsAnswer,  // 셔플하면 변경
-            originalSelectionsNumber : originalSelectionsNumber,
-            
-            ansSelContent: question.answerSelection?.notContent != nil ? question.answerSelection?.notContent : "없음",  // 셔플하면 변경
-            ansSelIscOrrect: question.answerSelection?.iscOrrect != nil ? question.answerSelection!.iscOrrect : nil,  // 셔플하면 변경
-            ansSelIsAnswer: question.answerSelection?.isAnswer,  // 셔플하면 변경
-            questionAnswer: question.answer,  // 셔플하면 변경
-            originalAnsSelectionNumber: question.answerSelection!.number.roundInt,
-            
-            solveDate:  [],
-            isRight: [],
-            comment: [],
-            answerRate: 0,
-            totalNumber: 0,
-            rightNumber: 0
-        )
-    }
     
     
-    // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
-    // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
-    // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
-    func solve(io : ConsoleIO) {
-        
-        let userAnswerString = io.getInput("정답을 입력하세요")
-        if userAnswerString == "" {
-            return
-        }
-        let userAnswerUnwrapped = Int(userAnswerString)
-        
-        // 입력이 숫자인지 확인
-        guard let userAnswer = userAnswerUnwrapped else {
-            io.writeMessage(to: .error, "숫자입력이 필요함")
-            solve(io: io)
-            return
-        }
-        
-        // 입력숫자가 선택지 범위인지 확인
-        if userAnswer < 1 || selections.count < userAnswer {
-            io.writeMessage(to: .error, "선택지 범위를 벗어난 숫자")
-            solve(io: io)
-            return
-        }
-        
-        io.writeMessage("")
-        
-        if selections[userAnswer-1] === answerSelectionModifed {
-            io.writeMessage(to: .notice, "정답!!")
-            isRight = true
+    
+    
+    func getWrappedContent(_ contentUnwrapped : String?) -> String {
+        if contentUnwrapped == nil {
+            return "(없음)"
         } else {
-            io.writeMessage(to: .error, "오답...XXXXX")
-            isRight = false
+            return contentUnwrapped!
         }
-        date = Date()
-        
-        
-        self.publish(outputManager: OutputManager(), showTitle: false, showQuestion: false, showAnswer: true, showAttribute: true, showOrigSel: false)
-        
-        self.publish(outputManager: OutputManager(), showTitle: false, showQuestion: false, showAnswer: false, showHistory: true, showAttribute: true, showOrigSel: false)
-        
-        // 문제를 solve한 이 시점에 원 question에 풀이 이력을 추가
-        question.solvers.append(self)
         
     }
     
-    
-    func edit() {
-        
+    func getNotWrappedBool(_ unwrappedBool : Bool?) -> Bool? {
+        if unwrappedBool == nil {
+            return nil
+        } else {
+            return unwrappedBool!
+        }
     }
+    
+    func getNotQuestionOX(_ oriQuestionOX : QuestionOX) -> QuestionOX {
+        if oriQuestionOX == .O {
+            return .X
+        } else {
+            if oriQuestionOX == .O {
+                return .X
+            } else {
+            return oriQuestionOX
+            }
+        }
+    }
+}
+
+
+enum QuestionPublishType {
+    case original
+    case originalNot
+    case solver
 }
 
 

@@ -44,7 +44,7 @@ class TestDatabase: DataStructure {
         }
         
         for removeKey in result {
-            for (index,cat) in categories.enumerated() {
+            for (_,cat) in categories.enumerated() {
 //                categories[index] = categories[index].testSubjects.
                 print(cat.testSubjects.filter(){$0.key != removeKey})
             }

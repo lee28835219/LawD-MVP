@@ -61,7 +61,7 @@ class StorageManager {
             return of
         }
         
-        var refreshAll = false
+//        var refreshAll = false
         for category in of.categories {
             for subject in category.testSubjects {
                 for newTest in subject.tests {

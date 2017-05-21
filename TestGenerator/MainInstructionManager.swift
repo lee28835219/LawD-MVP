@@ -53,44 +53,28 @@ class MainInstructionManager {
                 showKeys(inst, value : value)
                 
             case .publish:
-                let generatorUnwrapped = publishAndSolver(gonnaShuffle: false, gonnaSolve: false, gonnaControversal: false)
-                guard let generator = generatorUnwrapped else {
-                    io.writeMessage(to: .error, "문제를 찾을 수 없음")
-                    continue
-                }
-                if generator.solvers.count == 0 {
-                    continue
-                }
-                let input = io.getInput("exit[], [e]dit ? ")
-                if input == "e" || input == "ㄷ" {
-                    editGenerator(generator)
-                }
+                let generatorUnwrapped = publishAndSolver(.publish)
+                handleQuestionGenerator(generatorUnwrapped)
+                
+            case .publishOriginal:
+                let generatorUnwrapped = publishAndSolver(.publishOriginal)
+                handleQuestionGenerator(generatorUnwrapped)
             
             case .publishShuffled:
-                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: false, gonnaControversal: false)
-                guard let generator = generatorUnwrapped else {
-                    io.writeMessage(to: .error, "문제를 찾을 수 없음")
-                    continue
-                }
-                if generator.solvers.count == 0 {
-                    continue
-                }
-                let input = io.getInput("exit[], [e]dit ? ")
-                if input == "e" || input == "ㄷ" {
-                    editGenerator(generator)
-                }
+                let generatorUnwrapped = publishAndSolver(.publishShuffled)
+                handleQuestionGenerator(generatorUnwrapped)
             
             case .solve:
-                let generatorUnwrapped = publishAndSolver(gonnaShuffle: false, gonnaSolve: true, gonnaControversal: false)
-                handleGenerator(generatorUnwrapped)
+                let generatorUnwrapped = publishAndSolver(.solve)
+                handleSolveGenerator(generatorUnwrapped)
                 
             case .solveShuffled:
-                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: true, gonnaControversal: false)
-                handleGenerator(generatorUnwrapped)
+                let generatorUnwrapped = publishAndSolver(.solveShuffled)
+                handleSolveGenerator(generatorUnwrapped)
             
             case .solveControversal:
-                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: true, gonnaControversal: true)
-                handleGenerator(generatorUnwrapped)
+                let generatorUnwrapped = publishAndSolver(.solveControversal)
+                handleSolveGenerator(generatorUnwrapped)
                 
             case .save:
                 let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
@@ -131,51 +115,6 @@ class MainInstructionManager {
     
     
     //// 내부보조함수
-    
-    
-    
-    
-    
-//    // content를 수정하는 modifyQuestion의 보조함수
-//    func modifyControversalContent(name : String, content : String, contentOX : String, notContent : String?, targetNumber : String) -> String? {
-//        
-//        var result : String? = notContent
-//        
-//        print("\(targetNumber)")
-//        print(content, contentOX)
-//        print("\(targetNumber) (!!!반대)")
-//        var contentOXCont = contentOX
-//        if contentOXCont == "(O)" {
-//            contentOXCont = "(X)"
-//        } else if contentOXCont == "(X)" {
-//            contentOXCont = "(O)"
-//        }
-//        
-//        print((notContent != nil ? notContent! : "없음"),contentOXCont)
-//        
-//        print("-. 반대\(name) 신규입력 \(targetNumber) $ ")
-//        let inp = consoleIO.getInput()
-//        print()
-//        if inp == "" {
-//            print("> 아무것도 입력된 것이 없어 반대\(name) 변경없음")
-//        } else {
-//            result = inp
-//            print("> 반대\(name) 입력완료 : \(targetNumber)")
-//            print(result!, contentOXCont)
-//        }
-//        
-//        print("계속()다시(r) $ ", terminator: "")
-//        let iinp = consoleIO.getInput()
-//        if iinp == "r" || iinp == "ㄱ" {
-//            return modifyControversalContent(name : name, content : content, contentOX : contentOX, notContent : notContent, targetNumber : targetNumber)
-//        }
-//        print()
-//        return result
-//        
-//        // 추가 디버깅 사항 2017. 5. 16. (+)
-//        // 1. 문제 반전사항출력(완료)), 2. 문제유형 반전해서 출력, 3. 목록 선택지 문제일 경우 선택지는 손대지 않음
-//        
-//    }
     
     
     
@@ -474,16 +413,50 @@ extension MainInstructionManager {
     }
     
     
-    func publishAndSolver(gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal: Bool = false) -> Generator? {
-        let generator = Generator()
+    func publishAndSolver(_ solveQuestionInstructionType : SolveQuestionInstructionType) -> Generator? {
         
         var str = ""
-        if gonnaSolve {
-            str = "풀 문제의 형식을 선택"
-        } else {
-            str = "출력할 형식을 선택"
+        var gonnaTestShuffling = false
+        
+        switch solveQuestionInstructionType {
+        case .publish, .publishOriginal, .publishShuffled:
+            str = "출력"
+        case .solve, .solveControversal, .solveShuffled:
+            let input = io.getInput("문제를 섞어서 진행 [y]es, no[] ? ")
+            if input == "y" || input == "ㅛ" {
+                gonnaTestShuffling = true
+            }
+            str = "풀이"
         }
-        let (instruction,value) = io.getPublish(io.getInput(str+io.getHelp(.InstPublish)))
+        
+        
+        var questions = getQuestionsInKey(title : str+"할 문제의 범주를 선택")
+        
+        var generator = Generator()
+        
+        if gonnaTestShuffling {
+            questions.shuffle()
+        }
+        let counter = questions.count
+        for (index, que) in questions.enumerated() {
+            
+            io.writeMessage(to: .title, "[[ \(str) : \(index+1) / \(counter)]]")
+            let (generatorResult, gonnaExit) = solveQuestion(que, generator: generator, solveQuestionInstructionType : solveQuestionInstructionType)
+            generator = generatorResult
+            if gonnaExit {
+                return nil
+            }
+        }
+        generator.solvers.sort{$0.question.key < $1.question.key}
+        
+        return generator
+    }
+    
+    func getQuestionsInKey(title : String) -> [Question] {
+        
+        var questions = [Question]()
+        
+        let (instruction,value) = io.getPublish(io.getInput(title + io.getHelp(.InstPublish)))
         
         
         switch instruction {
@@ -492,10 +465,7 @@ extension MainInstructionManager {
                 for testSubject in testCategory.testSubjects {
                     for test in testSubject.tests {
                         for que in test.questions {
-                            let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
-                            if gonnaExit {
-                                return generator
-                            }
+                            questions.append(que)
                         }
                     }
                 }
@@ -503,157 +473,363 @@ extension MainInstructionManager {
         case .category:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return nil
+                return questions
             }
             for testSubject in testCategory.testSubjects {
                 for test in testSubject.tests {
                     for que in test.questions {
-                        let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
-                        if gonnaExit {
-                            return generator
-                        }
+                        questions.append(que)
                     }
                 }
             }
         case .subject:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return nil
+                return questions
             }
             for test in testSubject.tests {
                 for que in test.questions {
-                    let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
-                    if gonnaExit {
-                        return generator
-                    }
+                    questions.append(que)
+                    
                 }
             }
         case .test:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let test = selectTest(testSubject) else {
                 io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
-                return nil
+                return questions
             }
             for que in test.questions {
-                let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
-                if gonnaExit {
-                    return generator
-                }
+                questions.append(que)
+                
             }
             
         case .question:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let testSubject = selectTestSubject(testCategory) else {
                 io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let test = selectTest(testSubject) else {
                 io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
-                return nil
+                return questions
             }
             guard let que = selectQuestion(test) else {
                 io.writeMessage(to: .error, "문제를 찾을 수 없음")
-                return nil
+                return questions
             }
-            let (generator, gonnaExit) = solveQuestion(que, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal : gonnaControversal, generator: generator)
-            if gonnaExit {
-                return generator
-            }
+            questions.append(que)
             
         case .unknown:
             io.unkown(value)
         }
-        
-        return generator
-        
+        return questions
     }
     
     
-    func solveQuestion(_ question : Question, gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal : Bool, generator: Generator) -> (Generator, Bool) {
+    func solveQuestion(_ question : Question, generator: Generator, solveQuestionInstructionType : SolveQuestionInstructionType) -> (Generator, gonnaExit : Bool) {
         
-        let showAnswer = gonnaSolve ? false : true
-        let showHistory = gonnaSolve ? false : true
-        let showAttribute = gonnaSolve ? false : true
-        var showOrigSel = true
         
-        if gonnaSolve {
+        var solver : Solver
+        var questionPublishType : QuestionPublishType
+        
+        var showTitle : Bool
+        var showQuestion : Bool
+        var showAnswer : Bool
+        var showHistory : Bool
+        var showAttribute : Bool
+        var showOrigSel : Bool
+        
+        var gonnaSolve : Bool
+        
+        switch solveQuestionInstructionType {
+            
+        // 수정안한 원래문제와 반전문제 다 출력, 단 오리지날 번호만 빼고
+        case .publish:
+            
+            // 어떤 문제를 선택할지
+           solver = Solver(question, gonnaShuffle: false)
+           questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
+           
+           // 문제를 최초에 어떻게 출력할지
+            showTitle = true
+            showQuestion = true
+            showAnswer = true
+            showHistory = false // 뒤에 반전지문까지 출력한 뒤에 히스트로리를 출력할 거니 false
+            showAttribute = true
             showOrigSel = false
-        } else {
-            showOrigSel ? true : false
+           
+           
+           // 문제를 풀건지
+            gonnaSolve = false
+            
+            
+        // 수정안한 원래문제만 다 출력, 여기도 오리지날 번호 필요없음
+        case .publishOriginal:
+           solver = Solver(question, gonnaShuffle: false)
+           questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
+            
+           showTitle = true
+           showQuestion = true
+           showAnswer = true
+           showHistory = true
+           showAttribute = true
+           showOrigSel = false
+            
+            gonnaSolve = false
+            
+        // 수정한 문제를 출력, 오리지날 번호 필요함
+        case .publishShuffled:
+            solver = Solver(question, gonnaShuffle: true)
+            questionPublishType = .solver
+            
+            showTitle = true
+            showQuestion = true
+            showAnswer = true
+            showHistory = true
+            showAttribute = true
+            showOrigSel = true
+            
+            gonnaSolve = false
+            
+            
+        // 원래 문제를 품
+        case .solve:
+            solver = Solver(question, gonnaShuffle: false)
+            questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
+            
+            showTitle = true
+            showQuestion = true
+            showAnswer = false
+            showHistory = false
+            showAttribute = false
+            showOrigSel = false
+            
+            gonnaSolve = true
+            
+            
+        // 수정한 문제를 품, 반전문제가 없으면 원래 문제를 품
+        case .solveShuffled:
+             solver = Solver(question, gonnaShuffle: true)
+            questionPublishType = .solver
+            
+             showTitle = true
+             showQuestion = true
+             showAnswer = false
+             showHistory = false
+             showAttribute = false
+             showOrigSel = false
+            
+            gonnaSolve = true
+            
+        // 수정한 문제를 푸는데 반전문제가 없으면 문제를 출력하지 않음
+        case .solveControversal:
+            solver = Solver(question, gonnaShuffle: true)
+            questionPublishType = .solver
+            
+            showTitle = true
+            showQuestion = true
+            showAnswer = false
+            showHistory = false
+            showAttribute = false
+            showOrigSel = false
+            
+            gonnaSolve = true
+            
         }
         
-        let solver = Solver(question, gonnaShuffle: gonnaShuffle)
         
-        if !solver.isOXChangable && gonnaControversal {
+        // 문제가 반전 불가능하고 명령이 반전가능한 문제만 풀겠다고 했을 때
+        if !solver.isOXChangable && solveQuestionInstructionType == .solveControversal {
+            
+            // 문제의 심각성을 보여주고
+            io.writeMessage()
+            io.writeMessage(to: .title, "[반전된 문제]")
+            solver.publish(om: outputManager,
+                           type: .originalNot,
+                           showTitle: showTitle, showQuestion: true, showAnswer: true, showHistory: false,
+                           showAttribute: true, showOrigSel: false)
+            
+            io.writeMessage(to: .error, "이 문제는 반전이 불가능한 상황")
+            
+            // 함수화 필요? -> 뒤에 필요한 멸영이 아주 특징적인 것이라 함수화 불필요
+            let input = io.getInput("continue[], [e]dit ?")
+            if input == "e" || input == "ㄷ" {
+                let generatorForOneQuestion = Generator()
+                generatorForOneQuestion.solvers.append(solver)
+                editGenerator(generatorForOneQuestion)
+                return (generator, false)
+            }
             return (generator, false)
         }
         
-        solver.publish(outputManager: outputManager, showTitle: true, showAnswer: showAnswer, showHistory : showHistory, showAttribute: showAttribute, showOrigSel: showOrigSel)
         
         
-        if gonnaSolve {
-            solver.solve(io : io)
-            solver.comment = io.getInput("남기고 싶은 코멘트")
-            
-            var goon = true
-            while goon {
+        // 문제를 내용을 타입의 논리에 맞게 출력
+        solver.publish(om: outputManager,
+                       type: questionPublishType,
+                       showTitle: showTitle, showQuestion: showQuestion, showAnswer: showAnswer, showHistory: showHistory,
+                       showAttribute: showAttribute, showOrigSel: showOrigSel)
+        
+        
+        /// publish 계열의 명령이면 여기서 반전된 문제는 출력해야되면 하고 아님 말고, 제네레이터에 솔버 추가해서 반환함
+        if !gonnaSolve {
+            if solveQuestionInstructionType == .publish {
                 
-                let (instruction, value) = io.getSolve(io.getInput(io.getHelp(.InstSolve)))
-                
-                switch instruction {
-                
-                case .resolve:
-                    generator.solvers.append(solver)
-                    return solveQuestion(question, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal: gonnaControversal, generator: generator)
-                
-                case .noteQuestion:
-                    io.getInput("\(question.key)에 대한 태그입력")
-                    io.writeMessage(to: .error, "아직 구현되지 않은 기능")
-                
-                case .tagQuestion:
-                    question.tags.append(io.getInput("\(question.key)에 대한 태그입력"))
-                
-                case .modifyQuestoin:
-                    let generator = Generator()
-                    generator.solvers = [solver]
-                    editGenerator(generator)
-                    io.writeMessage(to: .notice, "\(question.key) 문제 수정완료")
-                
-                case .next:
-                    generator.solvers.append(solver)
-                    goon = false
-                
-                case .exit:
-                    generator.solvers = []
-                    return (generator, true)
-                
-                case .unknown:
-                    generator.solvers.append(solver)
-                    goon = false
-                }
+                io.writeMessage(to: .title, "[반전된 문제]")
+                solver.publish(om: outputManager,
+                               type: .originalNot,
+                               showTitle: false, showQuestion: true, showAnswer: true, showHistory: true, // 히스토리는 여기서 보여줌
+                               showAttribute: true, showOrigSel: false)
             }
-        } else {
             generator.solvers.append(solver)
+            return (generator, false)
         }
         
-        return (generator,false)
+        
+        // solve 계열 명령은 여기서 문제풀이 시작
+        
+        // 문제를 푸는 매우 중요한 함수
+        solve(solver)
+        
+        // 문제를 푼 결과를 처리하는 구문
+        var goon = true
+        while goon {
+            
+            io.writeMessage()
+            io.writeMessage(to: .input, "\(question.key) 문제 풀이 : ")
+            let (instruction, value) = io.getSolve(io.getInput(io.getHelp(.InstSolve)))
+            
+            switch instruction {
+            
+            case .resolve:
+                generator.solvers.append(solver)
+                return solveQuestion(question, generator: generator, solveQuestionInstructionType: solveQuestionInstructionType)
+            
+            case .noteQuestion:
+                _ = io.getInput("\(question.key)에 대한 태그입력")
+                io.writeMessage(to: .error, "아직 구현되지 않은 기능")
+            
+            case .tagQuestion:
+                if let newTag = writeTag(title : "\(question.key)") {
+                    question.tags.append(newTag)
+                    
+                    var tags = ""
+                    for (index,tag) in question.tags.enumerated() {
+                        if index == 0 {
+                            tags = tag
+                        } else {
+                            tags = ", " + tag
+                        }
+                    }
+                    io.writeMessage(to: .publish, "[\(question.key) 태그 목록] \(tags)")
+                }
+            
+            case .modifyQuestoin:
+                let generator = Generator()
+                generator.solvers = [solver]
+                editGenerator(generator)
+                io.writeMessage(to: .notice, "\(question.key) 문제 수정완료")
+            
+            case .next:
+                generator.solvers.append(solver)
+                goon = false
+            
+            case .exit:
+                generator.solvers = []
+                return (generator, true)
+            
+            case .unknown:
+                io.unkown(value)
+                generator.solvers.append(solver)
+                goon = false
+            }
+        }
+        
+        // 푼 문제에 대한 출력을 반환
+        return (generator, false) // exit되지 않도록 반환을 잘 확인해야함
+        
     }
     
-    func handleGenerator(_ generator : Generator?) {
+    // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
+    // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
+    // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
+    func solve(_ solver : Solver) {
+        
+        let userAnswerString = io.getInput("정답을 입력하세요, skip[]")
+        if userAnswerString == "" {
+            io.writeMessage(to: .notice, "\(solver.question.key) 문제 풀지않고 넘김")
+            return
+        }
+        let userAnswerUnwrapped = Int(userAnswerString)
+        
+        // 입력이 숫자인지 확인
+        guard let userAnswer = userAnswerUnwrapped else {
+            io.writeMessage(to: .error, "숫자입력이 필요함")
+            solve(solver)
+            return
+        }
+        
+        // 입력숫자가 선택지 범위인지 확인
+        if userAnswer < 1 || solver.selections.count < userAnswer {
+            io.writeMessage(to: .error, "선택지 범위를 벗어난 숫자")
+            solve(solver)
+            return
+        }
+        
+        io.writeMessage("")
+        
+        if solver.selections[userAnswer-1] === solver.answerSelectionModifed {
+            io.writeMessage(to: .notice, "정답!!!!!!!!")
+            solver.isRight = true
+        } else {
+            io.writeMessage(to: .error, "오답...XXXXXXXX")
+            solver.isRight = false
+        }
+        solver.date = Date()
+        
+        
+        solver.publish(om: outputManager,
+                       type: .solver,
+                       showTitle: false, showQuestion: false, showAnswer: true, showHistory: true,
+                       showAttribute: true, showOrigSel: false)
+        
+        
+        let input = io.getInput("남기고 싶은 주기, (입력안함 \\) ?")
+        if input == "" {
+            io.writeMessage(to: .notice, "주기 입력안함")
+        } else {
+            solver.comment = input
+            io.writeMessage(to: .notice, "주기 입력완료")
+            solver.publish(om: outputManager,
+                           type: .original,
+                           showTitle: false, showQuestion: false, showAnswer: false, showHistory: true,
+                           showAttribute: true, showOrigSel: false)
+            
+        }
+        
+        
+        // 문제를 solve한 이 시점에 원 question에 풀이 이력을 추가
+        solver.question.solvers.append(solver)
+    }
+    
+    
+    
+    func handleSolveGenerator(_ generator : Generator?) {
         if let generator = generator {
             let (r,_) = generator.seperateWorngSolve()
             io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
@@ -668,6 +844,20 @@ extension MainInstructionManager {
             
         } else {
             io.writeMessage(to: .error, "문제를 찾을 수 없음")
+        }
+    }
+    
+    func handleQuestionGenerator(_ generatorUnwrapped : Generator?) {
+        guard let generator = generatorUnwrapped else {
+            io.writeMessage(to: .error, "문제를 찾을 수 없음")
+            return
+        }
+        if generator.solvers.count == 0 {
+            return
+        }
+        let input = io.getInput("exit[], [e]dit ? ")
+        if input == "e" || input == "ㄷ" {
+            editGenerator(generator)
         }
     }
     
@@ -690,11 +880,25 @@ extension MainInstructionManager {
         let questions = generator.getQustioninSovers()
         var questionsEdited = [Question]()
         
-        for question in questions {
+        let queCounter = questions.count
+        for (index,question) in questions.enumerated() {
+            
+            io.writeMessage()
+            io.writeMessage(to: .title, "[[시험문제 수정 - \(index+1) / \(queCounter)]]")
             
             
-            Solver(question).publish(outputManager: outputManager)
-            Solver(question).controversalPublish()
+            // solver가 셔플하든 말든 원래 값을 출력해야 할 것임
+            Solver(question).publish(om: outputManager,
+                                     type: .original,
+                                     showTitle: true, showQuestion: true, showAnswer: true, showHistory: false,
+                                     showAttribute: true, showOrigSel: true)
+            
+            io.writeMessage(to: .title, "[반전된 문제]")
+            
+            Solver(question).publish(om: outputManager,
+                                     type: .originalNot,
+                                     showTitle: true, showQuestion: true, showAnswer: true, showHistory: true,
+                                     showAttribute: true, showOrigSel: true)
             
             
             
@@ -810,7 +1014,9 @@ extension MainInstructionManager {
         case .notQuestion:
             guard let result = editStatementString(
                 title: "문제의 반대질문",
+                question : nil,
                 oriStr: question.content,
+                oriIscOrrect: nil,
                 notOriStr: question.notContent,
                 isNotStatementEditMode: true)
                 else {
@@ -826,14 +1032,19 @@ extension MainInstructionManager {
                 let count = question.lists.count
                 guard let result = editStatementString(
                     title: "반대목록지 \(index+1) / \(count)",
+                    question : question.notContent,
                     oriStr: statement.content,
+                    oriIscOrrect: nil, // list는 아직 oX판단하는 기능이 없다? 충격적 꼭 필요함 추가 필요 2017. 5. 21. (+)(+)(+)(+)(+)
                     notOriStr: statement.notContent,
                     isNotStatementEditMode: true)
                     else {
                     continue
                 }
-                nextUpadte = true
+                nextUpadte = true // 단 하나라도 수정된게 있어서 result가 가드문을 빠져 나오면 업데이트 된것으로 판단. -> 파일저장
                 question.lists[index].notContent = result
+            }
+            if question.lists.count == 0 {
+                io.writeMessage(to: .error, "문제에 목록지가 없음")
             }
             return editQuestion(question, nextUpadte)
         
@@ -843,7 +1054,9 @@ extension MainInstructionManager {
                 let count = question.selections.count
                 guard let result = editStatementString(
                     title: "반대선택지 \(index+1) / \(count)",
+                    question : question.notContent,
                     oriStr: statement.content,
+                    oriIscOrrect: statement.iscOrrect,
                     notOriStr: statement.notContent,
                     isNotStatementEditMode: true)
                     else {
@@ -852,14 +1065,15 @@ extension MainInstructionManager {
                 nextUpadte = true
                 question.selections[index].notContent = result
             }
-            nextUpadte = true
             return editQuestion(question, nextUpadte)
         
         
         case .originalQuestion:
             guard let result = editStatementString(
                 title: "문제의 질문",
+                question : nil,
                 oriStr: question.content,
+                oriIscOrrect: nil,
                 notOriStr: question.notContent,
                 isNotStatementEditMode: true)
                 else {
@@ -875,7 +1089,9 @@ extension MainInstructionManager {
                 let count = question.lists.count
                 guard let result = editStatementString(
                     title: "목록지 \(index+1) / \(count)",
+                    question : question.content,
                     oriStr: statement.content,
+                    oriIscOrrect: nil,
                     notOriStr: statement.notContent,
                     isNotStatementEditMode: false)
                     else {
@@ -883,6 +1099,9 @@ extension MainInstructionManager {
                 }
                 nextUpadte = true
                 question.lists[index].content = result
+            }
+            if question.lists.count == 0 {
+                io.writeMessage(to: .error, "문제에 목록지가 없음")
             }
             return editQuestion(question, nextUpadte)
         
@@ -892,7 +1111,9 @@ extension MainInstructionManager {
                 let count = question.selections.count
                 guard let result = editStatementString(
                     title: "선택지 \(index+1) / \(count)",
+                    question : question.content,
                     oriStr: statement.content,
+                    oriIscOrrect : statement.iscOrrect,
                     notOriStr: statement.notContent,
                     isNotStatementEditMode: false)
                     else {
@@ -909,11 +1130,11 @@ extension MainInstructionManager {
             if nextUpadte {
                 return (question, false)
             } else {
-                return (nil, false)
+                return (nil, false) // -> gonnaExit은 false이나 질문반환ㄴ은 nil 이는 요번 질문은 수정안한다는 예기
             }
             
         case .exit:
-            return (nil, false)
+            return (nil, true) // -> gonnaExit true 이는 파일저장 안하고 종료한다는 의미
             
         case .unknown:
             io.unkown(value, true)
@@ -921,7 +1142,7 @@ extension MainInstructionManager {
         }
     }
     
-    func editStatementString(title : String, oriStr : String, notOriStr : String?, isNotStatementEditMode : Bool) -> String? {
+    func editStatementString(title : String, question : String?, oriStr : String, oriIscOrrect : Bool?, notOriStr : String?, isNotStatementEditMode : Bool) -> String? {
         
         io.writeMessage()
         io.writeMessage(to: .title, "["+title+" 수정을 시작함]")
@@ -931,24 +1152,51 @@ extension MainInstructionManager {
         let notStaOut = isNotStatementEditMode ? OutputType.important : OutputType.standard
         let ontOriStrWrapped = notOriStr == nil ? "(입력되지 않음)" : notOriStr!
         
+        var oriOX : String = ""
+        var notOriOX : String = ""
+        
         io.writeMessage()
+        
+        // 질문이 아니므로 목록지와 선택지는 OX를 판단할 수 있고 앞에 질문 출력이 필요함
+        if question != nil {
+            io.writeMessage(to: .publish, "[질문]")
+            io.writeMessage()
+            io.writeMessage(to: .publish, question!)
+            io.writeMessage()
+            
+            if oriIscOrrect == nil {
+                oriOX = "(알수없음)"
+                notOriOX = oriOX
+            } else {
+                if oriIscOrrect == true {
+                    oriOX = "(O)"
+                    notOriOX = "(X)"
+                } else {
+                    oriOX = "(X)"
+                    notOriOX = "(O)"
+                }
+            }
+            
+        }
+        
+        
         io.writeMessage(to: staOut, "[원본진술]")
         io.writeMessage()
-        io.writeMessage(to: staOut, oriStr)
+        io.writeMessage(to: staOut, oriStr+"   \(oriOX)")
         io.writeMessage()
         io.writeMessage(to: notStaOut, "[반대진술]")
         io.writeMessage()
-        io.writeMessage(to: notStaOut, ontOriStrWrapped)
+        io.writeMessage(to: notStaOut, ontOriStrWrapped+"   \(notOriOX)")
         io.writeMessage()
         
-        let str = isNotStatementEditMode ? "> 수정할 반대진술 입력(다시 입력을 원할 시 \\) $ " : "> 수정할 진술 입력(다시 입력을 원할 시 \\) $"
+        let str = isNotStatementEditMode ? "> 수정할 반대진술 입력 (다시입력 : \\) $ " : "> 수정할 진술 입력 (다시입력 : \\) $"
         io.writeMessage(to: .notice, str)
         io.writeMessage()
         let inputUnwrapped : String? = io.getInput("", true)
         
         guard let input = inputUnwrapped else {
             io.writeMessage(to: .error, "올바르지 않은 입력")
-            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         
         if input == "" {
@@ -959,7 +1207,7 @@ extension MainInstructionManager {
             // How do you get the last character of a string without using array on swift?
             io.writeMessage(to: .notice, "다시입력")
             io.writeMessage(to: .notice, "")
-            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         
         
@@ -971,11 +1219,26 @@ extension MainInstructionManager {
         
         let inp = io.getInput("confirm[], [r]ewrite ?")
         if inp == "r" || inp == "ㄱ" {
-            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         return input
     }
+    
+    
+    func writeTag(title : String) -> String? {
+        
+        let tag = io.getInput("\(title) 대한 태그 (다시입력 : \\)")
+        
+        if tag == "" {
+            io.writeMessage(to: .notice, "입력한 태그없음")
+            return nil
+        } else if tag.characters.last == "\\" {
+            return writeTag(title: title)
+        }
+        return tag
+    }
 }
+
 
 
 // Does there exist within Swift's API an easy way to remove duplicate elements from an array?

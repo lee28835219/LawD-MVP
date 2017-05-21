@@ -36,6 +36,7 @@ enum InstMain : String {
     case exit = "exit"
     case keys = "[k]eys"
     case publish = "[p]ublish"
+    case publishOriginal = "[p]ublish [o]riginal"
     case publishShuffled = "[p]ublish [s]huffled"
     case solve = "sol[v]e"
     case solveShuffled = "sol[v]e [s]huffled"
@@ -49,7 +50,7 @@ enum InstMain : String {
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishOriginal.rawValue ,publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -74,6 +75,11 @@ enum InstMain : String {
             self = .publish
         case "ㅔ":
             self = .publish
+        
+        case "po":
+            self = .publishOriginal
+        case "ㅔㅐ":
+            self = .publishOriginal
         
         case "ps":
             self = .publishShuffled
@@ -120,6 +126,17 @@ enum InstMain : String {
         }
     }
 }
+
+enum SolveQuestionInstructionType : String {
+    case publish = "[p]ublish"
+    case publishOriginal = "[p]ublish [o]riginal"
+    case publishShuffled = "[p]ublish [s]huffled"
+    case solve = "sol[v]e"
+    case solveShuffled = "sol[v]e [s]huffled"
+    case solveControversal = "sol[v]e [c]ontroversl"
+}
+
+
 
 enum InstKey : String {
     
@@ -378,3 +395,4 @@ enum InstEdit : String {
         }
     }
 }
+

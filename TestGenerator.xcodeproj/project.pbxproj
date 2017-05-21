@@ -23,7 +23,6 @@
 		397214D71EBD82E800FDCD62 /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397214D61EBD82E800FDCD62 /* DataStructure.swift */; };
 		397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B21EB6F08D0040CE01 /* DataConverter.swift */; };
 		397631B51EB6F4CE0040CE01 /* DC법조윤리.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */; };
-		39B100421ECF4FB700C632EA /* asdfsdf.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B100411ECF4FB700C632EA /* asdfsdf.swift */; };
 		39CFAE1B1ECDDF00008C775D /* ConsoleIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CFAE1A1ECDDF00008C775D /* ConsoleIO.swift */; };
 		39DF734B1EAF2EFE005AD7D7 /* 3. Keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734A1EAF2EFE005AD7D7 /* 3. Keyword.swift */; };
 		39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734C1EAF4036005AD7D7 /* Note.swift */; };
@@ -80,8 +79,6 @@
 		397631B21EB6F08D0040CE01 /* DataConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
 		397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC법조윤리.swift"; sourceTree = "<group>"; };
 		39B1003F1ECF4FB600C632EA /* asdfsdf.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = asdfsdf.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		39B100411ECF4FB700C632EA /* asdfsdf.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asdfsdf.swift; sourceTree = "<group>"; };
-		39B100431ECF4FB700C632EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		39CFAE031ECDD897008C775D /* =변호사시험=공법=1회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=1회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=공법=1회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
 		39CFAE041ECDD897008C775D /* =변호사시험=공법=2회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=2회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=공법=2회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
 		39CFAE051ECDD897008C775D /* =변호사시험=공법=3회=선택형=.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "=변호사시험=공법=3회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=공법=3회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
@@ -185,7 +182,6 @@
 			isa = PBXGroup;
 			children = (
 				395BF6D11E82BA36004BE198 /* TestGenerator */,
-				39B100401ECF4FB600C632EA /* asdfsdf */,
 				395BF6D01E82BA36004BE198 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -274,15 +270,6 @@
 				39CFAE181ECDD95A008C775D /* 법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json */,
 			);
 			name = "법조윤리";
-			sourceTree = "<group>";
-		};
-		39B100401ECF4FB600C632EA /* asdfsdf */ = {
-			isa = PBXGroup;
-			children = (
-				39B100411ECF4FB700C632EA /* asdfsdf.swift */,
-				39B100431ECF4FB700C632EA /* Info.plist */,
-			);
-			path = asdfsdf;
 			sourceTree = "<group>";
 		};
 		39DF734E1EAFB820005AD7D7 /* ProcessingData */ = {
@@ -456,7 +443,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39B100421ECF4FB700C632EA /* asdfsdf.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -374,7 +374,7 @@ extension String {
         let chars = self.characters
         
         var pointer = 0
-        for (index,char) in chars.enumerated() {
+        for (_,char) in chars.enumerated() {
             
             pointer = pointer + 1
             
