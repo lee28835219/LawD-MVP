@@ -23,5 +23,16 @@ class Generator {
         return (right,wrong)
     }
     
+    func shuffleSolvers() {
+        solvers.shuffle()
+    }
     
+    func getTestinSolvers() -> [Test] {
+        let question = getQustioninSovers()
+        return question.map(){$0.test}.unique
+    }
+    
+    func getQustioninSovers() -> [Question]{
+        return solvers.map(){$0.question}.unique
+    }
 }

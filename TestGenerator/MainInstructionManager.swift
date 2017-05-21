@@ -647,9 +647,9 @@ extension MainInstructionManager {
         if let generator = generator {
             let (r,_) = generator.seperateWorngSolve()
             io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
-            var tests = generator.solvers.map{$0.question.test}
             
-            tests = tests.unique
+            
+            let tests = generator.getTestinSolvers()
             
             for test in tests {
                 // 저장에 관한 메세지는 함수 내부에서 가지고 있음
@@ -677,12 +677,11 @@ extension MainInstructionManager {
     
     func editGenerator(_ generator : Generator)  {
         
-        let questions = generator.solvers.map(){$0.question}.unique
-        
+        let questions = generator.getQustioninSovers()
         var questionsEdited = [Question]()
         
-        
         for question in questions {
+            
             
             Solver(question).publish(outputManager: outputManager)
             Solver(question).controversalPublish()
@@ -744,7 +743,7 @@ extension MainInstructionManager {
             }
             
             
-            
+            question.revision = reultEdidtedQuestion.revision
             question.specification = reultEdidtedQuestion.specification
             question.number = reultEdidtedQuestion.number
             question.subjectDetails = reultEdidtedQuestion.subjectDetails
@@ -799,9 +798,13 @@ extension MainInstructionManager {
         
         switch instruction {
         case .notQuestion:
-            guard let result = editStatement(title: "문제의 반대질문", oriStr: question.content, notOriStr: question.notContent, isNotStatementEditMode: true) else
-            {
-                return editQuestion(question, nextUpadte)
+            guard let result = editStatementString(
+                title: "문제의 반대질문",
+                oriStr: question.content,
+                notOriStr: question.notContent,
+                isNotStatementEditMode: true)
+                else {
+                    return editQuestion(question, nextUpadte)
             }
             nextUpadte = true
             question.notContent = result
@@ -811,8 +814,12 @@ extension MainInstructionManager {
         case .notLists:
             for (index,statement) in question.lists.enumerated() {
                 let count = question.lists.count
-                guard let result = editStatement(title: "반대목록지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: true) else
-                {
+                guard let result = editStatementString(
+                    title: "반대목록지 \(index+1) / \(count)",
+                    oriStr: statement.content,
+                    notOriStr: statement.notContent,
+                    isNotStatementEditMode: true)
+                    else {
                     continue
                 }
                 nextUpadte = true
@@ -824,8 +831,12 @@ extension MainInstructionManager {
         case .notSelections:
             for (index,statement) in question.selections.enumerated() {
                 let count = question.selections.count
-                guard let result = editStatement(title: "반대선택지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: true) else
-                {
+                guard let result = editStatementString(
+                    title: "반대선택지 \(index+1) / \(count)",
+                    oriStr: statement.content,
+                    notOriStr: statement.notContent,
+                    isNotStatementEditMode: true)
+                    else {
                     continue
                 }
                 nextUpadte = true
@@ -836,8 +847,12 @@ extension MainInstructionManager {
         
         
         case .originalQuestion:
-            guard let result = editStatement(title: "문제의 질문", oriStr: question.content, notOriStr: question.notContent, isNotStatementEditMode: true) else
-            {
+            guard let result = editStatementString(
+                title: "문제의 질문",
+                oriStr: question.content,
+                notOriStr: question.notContent,
+                isNotStatementEditMode: true)
+                else {
                 return editQuestion(question, nextUpadte)
             }
             nextUpadte = true
@@ -848,8 +863,12 @@ extension MainInstructionManager {
         case .originalLists:
             for (index,statement) in question.lists.enumerated() {
                 let count = question.lists.count
-                guard let result = editStatement(title: "목록지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: false) else
-                {
+                guard let result = editStatementString(
+                    title: "목록지 \(index+1) / \(count)",
+                    oriStr: statement.content,
+                    notOriStr: statement.notContent,
+                    isNotStatementEditMode: false)
+                    else {
                     continue
                 }
                 nextUpadte = true
@@ -861,8 +880,12 @@ extension MainInstructionManager {
         case .originalSelection:
             for (index,statement) in question.selections.enumerated() {
                 let count = question.selections.count
-                guard let result = editStatement(title: "선택지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: false) else
-                {
+                guard let result = editStatementString(
+                    title: "선택지 \(index+1) / \(count)",
+                    oriStr: statement.content,
+                    notOriStr: statement.notContent,
+                    isNotStatementEditMode: false)
+                    else {
                     continue
                 }
                 nextUpadte = true
@@ -878,19 +901,20 @@ extension MainInstructionManager {
             } else {
                 return (nil, false)
             }
+            
         case .exit:
             return (nil, false)
+            
         case .unknown:
             io.unkown(value, true)
             return editQuestion(question, nextUpadte)
         }
     }
     
-    func editStatement(title : String, oriStr : String, notOriStr : String?, isNotStatementEditMode : Bool) -> String? {
+    func editStatementString(title : String, oriStr : String, notOriStr : String?, isNotStatementEditMode : Bool) -> String? {
         
         io.writeMessage()
         io.writeMessage(to: .title, "["+title+" 수정을 시작함]")
-        
         
         
         let staOut = isNotStatementEditMode ? OutputType.standard : OutputType.important
@@ -914,7 +938,7 @@ extension MainInstructionManager {
         
         guard let input = inputUnwrapped else {
             io.writeMessage(to: .error, "올바르지 않은 입력")
-            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         
         if input == "" {
@@ -925,7 +949,7 @@ extension MainInstructionManager {
             // How do you get the last character of a string without using array on swift?
             io.writeMessage(to: .notice, "다시입력")
             io.writeMessage(to: .notice, "")
-            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         
         
@@ -937,7 +961,7 @@ extension MainInstructionManager {
         
         let inp = io.getInput("confirm[], [r]ewrite ?")
         if inp == "r" || inp == "ㄱ" {
-            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return editStatementString(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         return input
     }

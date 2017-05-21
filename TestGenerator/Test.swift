@@ -214,6 +214,8 @@ extension Test {
     
     func save() -> Bool {
         
+        self.revision = self.revision + 1
+        
         let data = self.createJsonObject()
         
         var testNumber : String = ""
@@ -229,7 +231,7 @@ extension Test {
                 self.testSubject.subject,   //과목
                 testNumber //회차
             ],
-            fileName: "[\(Date().HHmmSS)]\(self.testSubject.testCategory.testDatabase.key)=\(self.key).json",
+            fileName: "[\(Date().HHmm)]\(self.testSubject.testCategory.testDatabase.key)=\(self.key).json",
             data: data) {
             return true
         } else {

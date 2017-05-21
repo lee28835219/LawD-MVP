@@ -315,6 +315,16 @@ extension Date {
         return dateString
     }
     
+    
+    var HHmm : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. MM. dd. HH시 mm분"
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
+    
+    
     var HHmmss : String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy. MM. dd. HH시 mm분 ss초"
