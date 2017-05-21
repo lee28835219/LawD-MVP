@@ -82,6 +82,10 @@ class ConsoleIO {
         return (InstSolve(value),value)
     }
     
+    func getEdit(_ value : String) -> (instruction: InstEdit, value:String) {
+        return (InstEdit(value),value)
+    }
+    
     
     /* Output */
     
@@ -102,22 +106,18 @@ class ConsoleIO {
             values = InstGoon.allValues
         case .InstSolve:
             values = InstSolve.allValues
+        case .InstEdit:
+            values = InstEdit.allValues
         }
         
         var str = ""
         for (index,value) in values.enumerated() {
-            if ConsoleIO.isDebug {
-                if index == 0 {
-                    str = "? \(value)"
-                } else {
-                    str = str + ", \(value)"
-                }
+            if index == values.count - 1 {
+                str = str + ", \(value) ? "
+            } else if index == 0 {
+                str = "\(value)"
             } else {
-                if index == 0 {
-                    str = "? \(value)"
-                } else {
-                    str = str + ", \(value)"
-                }
+                str = str + ", \(value)"
             }
         }
         return str

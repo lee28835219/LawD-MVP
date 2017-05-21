@@ -53,39 +53,54 @@ class MainInstructionManager {
                 showKeys(inst, value : value)
                 
             case .publish:
-                _ = publishAndSolver(instruction.rawValue, gonnaShuffle: false, gonnaSolve: false)
+                let generatorUnwrapped = publishAndSolver(gonnaShuffle: false, gonnaSolve: false, gonnaControversal: false)
+                guard let generator = generatorUnwrapped else {
+                    io.writeMessage(to: .error, "문제를 찾을 수 없음")
+                    continue
+                }
+                if generator.solvers.count == 0 {
+                    continue
+                }
+                let input = io.getInput("exit[], [e]dit ? ")
+                if input == "e" || input == "ㄷ" {
+                    editGenerator(generator)
+                }
             
             case .publishShuffled:
-                _ = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: false)
+                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: false, gonnaControversal: false)
+                guard let generator = generatorUnwrapped else {
+                    io.writeMessage(to: .error, "문제를 찾을 수 없음")
+                    continue
+                }
+                if generator.solvers.count == 0 {
+                    continue
+                }
+                let input = io.getInput("exit[], [e]dit ? ")
+                if input == "e" || input == "ㄷ" {
+                    editGenerator(generator)
+                }
             
             case .solve:
-                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
+                let generatorUnwrapped = publishAndSolver(gonnaShuffle: false, gonnaSolve: true, gonnaControversal: false)
                 handleGenerator(generatorUnwrapped)
                 
             case .solveShuffled:
-                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true)
+                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: true, gonnaControversal: false)
                 handleGenerator(generatorUnwrapped)
             
             case .solveControversal:
-                let generatorUnwrapped = publishAndSolver(instruction.rawValue, gonnaShuffle: true, gonnaSolve: true, gonnaControversal: true)
+                let generatorUnwrapped = publishAndSolver(gonnaShuffle: true, gonnaSolve: true, gonnaControversal: true)
                 handleGenerator(generatorUnwrapped)
                 
             case .save:
                 let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
                 switch inst {
+                    
                 case .all:
                     for testCategory in testDatabase.categories {
                         for testSubject in testCategory.testSubjects {
                             for test in testSubject.tests {
                                 saveTest(test)
-                                
-//                                if self.outputManager.saveTest(test) {
-//                                    //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장성공")
-//                                    //outputManager.saveFile()에 에러 로그가 있어 여기서 처리할 필요없음.
-//                                } else {
-//                                    //print("> [\(Date().HHmmss)]\(test.testSubject.testCategory.testDatabase.key)=\(test.key).json 저장실패")
-//                                    // 정밀한 에러 핸들링 필요 2017. 5. 9. (+)
-//                                }
                             }
                         }
                     }
@@ -96,13 +111,15 @@ class MainInstructionManager {
                     
                 case .unknown:
                     io.unkown(value)
+                    
                 }
+                
                 
             case .edit:
                 io.unkown(value)
                 
             case .refresh:
-//                storageManager.refresh(io: io)
+//                storageManager.refresh(io: io) // 구현실패 2017. 5. 20.
                 io.unkown(value)
             
             case .unknown:
@@ -111,99 +128,9 @@ class MainInstructionManager {
         }
     }
     
-                
-    func execute(_ input : String) -> Bool? {
-        
-        
-//        if isSame(input, targets: ["shuffles","노ㅕㄹ릳ㄴ"]) {
-//            let selectedSubject = selectTestSubject(selectTestCategory(testDatabase))
-//            
-//            guard let selectedSubjectWrapped = selectedSubject else {
-//                print("선택한 과목을 찾을 수 없었음")
-//                return false
-//            }
-//            
-//            var selectedQuestions = [Question]()
-//            
-//            for test in selectedSubjectWrapped.tests {
-//                selectedQuestions.append(contentsOf: test.questions)
-//            }
-//            
-//            if selectedQuestions.count == 0 {
-//                print(">\(selectedSubjectWrapped.key)에 문제가 하나도 없음")
-//                return false
-//            }
-//            
-//            _ = solveShuffledQuestions(selectedQuestions.shuffled())
-//            
-//            return true
-//        }
-//        
-//        
-        
-        // 시험을 선택하여 문제당 5개의 변형문제를 진행
-//        if isSame(input, targets: ["shufflet","노ㅕㄹ릳ㅅ"]) {
-//            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
-//            
-//            guard let selectedTestWrapped = selectedTest else {
-//                print("선택한 시험을 찾을 수 없었음")
-//                return false
-//            }
-//            
-//            let selectedQuestions = selectedTestWrapped.questions.shuffled()
-//            
-//            if selectedQuestions.count == 0 {
-//                print(">\(selectedTestWrapped.key)에 문제가 하나도 없음")
-//                return false
-//            }
-//
-//            _ = solveShuffledQuestions(selectedQuestions.shuffled())
-//            
-//            return true
-//        }
-//
-//        // 문제를 선택하여 10개의 변형문제를 진행
-//        if isSame(input, targets: ["shuffleq","노ㅕㄹ릳ㅂ"]) {
-//            
-//            let selectedTest = selectTest(selectTestSubject(selectTestCategory(testDatabase)))
-//    
-//            let selectedQuestion = selectQuestion(selectedTest)
-//            guard let selectedQuestionWrapped = selectedQuestion else { return false }
-//            
-//            selectedQuestionWrapped.publish(showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-//            
-//            for _ in 1...5 {
-//                let result = solveShuffledQuestion(question: selectedQuestionWrapped)
-//                if !result.isShuffled {
-//                    return false
-//                }
-//            }
-//            return true
-//        }
-
-        return false
-    }
-    
-    
-    
     
     
     //// 내부보조함수
-    
-    
-    
-    
-    // 입력이 주어진 값과 동일한지 확인하는 함수
-    // 한글로 잘못 입력하는 경우도 동일한 입력으로 고려함
-    func isSame(_ input : String, targets : [String]) -> Bool {
-        var result = false
-        for target in targets {
-            if input.caseInsensitiveCompare(target) == ComparisonResult.orderedSame {
-                result = true
-            }
-        }
-        return result
-    }
     
     
     
@@ -249,6 +176,8 @@ class MainInstructionManager {
 //        // 1. 문제 반전사항출력(완료)), 2. 문제유형 반전해서 출력, 3. 목록 선택지 문제일 경우 선택지는 손대지 않음
 //        
 //    }
+    
+    
     
     //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)
     //노가다 및 Int(String)으로 완성 2017. 5. 6.
@@ -479,36 +408,10 @@ class MainInstructionManager {
     }
 }
 
+
+// Main 명령어용 함수들의 모임
+
 extension MainInstructionManager {
-    
-//    func solveShuffledQuestions(_ questions : [Question]) -> [Question] {
-//        var wrongQuestions = [Question]()
-//        
-//        for (index,que) in questions.enumerated() {
-//            print("(\(index) / \(questions.count))")
-//            let result = solveShuffledQuestion(question: que)
-//            if !result.isShuffled {
-//                continue
-//            }
-//            if !result.isRight {
-//                wrongQuestions.append(que)
-//            }
-//        }
-//        if wrongQuestions.count == 0 {
-//            print(">총 \(questions.count) 문제 모두 맞춤-종료(),문제수정(m) $ ", terminator: "")
-//        } else {
-//            print(">총 \(questions.count) 문제 중 \(questions.count - wrongQuestions.count) 개 맞춤-종료(),다시풀기(r),틀린문제만 다시풀기(w) $ ", terminator: "")
-//        }
-//        let input = readLine()
-//        if input == "r" || input == "ㄱ" {
-//            wrongQuestions = solveShuffledQuestions(questions)
-//        }
-//        if (input == "w" && wrongQuestions.count != 0) || (input == "ㅈ" && wrongQuestions.count != 0){
-//            wrongQuestions = solveShuffledQuestions(wrongQuestions)
-//        }
-//        return wrongQuestions
-//    }
-    
     
     func showKeys(_ instruction : InstPublish, value: String) {
         switch instruction {
@@ -571,7 +474,7 @@ extension MainInstructionManager {
     }
     
     
-    func publishAndSolver(_ instructionRaw : String, gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal: Bool = false) -> Generator? {
+    func publishAndSolver(gonnaShuffle: Bool, gonnaSolve: Bool, gonnaControversal: Bool = false) -> Generator? {
         let generator = Generator()
         
         var str = ""
@@ -686,6 +589,7 @@ extension MainInstructionManager {
         let showHistory = gonnaSolve ? false : true
         let showAttribute = gonnaSolve ? false : true
         var showOrigSel = true
+        
         if gonnaSolve {
             showOrigSel = false
         } else {
@@ -702,7 +606,7 @@ extension MainInstructionManager {
         
         
         if gonnaSolve {
-            solver.solve(consoleIO : io)
+            solver.solve(io : io)
             solver.comment = io.getInput("남기고 싶은 코멘트")
             
             var goon = true
@@ -722,13 +626,15 @@ extension MainInstructionManager {
                     generator.solvers.append(solver)
                     goon = false
                 case .exit:
-                    generator.solvers.append(solver)
+                    generator.solvers = []
                     return (generator, true)
                 case .unknown:
                     generator.solvers.append(solver)
                     goon = false
                 }
             }
+        } else {
+            generator.solvers.append(solver)
         }
         
         return (generator,false)
@@ -736,8 +642,17 @@ extension MainInstructionManager {
     
     func handleGenerator(_ generator : Generator?) {
         if let generator = generator {
-            let (r,w) = generator.seperateWorngSolve()
+            let (r,_) = generator.seperateWorngSolve()
             io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
+            var tests = generator.solvers.map{$0.question.test}
+            
+            tests = tests.unique
+            
+            for test in tests {
+                // 저장에 관한 메세지는 함수 내부에서 가지고 있음
+                _ = test.save()
+            }
+            
         } else {
             io.writeMessage(to: .error, "문제를 찾을 수 없음")
         }
@@ -746,8 +661,7 @@ extension MainInstructionManager {
     
     func saveTest(_ selectedTest : Test?) {
         guard let selectedTestWrapped = selectedTest else {
-            
-            print("선택한 시험이 없어 시험저장 실패")
+            io.writeMessage(to: .error, "선택한 시험이 없어 시험저장 실패")
             return
         }
         
@@ -758,5 +672,203 @@ extension MainInstructionManager {
         }
     }
     
+    func editGenerator(_ generator : Generator)  {
+        
+        let questions = generator.solvers.map(){$0.question}.unique
+        
+        var questionsEdited = [Question]()
+        
+        
+        for question in questions {
+            
+            Solver(question).publish(outputManager: outputManager)
+            Solver(question).controversalPublish()
+            
+            
+            
+            var editedQuestion = Templet.Question(
+                revision: question.revision + 1,  // revision up
+                specification: question.specification,
+                number: question.number,
+                subjectDetails: question.subjectDetails,
+                questionType: question.questionType,
+                questionOX: question.questionOX,
+                contentPrefix: question.contentPrefix,
+                content: question.content,
+                notContent: question.notContent,
+                contentNote: question.contentNote,
+                questionSuffix: question.questionSuffix,
+                passage: question.passage,
+                passageSuffix: question.passageSuffix,
+                answer: question.answer,
+                raw: question.raw,
+                rawSelections: question.rawSelections,
+                rawLists: question.rawLists,
+                selections: [],  // 2. 선택지
+                lists: []  // 3. 목록
+            )
+            
+            for (_, statement) in question.lists.enumerated() {
+                let list = Templet.List(
+                    revision: statement.revision + 1,
+                    specification: statement.specification,
+                    content: statement.content,
+                    notContent: statement.notContent,
+                    listStringType: statement.listStringType,
+                    number: statement.number)
+                editedQuestion.lists.append(list)
+            }
+            
+            for (_, statement) in question.selections.enumerated() {
+                let selection = Templet.Selection(
+                    revision: statement.revision + 1,
+                    specification: statement.specification,
+                    content: statement.content,
+                    notContent: statement.notContent,
+                    number: statement.number,
+                    iscOrrect: statement.iscOrrect,
+                    isAnswer: statement.isAnswer)
+                editedQuestion.selections.append(selection)
+            }
+            
+            
+            let result = editQuestion(editedQuestion, false)
+            if result.gonnaExit {
+                return
+            }
+            guard let reultEdidtedQuestion = result.editedQuestion else {
+                continue
+            }
+            
+            
+            
+            question.specification = reultEdidtedQuestion.specification
+            question.number = reultEdidtedQuestion.number
+            question.subjectDetails = reultEdidtedQuestion.subjectDetails
+            question.questionType = reultEdidtedQuestion.questionType
+            question.questionOX = reultEdidtedQuestion.questionOX
+            question.contentPrefix = reultEdidtedQuestion.contentPrefix
+            question.content = reultEdidtedQuestion.content
+            question.notContent = reultEdidtedQuestion.notContent
+            question.contentNote = reultEdidtedQuestion.contentNote
+            question.questionSuffix = reultEdidtedQuestion.questionSuffix
+            question.passage = reultEdidtedQuestion.passage
+            question.passageSuffix = reultEdidtedQuestion.passageSuffix
+            question.answer = reultEdidtedQuestion.answer
+            question.raw = reultEdidtedQuestion.raw
+            question.rawSelections = reultEdidtedQuestion.rawSelections
+            question.rawLists = reultEdidtedQuestion.rawLists
+            
+            
+            
+            for (index,statement) in question.lists.enumerated() {
+                statement.content = reultEdidtedQuestion.lists[index].content
+                statement.notContent = reultEdidtedQuestion.lists[index].notContent
+            }
+            for (index,statement) in question.selections.enumerated() {
+                statement.content = reultEdidtedQuestion.selections[index].content
+                statement.notContent = reultEdidtedQuestion.selections[index].notContent
+            }
+            
+            questionsEdited.append(question)
+        }
+        
+        
+        for que in questionsEdited {
+            print(que.key)
+        }
+        
+        let testsEdited = questionsEdited.map(){$0.test}.unique
+        
+        for test in testsEdited {
+            print(test.key)
+            saveTest(test)
+        }
+        
+    }
+    
+    func editQuestion(_ editedQuestion : Templet.Question, _ next: Bool) -> (editedQuestion : Templet.Question?, gonnaExit : Bool) {
+        let (instruction, value) = io.getEdit(io.getInput(io.getHelp(.InstEdit)))
+        
+        var question = editedQuestion
+        
+        switch instruction {
+        case .notQuestion:
+            let next = true
+            question.notContent = io.getInput("질문의 반대를 입력하세요")
+            return editQuestion(question, next)
+        
+        
+        case .notLists:
+            let next = true
+            for (index,statement) in question.lists.enumerated() {
+                question.lists[index].notContent = io.getInput("목록지의 반대를 입력하세요")
+            }
+            return editQuestion(question, next)
+        
+        
+        case .notSelections:
+            let next = true
+            for (index,statement) in question.selections.enumerated() {
+                question.selections[index].notContent = io.getInput("선택지의 반대를 입력하세요")
+            }
+            return editQuestion(question, next)
+        
+        
+        case .originalQuestion:
+            let next = true
+            question.content = io.getInput("질문을 입력하세요")
+            return editQuestion(question, next)
+        
+        
+        case .originalLists:
+            let next = true
+            for (index,statement) in question.lists.enumerated() {
+                question.lists[index].content = io.getInput("목록지를 입력하세요")
+            }
+            return editQuestion(question, next)
+        
+        
+        case .originalSelection:
+            let next = true
+            for (index,statement) in question.selections.enumerated() {
+                question.selections[index].content = io.getInput("선택지를 입력하세요")
+            }
+            return editQuestion(question, next)
+            
+        
+        
+        case .next:
+            if next {
+                return (question, false)
+            } else {
+                return (nil, false)
+            }
+        case .exit:
+            return (nil, false)
+        case .unknown:
+            io.unkown(value, true)
+            return editQuestion(question, next)
+        }
+    }
+}
+
+
+// Does there exist within Swift's API an easy way to remove duplicate elements from an array?
+// http://stackoverflow.com/questions/25738817/does-there-exist-within-swifts-api-an-easy-way-to-remove-duplicate-elements-fro
+// 담에 공부하자 2017. 5. 21.
+extension Array where Element:Hashable {
+    var unique: [Element] {
+        var set = Set<Element>() //the unique list kept in a Set for fast retrieval
+        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
+        for value in self {
+            if !set.contains(value) {
+                set.insert(value)
+                arrayOrdered.append(value)
+            }
+        }
+        
+        return arrayOrdered
+    }
 }
 

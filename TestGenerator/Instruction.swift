@@ -27,19 +27,20 @@ enum HelpInstruction {
     case InstSave
     case InstGoon
     case InstSolve
+    case InstEdit
 }
 
 enum InstMain : String {
     
     case help = "help"
     case exit = "exit"
-    case keys = "keys"
-    case publish = "publish"
-    case publishShuffled = "publish shuffled"
-    case solve = "solve"
-    case solveShuffled = "solve shuffled"
-    case solveControversal = "solve controversl"
-    case edit = "edit"
+    case keys = "[k]eys"
+    case publish = "[p]ublish"
+    case publishShuffled = "[p]ublish [s]huffled"
+    case solve = "sol[v]e"
+    case solveShuffled = "sol[v]e [s]huffled"
+    case solveControversal = "sol[v]e [c]ontroversl"
+    case edit = "[e]dit"
     case save = "save"
     case refresh = "refresh"
     
@@ -314,6 +315,66 @@ enum InstSolve : String {
         }
     }
 }
+enum InstEdit : String {
+    
+    case notQuestion = "not [q]uestion"
+    case notLists = "not [l]ists"
+    case notSelections = "not [s]elections"
+    case originalQuestion = "[o]riginal [q]uestion"
+    case originalLists = "[o]riginal [l]ists"
+    case originalSelection = "[o]riginal [s]elections"
+    case next = "next[]"
+    case exit = "e[x]it"
+    
+    case unknown
+    
+    
+    static let allValues = [notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
+    
+    init(_ value : String) {
+        switch value {
+            
+        case "q":
+            self = .notQuestion
+        case "ㅂ":
+            self = .notQuestion
 
+        case "l":
+            self = .notLists
+        case "ㅣ":
+            self = .notLists
 
+        case "s":
+            self = .notSelections
+        case "ㄴ":
+            self = .notSelections
 
+        case "oq":
+            self = .originalQuestion
+        case "ㅐㅂ":
+            self = .originalQuestion
+
+        case "ol":
+            self = .originalLists
+        case "ㅐㅣ":
+            self = .originalLists
+
+        case "os":
+            self = .originalSelection
+        case "ㅐㄴ":
+            self = .originalSelection
+            
+        case "":
+            self = .next
+        
+        case "x":
+            self = .exit
+        case "ㅌ":
+            self = .exit
+            
+            
+        default:
+            self = .unknown
+        }
+    }
+}

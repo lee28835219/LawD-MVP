@@ -75,7 +75,7 @@ class OutputManager {
             if showAttribute {
                 queCont = queCont + " (문제유형 : \(questionType)\(questionOX))"
             }
-             io.writeMessage(to: .publish, "  "+queCont.spacing(2))
+             io.writeMessage(to: .publish, "  "+queCont.spacing(2, 44))
              io.writeMessage("")
             
             //지문

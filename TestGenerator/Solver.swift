@@ -742,32 +742,35 @@ class Solver : DataStructure {
     // 문제를 입력하면 변형하여 문제를 출력하고 입력을 받아서 정답을 체크하는 함수
     // 변경문제에 대하여 문제변경이 성공하면 진행하지만, 실패하면 false를 반환
     // 1. 노트추가나 태그추가, 2. 문제변경 기능에 대해서 만들어내도록 기능추가해야할 핵심함수 2017. 5. 7. (+)
-    func solve(consoleIO : ConsoleIO) {
+    func solve(io : ConsoleIO) {
         
-        let userAnswerString = consoleIO.getInput("정답을 입력하세요 ")
+        let userAnswerString = io.getInput("정답을 입력하세요")
+        if userAnswerString == "" {
+            return
+        }
         let userAnswerUnwrapped = Int(userAnswerString)
         
         // 입력이 숫자인지 확인
         guard let userAnswer = userAnswerUnwrapped else {
-            consoleIO.writeMessage(to: .error, "숫자입력이 필요함")
-            solve(consoleIO: consoleIO)
+            io.writeMessage(to: .error, "숫자입력이 필요함")
+            solve(io: io)
             return
         }
         
         // 입력숫자가 선택지 범위인지 확인
         if userAnswer < 1 || selections.count < userAnswer {
-            consoleIO.writeMessage(to: .error, "선택지 범위를 벗어난 숫자")
-            solve(consoleIO: consoleIO)
+            io.writeMessage(to: .error, "선택지 범위를 벗어난 숫자")
+            solve(io: io)
             return
         }
         
-        consoleIO.writeMessage("")
+        io.writeMessage("")
         
         if selections[userAnswer-1] === answerSelectionModifed {
-            consoleIO.writeMessage(to: .notice, "정답!!")
+            io.writeMessage(to: .notice, "정답!!")
             isRight = true
         } else {
-            consoleIO.writeMessage(to: .error, "오답...XXXXX")
+            io.writeMessage(to: .error, "오답...XXXXX")
             isRight = false
         }
         date = Date()
