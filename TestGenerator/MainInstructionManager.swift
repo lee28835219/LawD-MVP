@@ -611,26 +611,36 @@ extension MainInstructionManager {
             
             var goon = true
             while goon {
+                
                 let (instruction, value) = io.getSolve(io.getInput(io.getHelp(.InstSolve)))
+                
                 switch instruction {
+                
                 case .resolve:
                     generator.solvers.append(solver)
                     return solveQuestion(question, gonnaShuffle: gonnaShuffle, gonnaSolve: gonnaSolve, gonnaControversal: gonnaControversal, generator: generator)
+                
                 case .noteQuestion:
-                    let note = io.getInput("\(question.key)에 대한 태그입력")
+                    io.getInput("\(question.key)에 대한 태그입력")
+                    io.writeMessage(to: .error, "아직 구현되지 않은 기능")
+                
                 case .tagQuestion:
-                    let tag = io.getInput("\(question.key)에 대한 태그입력")
+                    question.tags.append(io.getInput("\(question.key)에 대한 태그입력"))
+                
                 case .modifyQuestoin:
                     let generator = Generator()
                     generator.solvers = [solver]
                     editGenerator(generator)
                     io.writeMessage(to: .notice, "\(question.key) 문제 수정완료")
+                
                 case .next:
                     generator.solvers.append(solver)
                     goon = false
+                
                 case .exit:
                     generator.solvers = []
                     return (generator, true)
+                
                 case .unknown:
                     generator.solvers.append(solver)
                     goon = false

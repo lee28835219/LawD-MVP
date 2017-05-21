@@ -24,4 +24,5 @@ class DataStructure: NSObject {
     init(_ key: String) {
         self.key = key
     }
+    
 }
