@@ -490,13 +490,14 @@ class Solver : DataStructure {
     
     func publish(om: OutputManager,
                  type: QuestionPublishType,
-                 showTitle: Bool, showQuestion : Bool, showAnswer: Bool, showHistory : Bool,
+                 showTitle: Bool, showQuestion : Bool, showAnswer: Bool, showTags : Bool, showHistory : Bool,
                  showAttribute: Bool = true, showOrigSel : Bool = true)
     {
         
         om.showTitle = showTitle
         om.showQuestion = showQuestion
         om.showAnswer = showAnswer
+        om.showTags = showTags
         om.showHistory = showHistory
         
         om.showAttribute = showAttribute
@@ -719,6 +720,8 @@ class Solver : DataStructure {
             ansSelIsAnswer: ansSelIsAnswer,  // 셔플하면 변경
             questionAnswer: questionAnswer,
             originalAnsSelectionNumber: originalAnsSelectionNumber,
+            
+            tags: question.tags,
             
             solveDate: question.solvers.map {$0.date},
             isRight: question.solvers.map {$0.isRight},

@@ -412,7 +412,7 @@ extension MainInstructionManager {
         }
     }
     
-    
+    // 출력이 nil인 경우는 유저가 문제를 풀다가 e[x]it 커맨드를 해서 강제종료하려고 하는 경우
     func publishAndSolver(_ solveQuestionInstructionType : SolveQuestionInstructionType) -> Generator? {
         
         var str = ""
@@ -443,6 +443,8 @@ extension MainInstructionManager {
             io.writeMessage(to: .title, "[[ \(str) : \(index+1) / \(counter)]]")
             let (generatorResult, gonnaExit) = solveQuestion(que, generator: generator, solveQuestionInstructionType : solveQuestionInstructionType)
             generator = generatorResult
+            
+            // 문제를 풀다가 유저가 e[x]를 입력하면 그 곳에서 중단하고 결과도 저장하지 않도록 하는 매우 편리하고 중요한 구문
             if gonnaExit {
                 return nil
             }
@@ -550,6 +552,7 @@ extension MainInstructionManager {
         var showTitle : Bool
         var showQuestion : Bool
         var showAnswer : Bool
+        var showTags : Bool
         var showHistory : Bool
         var showAttribute : Bool
         var showOrigSel : Bool
@@ -569,7 +572,8 @@ extension MainInstructionManager {
             showTitle = true
             showQuestion = true
             showAnswer = true
-            showHistory = false // 뒤에 반전지문까지 출력한 뒤에 히스트로리를 출력할 거니 false
+           showTags = false
+            showHistory = false // 뒤에 반전지문까지 출력한 뒤에 히스트로리와 태그를 출력할 거니 false
             showAttribute = true
             showOrigSel = false
            
@@ -586,6 +590,7 @@ extension MainInstructionManager {
            showTitle = true
            showQuestion = true
            showAnswer = true
+           showTags = true
            showHistory = true
            showAttribute = true
            showOrigSel = false
@@ -600,6 +605,7 @@ extension MainInstructionManager {
             showTitle = true
             showQuestion = true
             showAnswer = true
+            showTags = true
             showHistory = true
             showAttribute = true
             showOrigSel = true
@@ -615,6 +621,7 @@ extension MainInstructionManager {
             showTitle = true
             showQuestion = true
             showAnswer = false
+            showTags = false
             showHistory = false
             showAttribute = false
             showOrigSel = false
@@ -630,6 +637,7 @@ extension MainInstructionManager {
              showTitle = true
              showQuestion = true
              showAnswer = false
+             showTags = false
              showHistory = false
              showAttribute = false
              showOrigSel = false
@@ -644,6 +652,7 @@ extension MainInstructionManager {
             showTitle = true
             showQuestion = true
             showAnswer = false
+            showTags = false
             showHistory = false
             showAttribute = false
             showOrigSel = false
@@ -661,7 +670,7 @@ extension MainInstructionManager {
             io.writeMessage(to: .title, "[반전된 문제]")
             solver.publish(om: outputManager,
                            type: .originalNot,
-                           showTitle: showTitle, showQuestion: true, showAnswer: true, showHistory: false,
+                           showTitle: showTitle, showQuestion: true, showAnswer: true, showTags: false,showHistory: false,
                            showAttribute: true, showOrigSel: false)
             
             io.writeMessage(to: .error, "이 문제는 반전이 불가능한 상황")
@@ -682,7 +691,7 @@ extension MainInstructionManager {
         // 문제를 내용을 타입의 논리에 맞게 출력
         solver.publish(om: outputManager,
                        type: questionPublishType,
-                       showTitle: showTitle, showQuestion: showQuestion, showAnswer: showAnswer, showHistory: showHistory,
+                       showTitle: showTitle, showQuestion: showQuestion, showAnswer: showAnswer, showTags: showTags,showHistory: showHistory,
                        showAttribute: showAttribute, showOrigSel: showOrigSel)
         
         
@@ -693,7 +702,7 @@ extension MainInstructionManager {
                 io.writeMessage(to: .title, "[반전된 문제]")
                 solver.publish(om: outputManager,
                                type: .originalNot,
-                               showTitle: false, showQuestion: true, showAnswer: true, showHistory: true, // 히스토리는 여기서 보여줌
+                               showTitle: false, showQuestion: true, showAnswer: true, showTags: true,showHistory: true, // 히스토리는 여기서 보여줌
                                showAttribute: true, showOrigSel: false)
             }
             generator.solvers.append(solver)
@@ -721,22 +730,14 @@ extension MainInstructionManager {
                 return solveQuestion(question, generator: generator, solveQuestionInstructionType: solveQuestionInstructionType)
             
             case .noteQuestion:
-                _ = io.getInput("\(question.key)에 대한 태그입력")
+                _ = io.getInput("\(question.key)에 대한 노트입력")
                 io.writeMessage(to: .error, "아직 구현되지 않은 기능")
             
             case .tagQuestion:
                 if let newTag = writeTag(title : "\(question.key)") {
                     question.tags.append(newTag)
                     
-                    var tags = ""
-                    for (index,tag) in question.tags.enumerated() {
-                        if index == 0 {
-                            tags = tag
-                        } else {
-                            tags = ", " + tag
-                        }
-                    }
-                    io.writeMessage(to: .publish, "[\(question.key) 태그 목록] \(tags)")
+                    
                 }
             
             case .modifyQuestoin:
@@ -805,7 +806,7 @@ extension MainInstructionManager {
         
         solver.publish(om: outputManager,
                        type: .solver,
-                       showTitle: false, showQuestion: false, showAnswer: true, showHistory: true,
+                       showTitle: false, showQuestion: false, showAnswer: true, showTags: true,showHistory: true,
                        showAttribute: true, showOrigSel: false)
         
         
@@ -817,7 +818,7 @@ extension MainInstructionManager {
             io.writeMessage(to: .notice, "주기 입력완료")
             solver.publish(om: outputManager,
                            type: .original,
-                           showTitle: false, showQuestion: false, showAnswer: false, showHistory: true,
+                           showTitle: false, showQuestion: false, showAnswer: false, showTags: false,showHistory: true,
                            showAttribute: true, showOrigSel: false)
             
         }
@@ -834,7 +835,6 @@ extension MainInstructionManager {
             let (r,_) = generator.seperateWorngSolve()
             io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
             
-            
             let tests = generator.getTestinSolvers()
             
             for test in tests {
@@ -843,13 +843,12 @@ extension MainInstructionManager {
             }
             
         } else {
-            io.writeMessage(to: .error, "문제를 찾을 수 없음")
+            io.writeMessage(to: .notice, "문제풀이 강제종료함")
         }
     }
     
     func handleQuestionGenerator(_ generatorUnwrapped : Generator?) {
         guard let generator = generatorUnwrapped else {
-            io.writeMessage(to: .error, "문제를 찾을 수 없음")
             return
         }
         if generator.solvers.count == 0 {
@@ -890,14 +889,14 @@ extension MainInstructionManager {
             // solver가 셔플하든 말든 원래 값을 출력해야 할 것임
             Solver(question).publish(om: outputManager,
                                      type: .original,
-                                     showTitle: true, showQuestion: true, showAnswer: true, showHistory: false,
+                                     showTitle: true, showQuestion: true, showAnswer: true, showTags: false, showHistory: false,
                                      showAttribute: true, showOrigSel: true)
             
             io.writeMessage(to: .title, "[반전된 문제]")
             
             Solver(question).publish(om: outputManager,
                                      type: .originalNot,
-                                     showTitle: true, showQuestion: true, showAnswer: true, showHistory: true,
+                                     showTitle: true, showQuestion: true, showAnswer: true, showTags: false, showHistory: true,
                                      showAttribute: true, showOrigSel: true)
             
             

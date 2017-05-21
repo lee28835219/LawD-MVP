@@ -17,6 +17,7 @@ class OutputManager {
     var showTitle : Bool = true
     var showQuestion : Bool = true
     var showAnswer : Bool = false
+    var showTags : Bool = false
     var showHistory : Bool = false
     var showAttribute : Bool = false
     var showOrigSel : Bool = false
@@ -52,6 +53,8 @@ class OutputManager {
             selectionsContent : [String],selsIscOrrect : [Bool?],selsIsAnswer : [Bool?],originalSelectionsNumber : [String],
             //정답
             ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String,
+            //태그
+            tags : [String],
             //풀이이력
             solveDate: [Date?], isRight : [Bool?], comment : [String], answerRate : Float, totalNumber : Int, rightNumber : Int
             ) {
@@ -145,6 +148,23 @@ class OutputManager {
                 _getSelectionStringForPrinting(selContent : ansSCon, selIscOrrect : ansSelIscOrrect, selIsAnswer : ansSelIsAnswer, showAttribute : showAttribute, questionType : questionType, originalSelectionNumber : originalAnsSelectionNumber).spacing(5))
             io.writeMessage("")
         }
+        
+        // 태그
+        if showTags {
+            var str = ""
+            for (index,tag) in tags.enumerated() {
+                if index == 0 {
+                    str = tag
+                } else {
+                    str = str + ", " + tag
+                }
+            }
+            
+            io.writeMessage(to: .title, "<태그>")
+            io.writeMessage(to: .publish, str)
+            io.writeMessage("")
+        }
+        
         
         //이력
         if showHistory {
