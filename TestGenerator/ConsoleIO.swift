@@ -19,6 +19,7 @@ class ConsoleIO {
     static var isDebug = false
     static let colorLog = ANSIColors.yellow
     let colorStandard = ANSIColors.white
+    let colorImportant = ANSIColors.cyan
     let colorError = ANSIColors.red
     let colorTitle = ANSIColors.green
     let colorPublish = ANSIColors.cyan
@@ -33,14 +34,22 @@ class ConsoleIO {
     
     // 유효한 입력을 받는 보조함수
     // 내가짠 함수가 위의 ray 에 있는거보다 더 효윻ㄹ적인 듯~ 2017. 5. 20
-    func getInput(_ prefix:String = "") -> String {
+    func getInput(_ prefix:String = "", _ plainMode : Bool = false) -> String {
         var goon = true
         while goon {
-            let str = prefix != "" ? "> \(prefix) $ " : "$ "
-            if ConsoleIO.isDebug{
-                print(str, terminator: "")
+            if !plainMode {
+                let str = prefix != "" ? "> \(prefix) $ " : "$ "
+                if ConsoleIO.isDebug{
+                    print(str, terminator: "")
+                } else {
+                    print(colorInput+str, terminator: "")
+                }
             } else {
-                print(colorInput+str, terminator: "")
+                if ConsoleIO.isDebug{
+                    print(prefix, terminator: "")
+                } else {
+                    print(colorInput+prefix, terminator: "")
+                }
             }
             
             let inputRaw = readLine()
@@ -144,6 +153,12 @@ class ConsoleIO {
             } else {
                 print(colorStandard+message)
             }
+        case .important:
+            if ConsoleIO.isDebug {
+                print(message)
+            } else {
+                print(colorImportant+message)
+            }
         case .title:
             if ConsoleIO.isDebug {
                 print(" \(message)")
@@ -213,6 +228,7 @@ enum OutputType {
     case input
     case notice
     case standard
+    case important
     case title
     case publish
     case error

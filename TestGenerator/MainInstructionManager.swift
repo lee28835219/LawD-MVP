@@ -621,7 +621,10 @@ extension MainInstructionManager {
                 case .tagQuestion:
                     let tag = io.getInput("\(question.key)에 대한 태그입력")
                 case .modifyQuestoin:
-                    let instruction = io.getInput("\(question.key) 문제수정진행")
+                    let generator = Generator()
+                    generator.solvers = [solver]
+                    editGenerator(generator)
+                    io.writeMessage(to: .notice, "\(question.key) 문제 수정완료")
                 case .next:
                     generator.solvers.append(solver)
                     goon = false
@@ -788,58 +791,89 @@ extension MainInstructionManager {
     }
     
     func editQuestion(_ editedQuestion : Templet.Question, _ next: Bool) -> (editedQuestion : Templet.Question?, gonnaExit : Bool) {
-        let (instruction, value) = io.getEdit(io.getInput(io.getHelp(.InstEdit)))
+        let (instruction, value) = io.getEdit(io.getInput("수정할 대상선택 : "+io.getHelp(.InstEdit)))
         
         var question = editedQuestion
         
+        var nextUpadte = next
+        
         switch instruction {
         case .notQuestion:
-            let next = true
-            question.notContent = io.getInput("질문의 반대를 입력하세요")
-            return editQuestion(question, next)
+            guard let result = editStatement(title: "문제의 반대질문", oriStr: question.content, notOriStr: question.notContent, isNotStatementEditMode: true) else
+            {
+                return editQuestion(question, nextUpadte)
+            }
+            nextUpadte = true
+            question.notContent = result
+            return editQuestion(question, nextUpadte)
         
         
         case .notLists:
-            let next = true
             for (index,statement) in question.lists.enumerated() {
-                question.lists[index].notContent = io.getInput("목록지의 반대를 입력하세요")
+                let count = question.lists.count
+                guard let result = editStatement(title: "반대목록지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: true) else
+                {
+                    continue
+                }
+                nextUpadte = true
+                question.lists[index].notContent = result
             }
-            return editQuestion(question, next)
+            return editQuestion(question, nextUpadte)
         
         
         case .notSelections:
-            let next = true
             for (index,statement) in question.selections.enumerated() {
-                question.selections[index].notContent = io.getInput("선택지의 반대를 입력하세요")
+                let count = question.selections.count
+                guard let result = editStatement(title: "반대선택지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: true) else
+                {
+                    continue
+                }
+                nextUpadte = true
+                question.selections[index].notContent = result
             }
-            return editQuestion(question, next)
+            nextUpadte = true
+            return editQuestion(question, nextUpadte)
         
         
         case .originalQuestion:
-            let next = true
-            question.content = io.getInput("질문을 입력하세요")
-            return editQuestion(question, next)
+            guard let result = editStatement(title: "문제의 질문", oriStr: question.content, notOriStr: question.notContent, isNotStatementEditMode: true) else
+            {
+                return editQuestion(question, nextUpadte)
+            }
+            nextUpadte = true
+            question.notContent = result
+            return editQuestion(question, nextUpadte)
         
         
         case .originalLists:
-            let next = true
             for (index,statement) in question.lists.enumerated() {
-                question.lists[index].content = io.getInput("목록지를 입력하세요")
+                let count = question.lists.count
+                guard let result = editStatement(title: "목록지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: false) else
+                {
+                    continue
+                }
+                nextUpadte = true
+                question.lists[index].content = result
             }
-            return editQuestion(question, next)
+            return editQuestion(question, nextUpadte)
         
         
         case .originalSelection:
-            let next = true
             for (index,statement) in question.selections.enumerated() {
-                question.selections[index].content = io.getInput("선택지를 입력하세요")
+                let count = question.selections.count
+                guard let result = editStatement(title: "선택지 \(index+1) / \(count)", oriStr: statement.content, notOriStr: statement.notContent, isNotStatementEditMode: false) else
+                {
+                    continue
+                }
+                nextUpadte = true
+                question.selections[index].content = result
             }
-            return editQuestion(question, next)
+            return editQuestion(question, nextUpadte)
             
         
         
         case .next:
-            if next {
+            if nextUpadte {
                 return (question, false)
             } else {
                 return (nil, false)
@@ -848,8 +882,64 @@ extension MainInstructionManager {
             return (nil, false)
         case .unknown:
             io.unkown(value, true)
-            return editQuestion(question, next)
+            return editQuestion(question, nextUpadte)
         }
+    }
+    
+    func editStatement(title : String, oriStr : String, notOriStr : String?, isNotStatementEditMode : Bool) -> String? {
+        
+        io.writeMessage()
+        io.writeMessage(to: .title, "["+title+" 수정을 시작함]")
+        
+        
+        
+        let staOut = isNotStatementEditMode ? OutputType.standard : OutputType.important
+        let notStaOut = isNotStatementEditMode ? OutputType.important : OutputType.standard
+        let ontOriStrWrapped = notOriStr == nil ? "(입력되지 않음)" : notOriStr!
+        
+        io.writeMessage()
+        io.writeMessage(to: staOut, "[원본진술]")
+        io.writeMessage()
+        io.writeMessage(to: staOut, oriStr)
+        io.writeMessage()
+        io.writeMessage(to: notStaOut, "[반대진술]")
+        io.writeMessage()
+        io.writeMessage(to: notStaOut, ontOriStrWrapped)
+        io.writeMessage()
+        
+        let str = isNotStatementEditMode ? "> 수정할 반대진술 입력(다시 입력을 원할 시 \\) $ " : "> 수정할 진술 입력(다시 입력을 원할 시 \\) $"
+        io.writeMessage(to: .notice, str)
+        io.writeMessage()
+        let inputUnwrapped : String? = io.getInput("", true)
+        
+        guard let input = inputUnwrapped else {
+            io.writeMessage(to: .error, "올바르지 않은 입력")
+            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+        }
+        
+        if input == "" {
+            io.writeMessage(to: .error, "아무것도 입력되지 않아 진술수정하지 않음")
+            return nil
+        } else if input.characters.last == "\\" {
+            // http://stackoverflow.com/questions/25113672/how-do-you-get-the-last-character-of-a-string-without-using-array-on-swift
+            // How do you get the last character of a string without using array on swift?
+            io.writeMessage(to: .notice, "다시입력")
+            io.writeMessage(to: .notice, "")
+            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+        }
+        
+        
+        io.writeMessage()
+        io.writeMessage(to: .important, "[수정한 진술]")
+        io.writeMessage()
+        io.writeMessage(to: .important, input)
+        io.writeMessage()
+        
+        let inp = io.getInput("confirm[], [r]ewrite ?")
+        if inp == "r" || inp == "ㄱ" {
+            return editStatement(title: title, oriStr: oriStr, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+        }
+        return input
     }
 }
 
