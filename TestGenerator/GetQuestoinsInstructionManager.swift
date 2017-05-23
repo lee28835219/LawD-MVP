@@ -35,7 +35,7 @@ class GetQuestoinsInstructionManager {
                 if index == 0 {
                     str = tag
                 } else {
-                    str = str + ", " + tag
+                    str = str + " : " + tag
                 }
             }
             io.writeMessage()
