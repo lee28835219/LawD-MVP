@@ -15,6 +15,7 @@ class TestDatabase: DataStructure {
     let createDate	: Date = Date()
     
     var categories : [TestCategory] = []
+    var allTags : Set<String> = []
     var tagAddress : [(tag : String, dataType : DataType, foreignKey : String)] = []
     
     
@@ -53,6 +54,38 @@ class TestDatabase: DataStructure {
         
         
         return result
+    }
+    
+    func refreshTags() {
+        for cat in categories {
+            for sub in cat.testSubjects {
+                for test in sub.tests {
+                    for que in test.questions {
+                        for tagQue in que.tags {
+                            allTags.insert(tagQue)
+                            tagAddress.append((tagQue, .Question, que.key))
+                        }
+                        
+                        for list in que.lists {
+                            for tagList in list.tags {
+                               allTags.insert(tagList)
+                            tagAddress.append((tagList, .List, list.key))
+                            }
+                        }
+                        
+                        for sel in que.selections {
+                            for tagSel in sel.tags {
+                                allTags.insert(tagSel)
+                                tagAddress.append((tagSel, .Selection, sel.key))
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }
+        tagAddress.sort(){$0.0.foreignKey < $0.1.foreignKey}
+        tagAddress.sort(){$0.0.tag < $0.1.tag}
     }
     
 }

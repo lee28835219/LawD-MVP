@@ -370,14 +370,14 @@ class Solver : DataStructure {
         return (selections, isOXChanged, isAnswerChanged, answerSelectionModifed)
     }
     
-    // selections 배열 안에서 정답의 Index(정답번호-1)을 반환
+    // selections 배열 안에서 정답의 Index에서 +1을 반환(정답번호)
     func getAnswerNumber() -> Int {
         //http://stackoverflow.com/questions/24028860/how-to-find-index-of-list-item-in-swift
         //How to find index of list item in Swift?, index의 출력 형식 공부해야함 2017. 4. 25.
         guard let ansNumber = selections.index(where: {$0 === answerSelectionModifed}) else {
             fatalError("error>>getAnswerNumber 실패함")
         }
-        return ansNumber
+        return ansNumber + 1
     }
     
     private func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [List], originalShuffleMap : [(List, List)], isAnswerChanged : Bool){
@@ -575,13 +575,13 @@ class Solver : DataStructure {
             isPublished = true
             
             //질문
-            questionContent = getWrappedContent(self.question.notContent)
-            questionOX = getNotQuestionOX(self.question.questionOX)
+            questionContent = Solver.getWrappedContent(self.question.notContent)
+            questionOX = Solver.getNotQuestionOX(self.question.questionOX)
             
             //목록
             for (_, list) in self.question.lists.enumerated() {
-                listsContent.append(getWrappedContent(list.notContent))
-                listsIscOrrect.append(getNotWrappedBool(list.iscOrrect))
+                listsContent.append(Solver.getWrappedContent(list.notContent))
+                listsIscOrrect.append(Solver.getNotWrappedBool(list.iscOrrect))
                 listsIsAnswer.append(list.isAnswer)
                 listsNumberString.append(list.getListString())
                 origialListsNumberString.append(list.getListString())
@@ -591,14 +591,14 @@ class Solver : DataStructure {
             //선택지
             for (index,sel) in self.question.selections.enumerated() {
                 
-                selectionsContent.append(getWrappedContent(sel.notContent))
-                selsIscOrrect.append(getNotWrappedBool(sel.iscOrrect))
+                selectionsContent.append(Solver.getWrappedContent(sel.notContent))
+                selsIscOrrect.append(Solver.getNotWrappedBool(sel.iscOrrect))
                 selsIsAnswer.append(sel.isAnswer)
                 originalSelectionsNumber.append(sel.number.roundInt)
                 
                 if sel === self.question.answerSelection {
-                    ansSelContent = getWrappedContent(sel.notContent)
-                    ansSelIscOrrect = getNotWrappedBool(sel.iscOrrect)
+                    ansSelContent = Solver.getWrappedContent(sel.notContent)
+                    ansSelIscOrrect = Solver.getNotWrappedBool(sel.iscOrrect)
                     ansSelIsAnswer = sel.isAnswer
                     questionAnswer = (index + 1)
                     originalAnsSelectionNumber = sel.number.roundInt
@@ -734,11 +734,7 @@ class Solver : DataStructure {
         
     }
     
-    
-    
-    
-    
-    func getWrappedContent(_ contentUnwrapped : String?) -> String {
+    class func getWrappedContent(_ contentUnwrapped : String?) -> String {
         if contentUnwrapped == nil {
             return "(없음)"
         } else {
@@ -747,7 +743,7 @@ class Solver : DataStructure {
         
     }
     
-    func getNotWrappedBool(_ unwrappedBool : Bool?) -> Bool? {
+    class func getNotWrappedBool(_ unwrappedBool : Bool?) -> Bool? {
         if unwrappedBool == nil {
             return nil
         } else {
@@ -755,7 +751,7 @@ class Solver : DataStructure {
         }
     }
     
-    func getNotQuestionOX(_ oriQuestionOX : QuestionOX) -> QuestionOX {
+    class func getNotQuestionOX(_ oriQuestionOX : QuestionOX) -> QuestionOX {
         if oriQuestionOX == .O {
             return .X
         } else {

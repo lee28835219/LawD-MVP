@@ -151,17 +151,19 @@ class OutputManager {
         
         // 태그
         if showTags {
-            var str = ""
+            var str : String? = nil
             for (index,tag) in tags.enumerated() {
                 if index == 0 {
                     str = tag
                 } else {
-                    str = str + ", " + tag
+                    str = str! + ", " + tag
                 }
             }
             
-            io.writeMessage(to: .title, "<태그>")
-            io.writeMessage(to: .publish, str)
+            io.writeMessage(to: .title, "[태그]" + (tags.count == 0 ? "없음" : ""))
+            if str != nil {
+                io.writeMessage(to: .publish, str!)
+            }
             io.writeMessage("")
         }
         
@@ -175,7 +177,7 @@ class OutputManager {
                     continue
                 }
                 let str = isRight[index]! ? "(O)" : "(X)"
-                io.writeMessage(to: .title, (" " + date!.yyyymmdd + " " + str))
+                io.writeMessage(to: .title, (" " + date!.HHmmss + " " + str))
                 io.writeMessage(to: .publish, "   " + comment[index].spacing(3, 60))
             }
             io.writeMessage()

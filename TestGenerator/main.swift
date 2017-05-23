@@ -52,6 +52,8 @@ temp_testSubject.setSampleTest()
 
 
 
+
+g_testDatabase.refreshTags()
 //// EXEC
 g_instrcutionManger.didInitializationComplete()
 

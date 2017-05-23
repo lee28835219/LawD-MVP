@@ -99,5 +99,8 @@ struct Templet {
         
         var listStringType : SelectStringType = .koreanCharcter
         var number : Int = 0
+        
+        var iscOrrect : Bool? = nil // 필수인데 여기선 빼놓고 지나갔었음, 추가함 2017. 5. 23.
+        var isAnswer : Bool? = false  // 필수인데 여기선 빼놓고 지나갔었음
     }
 }

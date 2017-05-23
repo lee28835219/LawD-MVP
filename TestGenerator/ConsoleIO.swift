@@ -24,6 +24,7 @@ class ConsoleIO {
     let colorTitle = ANSIColors.green
     let colorPublish = ANSIColors.cyan
     let colorNotice = ANSIColors.magenta
+    let colorAlert = ANSIColors.red
     let colorHelp = ANSIColors.blue
     let colorInput = ANSIColors.white
     
@@ -143,9 +144,15 @@ class ConsoleIO {
             }
         case .notice:
             if ConsoleIO.isDebug {
+                print("- \(message)")
+            } else {
+                print(colorNotice+"- \(message)")
+            }
+        case .alert:
+            if ConsoleIO.isDebug {
                 print(message)
             } else {
-                print(colorNotice+message)
+                print(colorAlert+message)
             }
         case .standard:
             if ConsoleIO.isDebug {
@@ -163,13 +170,13 @@ class ConsoleIO {
             if ConsoleIO.isDebug {
                 print(" \(message)")
             } else {
-                print(colorTitle+"\(message)")
+                print(colorTitle+" \(message)")
             }
         case .publish:
             if ConsoleIO.isDebug {
-                print(" \(message)")
+                print("  \(message)")
             } else {
-                print(colorPublish+" \(message)")
+                print(colorPublish+"  \(message)")
             }
         case .error:
             // 어떤 원리로 폰트가 변화하는지 확인해야 한다. 2017. 5. 18.
@@ -227,6 +234,7 @@ class ConsoleIO {
 enum OutputType {
     case input
     case notice
+    case alert
     case standard
     case important
     case title
