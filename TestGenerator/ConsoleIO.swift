@@ -66,6 +66,30 @@ class ConsoleIO {
             return input.precomposedStringWithCompatibilityMapping
         }
     }
+    
+    func checkNumberRange(prefix: String, min : Int, max: Int?) -> Int {
+        let input = getInput(prefix)
+        let number = Int(input)
+        
+        if number == nil {
+            writeMessage(to: .error, "숫자를 입력하세요")
+            return checkNumberRange(prefix: prefix, min : min, max: max)
+        }
+        
+        if max != nil {
+            if number! < min || number! > max! {
+                    writeMessage(to: .error, "범위에 맞는 숫자를 입력하세요")
+                    return checkNumberRange(prefix: prefix, min : min, max: max)
+            }
+        } else {
+            if number! < min {
+                writeMessage(to: .error, "정확한 숫자를 입력하세요")
+                return checkNumberRange(prefix: prefix, min : min, max: max)
+            }
+        }
+        
+        return number!
+    }
 
     
     func getIntstruction(_ value : String) -> (instruction: InstMain, value:String) {

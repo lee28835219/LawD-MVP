@@ -121,6 +121,11 @@ extension MainInstructionManager {
     
     func showKeys(_ instruction : InstPublish, value: String) {
         switch instruction {
+            
+        case .tag:
+            _ = true
+            io.writeMessage(to: .error, "아직 구현 안됨")
+            
         case .all:
             for testCategory in testDatabase.categories {
                 io.writeMessage(to: .publish, " | " + testCategory.key)
@@ -296,11 +301,12 @@ extension MainInstructionManager {
             io.writeMessage(to: .error, "문제가 없음")
             return
         }
-        let input = io.getInput("exit[], [e]dit ? ")
-        if input == "e" || input == "ㄷ" {
+        let input = io.getInput("exit[], edit[/] ? ")
+        if input == "e" || input == "/" {
             
             let questions = generator.getQustioninSovers()
-
+            let generator = Generator()
+            
             let queCounter = questions.count
             for (index,question) in questions.enumerated() {
 
@@ -317,11 +323,18 @@ extension MainInstructionManager {
                     instQuestion = .solve
                 }
 
-                let (_, gonnaExit) = questionInstManager.questionMenu(question, instQuestion: instQuestion)
+                let (solvers, gonnaExit) = questionInstManager.questionMenu(question, instQuestion: instQuestion)
                 
                 if  gonnaExit  {
                     io.writeMessage(to: .notice, "강제종료")
+                    return
                 }
+                
+                generator.solvers.append(contentsOf: solvers)
+            }
+            
+            for test in generator.getTestinSolvers() {
+                _ = test.save()
             }
         }
     }

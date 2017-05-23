@@ -164,6 +164,7 @@ enum InstKey : String {
 
 enum InstPublish : String {
     
+    case tag = "tag[']"
     case all = "all[1]"
     case category = "category[2]"
     case subject = "subject[3]"
@@ -173,10 +174,13 @@ enum InstPublish : String {
     case unknown
     
     
-    static let allValues = [all.rawValue, category.rawValue, subject.rawValue, test.rawValue, question.rawValue]
+    static let allValues = [tag.rawValue, all.rawValue, category.rawValue, subject.rawValue, test.rawValue, question.rawValue]
     
     init(_ value : String) {
         switch value {
+        
+        case "'":
+            self = .tag
             
         case "1":
             self = .all
@@ -278,15 +282,17 @@ enum InstGoon : String {
 enum InstSolve : String {
     
     case show = "show[=]"
+    case showContent = "show[-]"
     case solve = "solve[\\]"
-    case noteQuestion = "note question[;]"
+    case noteQuestion = "note question[:]"
     case tagQuestion = "tag question[']"
     case modifyQuestoin = "modify question[/]"
     case next = "next[]"
+    case nextWithSave = "next with save[;]"
     case exit = "exit[~]"
     
     
-    static let allValues = [show.rawValue, solve.rawValue, noteQuestion.rawValue, tagQuestion.rawValue, modifyQuestoin.rawValue, next.rawValue, exit.rawValue]
+    static let allValues = [show.rawValue,showContent.rawValue, solve.rawValue, noteQuestion.rawValue, tagQuestion.rawValue, modifyQuestoin.rawValue, next.rawValue,nextWithSave.rawValue, exit.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -296,6 +302,12 @@ enum InstSolve : String {
         case "=":
             self = .show
             
+        case "c":
+            self = .showContent
+        case "-":
+            self = .showContent
+            
+            
         case "s":
             self = .solve
         case "\\":
@@ -303,7 +315,7 @@ enum InstSolve : String {
             
         case "n":
             self = .noteQuestion
-        case ";":
+        case ":":
             self = .noteQuestion
             
         case "t":
@@ -313,13 +325,18 @@ enum InstSolve : String {
             
         case "/":
             self = .modifyQuestoin
-        case "ㅡ":
+        case "m":
             self = .modifyQuestoin
             
         case "":
             self = .next
-        case "":
+        case "n":
             self = .next
+        
+        case ";":
+            self = .nextWithSave
+        case "a":
+            self = .nextWithSave
         
         case "x":
             self = .exit
@@ -334,6 +351,7 @@ enum InstSolve : String {
 enum InstEdit : String {
     
     case show = "show[=]"
+    case tags = "tags[']"
     case notQuestion = "not question[1]"
     case notLists = "not lists[2]"
     case notSelections = "not selections[3]"
@@ -346,13 +364,16 @@ enum InstEdit : String {
     case unknown
     
     
-    static let allValues = [show.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
+    static let allValues = [show.rawValue,tags.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
     
     init(_ value : String) {
         switch value {
             
         case "=":
             self = .show
+            
+        case "'":
+            self = .tags
             
         case "1":
             self = .notQuestion

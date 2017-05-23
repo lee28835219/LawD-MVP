@@ -19,7 +19,7 @@ class DataStructure: NSObject {
     let key : String
     var specification : String = ""
     var modifiedDate : Date = Date()
-    var tags = [String]()
+    var tags : Set<String> = []
     
     init(_ key: String) {
         self.key = key

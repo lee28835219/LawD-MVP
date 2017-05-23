@@ -68,7 +68,12 @@ extension Test {
         
         testSubject__test_attribute["specification"] = self.specification
         testSubject__test_attribute["modifiedDate"] = self.modifiedDate.jsonFormat
-        testSubject__test_attribute["tags"] = self.tags
+        // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+        var tempTags = [String]()
+        for tag in self.tags {
+            tempTags.append(tag)
+        }
+        testSubject__test_attribute["tags"] = tempTags
         testSubject__test_attribute["revision"] = self.revision
         testSubject__test_attribute["createDate"] = self.createDate.jsonFormat
         testSubject__test_attribute["isPublished"] = self.isPublished
@@ -84,7 +89,12 @@ extension Test {
             
             testSubject__test__question_attribute["specification"] = question.specification
             testSubject__test__question_attribute["modifiedDate"] = question.modifiedDate.jsonFormat
-            testSubject__test__question_attribute["tags"] = question.tags
+            // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+            var tempTags = [String]()
+            for tag in question.tags {
+                tempTags.append(tag)
+            }
+            testSubject__test__question_attribute["tags"] = tempTags
             testSubject__test__question_attribute["cases"] = question.cases
             testSubject__test__question_attribute["revision"] = question.revision
             testSubject__test__question_attribute["number"] = question.number
@@ -112,7 +122,12 @@ extension Test {
                 
                 testSubject__test__question__selection_attribute["specification"] = selection.specification
                 testSubject__test__question__selection_attribute["modifiedDate"] = selection.modifiedDate.jsonFormat
-                testSubject__test__question__selection_attribute["tags"] = selection.tags
+                // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+                var tempTags = [String]()
+                for tag in selection.tags {
+                    tempTags.append(tag)
+                }
+                testSubject__test__question__selection_attribute["tags"] = tempTags
                 testSubject__test__question__selection_attribute["cases"] = selection.cases
                 testSubject__test__question__selection_attribute["revision"] = selection.revision
                 testSubject__test__question__selection_attribute["content"] = selection.content
@@ -134,7 +149,12 @@ extension Test {
                 
                 testSubject__test__question__list_attribute["specification"] = list.specification
                 testSubject__test__question__list_attribute["modifiedDate"] = list.modifiedDate.jsonFormat
-                testSubject__test__question__list_attribute["tags"] = list.tags
+                // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+                var tempTags = [String]()
+                for tag in list.tags {
+                    tempTags.append(tag)
+                }
+                testSubject__test__question__list_attribute["tags"] = tempTags
                 testSubject__test__question__list_attribute["cases"] = list.cases
                 testSubject__test__question__list_attribute["revision"] = list.revision
                 testSubject__test__question__list_attribute["content"] = list.content

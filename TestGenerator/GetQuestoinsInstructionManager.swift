@@ -28,6 +28,47 @@ class GetQuestoinsInstructionManager {
         
         
         switch instruction {
+            
+        case .tag:
+            var str = ""
+            for (index, tag) in testDatabase.allTags.enumerated() {
+                if index == 0 {
+                    str = tag
+                } else {
+                    str = str + ", " + tag
+                }
+            }
+            io.writeMessage()
+            io.writeMessage(to: .title, "<태그>")
+            io.writeMessage(to: .publish, "\(str)")
+            
+            let tagsInQuestion = testDatabase.tagAddress.filter{$0.dataType == .Question}
+            let input = io.getInput("찾을 태그 입력")
+            
+            var questionsKey = Set<String>()
+            for (tag, _, key) in tagsInQuestion {
+                if tag == input {
+                   questionsKey.insert(key)
+                }
+            }
+            
+            for testCategory in testDatabase.categories {
+                for testSubject in testCategory.testSubjects {
+                    for test in testSubject.tests {
+                        for que in test.questions {
+                            if questionsKey.contains(que.key) {
+                                questions.append(que)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if questions.count == 0 {
+                io.writeMessage(to: .error, "\(input)에 맞는 태그를 찾을 수 없음")
+            }
+            
+            
         case .all:
             for testCategory in testDatabase.categories {
                 for testSubject in testCategory.testSubjects {
@@ -307,6 +348,8 @@ class GetQuestoinsInstructionManager {
         
         return selections[0]
     }
+    
+    
     
     
     //input이 0~ 정수로 입력받았는지 확인하는 로직 필요함 2017. 4. 26.(-)

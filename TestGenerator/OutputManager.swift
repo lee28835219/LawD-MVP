@@ -54,7 +54,7 @@ class OutputManager {
             //정답
             ansSelContent : String?, ansSelIscOrrect : Bool?,ansSelIsAnswer : Bool?, questionAnswer : Int, originalAnsSelectionNumber : String,
             //태그
-            tags : [String],
+            tags : Set<String>,
             //풀이이력
             solveDate: [Date?], isRight : [Bool?], comment : [String], answerRate : Float, totalNumber : Int, rightNumber : Int
             ) {

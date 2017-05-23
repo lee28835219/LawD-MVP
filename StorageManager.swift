@@ -446,7 +446,11 @@ class StorageManager {
             
             new_test.specification = testSubject__test_attribute_specification
             new_test.modifiedDate = testSubject__test_attribute_modifiedDate.jsonDateFormat
-            new_test.tags = testSubject__test_attribute_tags
+            
+            // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+            for tag in testSubject__test_attribute_tags {
+                new_test.tags.insert(tag)
+            }
             new_test.revision = testSubject__test_attribute_revision
             new_test.createDate = testSubject__test_attribute_createDate.jsonDateFormat
             new_test.isPublished = testSubject__test_attribute_isPublished
@@ -527,7 +531,12 @@ class StorageManager {
                 
                 new_question.specification = testSubject__test__question_attribute_specification
                 new_question.modifiedDate = testSubject__test__question_attribute_modifiedDate.jsonDateFormat
-                new_question.tags = testSubject__test__question_attribute_tags
+                
+                // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+                for tag in testSubject__test__question_attribute_tags {
+                    new_question.tags.insert(tag)
+                }
+                
                 new_question.cases = testSubject__test__question_attribute_cases
                 new_question.revision = testSubject__test__question_attribute_revision
                 new_question.number = testSubject__test__question_attribute_number
@@ -580,7 +589,11 @@ class StorageManager {
                     
                     new_selection.specification = testSubject__test__question__selection_attribute_specification
                     new_selection.modifiedDate = testSubject__test__question__selection_attribute_modifiedDate.jsonDateFormat
-                    new_selection.tags = testSubject__test__question__selection_attribute_tags
+                    
+                    // 태그를 어레이에서 세트로 변경하여 수정함 2017. 5. 23.
+                    for tag in testSubject__test__question__selection_attribute_tags {
+                        new_selection.tags.insert(tag)
+                    }
                     new_selection.cases = testSubject__test__question__selection_attribute_cases
                     new_selection.revision = testSubject__test__question__selection_attribute_revision
                     new_selection.content = testSubject__test__question__selection_attribute_content
@@ -620,7 +633,9 @@ class StorageManager {
                     
                     new_list.specification = testSubject__test__question__list_attribute_specification
                     new_list.modifiedDate = testSubject__test__question__list_attribute_modifiedDate.jsonDateFormat
-                    new_list.tags = testSubject__test__question__list_attribute_tags
+                    for tag in testSubject__test__question__list_attribute_tags {
+                        new_list.tags.insert(tag)
+                    }
                     new_list.cases = testSubject__test__question__list_attribute_cases
                     new_list.revision = testSubject__test__question__list_attribute_revision
                     new_list.content = testSubject__test__question__list_attribute_content

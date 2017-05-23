@@ -317,9 +317,9 @@
 				39CFAE1A1ECDDF00008C775D /* ConsoleIO.swift */,
 				39E1DE1A1E82C250006F3DB9 /* MainInstructionManager.swift */,
 				3964D7781ED40AE80089E9BB /* QuestionInstructionManager.swift */,
-				39E7E2B11EBB88E800087D73 /* OutputManager.swift */,
 				39D7AF1B1ED4502500973EFF /* GetQuestoinsInstructionManager.swift */,
 				39D7AF1D1ED453F100973EFF /* EditQuestionInstructionManager.swift */,
+				39E7E2B11EBB88E800087D73 /* OutputManager.swift */,
 			);
 			name = IO;
 			sourceTree = "<group>";

@@ -32,6 +32,47 @@ class EditQuestionInstructionManager {
             QuestionInstructionManager(io).show(question)
             return editQuestion(question, nextUpadte)
             
+        case .tags:
+            
+            io.writeMessage(to: .notice, "수정하거나 삭제할 태그 선택")
+            var tagsArray = [String]()
+            io.writeMessage(to: .notice, "[0] : (신규)")
+            for (index, tag) in question.tags.enumerated() {
+                io.writeMessage(to: .notice, "[\(index+1)] : \(tag)")
+                tagsArray.append(tag)
+            }
+            let jndex = io.checkNumberRange(prefix: "숫자입력", min : 0, max: question.tags.count)
+            var modifiedTag = ""
+            if jndex == 0 {
+                modifiedTag = io.getInput("(신규 태그, cancel[\\] ", false)
+            } else {
+                modifiedTag = io.getInput("(\(tagsArray[jndex-1])) 태그 수정, 무입력 시 삭제, cancel[\\] ", false)
+            }
+            if modifiedTag == "\\" {
+            } else if question.tags.contains(modifiedTag) {
+                io.writeMessage(to: .alert, "\(modifiedTag)는 이미 존재함")
+            } else if jndex == 0 {
+                if modifiedTag == "" {
+                    io.writeMessage(to: .notice, "아무것도 입력안함")
+                } else {
+                    question.tags.insert(modifiedTag)
+                    io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
+                }
+            } else {
+                if modifiedTag == "" {
+                    question.tags.remove(tagsArray[jndex-1])
+                    io.writeMessage(to: .notice, "\(modifiedTag) 삭제완료")
+                } else {
+                    question.tags.insert(modifiedTag)
+                    question.tags.remove(tagsArray[jndex-1])
+                    io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
+                }
+            }
+            Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+            _ = io.getInput("확인[]")
+            
+            return editQuestion(question, nextUpadte)
+            
         case .notQuestion:
             guard let result = editStatementString(
                 title: "문제의 반대질문",

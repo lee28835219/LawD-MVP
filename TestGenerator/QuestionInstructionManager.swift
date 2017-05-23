@@ -28,8 +28,13 @@ class QuestionInstructionManager {
         switch instruction {
             
         case .show:
-            io.writeMessage(to: .notice, "문제의 모든 내용 출력")
+            io.writeMessage(to: .notice, "문제의 모든 내용 출력(풀이이력포함)")
             show(question)
+            
+        case .showContent:
+            io.writeMessage(to: .notice, "문제의 모든 내용 출력")
+            showNotHistory(question)
+            
             
         case .solve:
             var instQuestionForSolve : InstQuestion
@@ -60,9 +65,15 @@ class QuestionInstructionManager {
             
         case .tagQuestion:
             if let newTag = writeTag(title : "\(question.key)") {
-                question.tags.append(newTag)
-                question.test.testSubject.testCategory.testDatabase.refreshTags()
-                Solver(question, gonnaShuffle: false).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+                if question.tags.contains(newTag) {
+                    io.writeMessage(to: .alert, "\(newTag)는 이미 존재함")
+                } else {
+                    question.tags.insert(newTag)
+                    io.writeMessage(to: .notice, "\(newTag) 추가완료")
+                    question.test.testSubject.testCategory.testDatabase.refreshTags()
+                    Solver(question, gonnaShuffle: false).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+                    _ = question.test.save()
+                }
             } else {
                 io.writeMessage(to: .error, "태그 입력되지 않음")
             }
@@ -79,9 +90,11 @@ class QuestionInstructionManager {
                 io.writeMessage(to: .notice, "\(question.key) 문제 수정하지 않음")
             }
             
-            
-            
         case .next:
+            return (solvers, false)
+            
+        case .nextWithSave:
+            _ = question.test.save()
             return (solvers, false)
             
         case .exit:
@@ -364,7 +377,7 @@ class QuestionInstructionManager {
         
         Solver(question).publish(om: OutputManager(),
                                  type: .originalNot,
-                                 showTitle: true, showQuestion: true, showAnswer: true, showTags: false, showHistory: true,
+                                 showTitle: true, showQuestion: true, showAnswer: true, showTags: true, showHistory: true,
                                  showAttribute: true, showOrigSel: true)
     }
     
@@ -379,7 +392,7 @@ class QuestionInstructionManager {
         
         Solver(question).publish(om: OutputManager(),
                                  type: .originalNot,
-                                 showTitle: true, showQuestion: true, showAnswer: true, showTags: false, showHistory: false,
+                                 showTitle: true, showQuestion: true, showAnswer: true, showTags: true, showHistory: false,
                                  showAttribute: true, showOrigSel: true)
     }
     
