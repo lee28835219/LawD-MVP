@@ -92,7 +92,7 @@ class ConsoleIO {
     }
 
     
-    func getIntstruction(_ value : String) -> (instruction: InstMain, value:String) {
+    func getInstMain(_ value : String) -> (instruction: InstMain, value:String) {
         return (InstMain(value),value)
     }
     
@@ -100,8 +100,8 @@ class ConsoleIO {
         return (InstKey(value),value)
     }
     
-    func getPublish(_ value : String) -> (instruction: InstPublish, value:String) {
-        return (InstPublish(value),value)
+    func getQuestionsGet(_ value : String) -> (instruction: InstQuestionsGet, value:String) {
+        return (InstQuestionsGet(value),value)
     }
     
     func getSave(_ value : String) -> (instruction: InstSave, value:String) {
@@ -112,8 +112,12 @@ class ConsoleIO {
         return (InstGoon(value),value)
     }
     
-    func getSolve(_ value : String) -> (instruction: InstSolve, value:String) {
-        return (InstSolve(value),value)
+    func getInstQuestion(_ value : String) -> (instruction: InstQuestion, value:String) {
+        return (InstQuestion(value),value)
+    }
+    
+    func getInstSolveType(_ value : String) -> (instruction: InstSolveType, value:String) {
+        return (InstSolveType(value),value)
     }
     
     func getEdit(_ value : String) -> (instruction: InstEdit, value:String) {
@@ -132,14 +136,16 @@ class ConsoleIO {
             values = InstMain.allValues
         case .InstKey:
             values = InstKey.allValues
-        case .InstPublish:
-            values = InstPublish.allValues
+        case .InstQuestionsGet:
+            values = InstQuestionsGet.allValues
         case .InstSave:
             values = InstSave.allValues
         case .InstGoon:
             values = InstGoon.allValues
-        case .InstSolve:
-            values = InstSolve.allValues
+        case .InstQuestion:
+            values = InstQuestion.allValues
+        case .InstSolveType:
+            values = InstSolveType.allValues
         case .InstEdit:
             values = InstEdit.allValues
         }

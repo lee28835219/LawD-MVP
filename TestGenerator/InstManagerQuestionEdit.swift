@@ -1,5 +1,5 @@
 //
-//  EditQuestionInstructionManager.swift
+//  InstManagerQuestionEdit.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 5. 23..
@@ -8,17 +8,25 @@
 
 import Foundation
 
-class EditQuestionInstructionManager {
+class InstManagerQuestionEdit {
     
     let io : ConsoleIO
+    let question : Question
     
-    init(io : ConsoleIO) {
+    
+    init(_ question : Question, io : ConsoleIO) {
         self.io = io
+        self.question = question
     }
     
-    func editQuestion(_ question : Question, _ next : Bool) -> (Question?, next : Bool) {
+    func editQuestion() -> (Question?, next : Bool) {
+        return _editQuestion(false)
+    }
+    
+    private func _editQuestion(_ next : Bool = false) -> (Question?, next : Bool) {
         
-        QuestionInstructionManager(io).showNotHistory(question)
+        InstManagerQuestion(question, io : io).showNoHistory()
+        InstManagerQuestion(question, io : io).showNotNoHistory()
         
         io.writeMessage()
         let (instruction, value) = io.getEdit(io.getInput("수정할 대상선택 : "+io.getHelp(.InstEdit)))
@@ -29,49 +37,8 @@ class EditQuestionInstructionManager {
         
         case .show:
             io.writeMessage(to: .notice, "문제의 모든 내용 출력")
-            QuestionInstructionManager(io).show(question)
-            return editQuestion(question, nextUpadte)
-            
-        case .tags:
-            
-            io.writeMessage(to: .notice, "수정하거나 삭제할 태그 선택")
-            var tagsArray = [String]()
-            io.writeMessage(to: .notice, "[0] : (신규)")
-            for (index, tag) in question.tags.enumerated() {
-                io.writeMessage(to: .notice, "[\(index+1)] : \(tag)")
-                tagsArray.append(tag)
-            }
-            let jndex = io.checkNumberRange(prefix: "숫자입력", min : 0, max: question.tags.count)
-            var modifiedTag = ""
-            if jndex == 0 {
-                modifiedTag = io.getInput("(신규 태그, cancel[\\] ", false)
-            } else {
-                modifiedTag = io.getInput("(\(tagsArray[jndex-1])) 태그 수정, 무입력 시 삭제, cancel[\\] ", false)
-            }
-            if modifiedTag == "\\" {
-            } else if question.tags.contains(modifiedTag) {
-                io.writeMessage(to: .alert, "\(modifiedTag)는 이미 존재함")
-            } else if jndex == 0 {
-                if modifiedTag == "" {
-                    io.writeMessage(to: .notice, "아무것도 입력안함")
-                } else {
-                    question.tags.insert(modifiedTag)
-                    io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
-                }
-            } else {
-                if modifiedTag == "" {
-                    question.tags.remove(tagsArray[jndex-1])
-                    io.writeMessage(to: .notice, "\(modifiedTag) 삭제완료")
-                } else {
-                    question.tags.insert(modifiedTag)
-                    question.tags.remove(tagsArray[jndex-1])
-                    io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
-                }
-            }
-            Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
-            _ = io.getInput("확인[]")
-            
-            return editQuestion(question, nextUpadte)
+            InstManagerQuestion(question, io : io).show()
+            return _editQuestion(nextUpadte)
             
         case .notQuestion:
             guard let result = editStatementString(
@@ -82,11 +49,11 @@ class EditQuestionInstructionManager {
                 notOriStr: question.notContent,
                 isNotStatementEditMode: true)
                 else {
-                    return editQuestion(question, nextUpadte)
+                    return _editQuestion(nextUpadte)
             }
             nextUpadte = true
             question.notContent = result
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             
         case .notLists:
@@ -109,7 +76,7 @@ class EditQuestionInstructionManager {
             if question.lists.count == 0 {
                 io.writeMessage(to: .error, "문제에 목록지가 없음")
             }
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             
         case .notSelections:
@@ -128,7 +95,7 @@ class EditQuestionInstructionManager {
                 nextUpadte = true
                 question.selections[index].notContent = result
             }
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             
         case .originalQuestion:
@@ -140,11 +107,11 @@ class EditQuestionInstructionManager {
                 notOriStr: question.notContent,
                 isNotStatementEditMode: false)
                 else {
-                    return editQuestion(question, nextUpadte)
+                    return _editQuestion(nextUpadte)
             }
             nextUpadte = true
             question.notContent = result
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             
         case .originalLists:
@@ -166,7 +133,7 @@ class EditQuestionInstructionManager {
             if question.lists.count == 0 {
                 io.writeMessage(to: .error, "문제에 목록지가 없음")
             }
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             
         case .originalSelection:
@@ -185,7 +152,7 @@ class EditQuestionInstructionManager {
                 nextUpadte = true
                 question.selections[index].content = result
             }
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
             
             //        case .
             //         solve, publishall 기능 추가 필요
@@ -203,7 +170,7 @@ class EditQuestionInstructionManager {
             
         case .unknown:
             io.unkown(value, true)
-            return editQuestion(question, nextUpadte)
+            return _editQuestion(nextUpadte)
         }
     }
     
@@ -259,12 +226,96 @@ class EditQuestionInstructionManager {
         
         let str = isNotStatementEditMode ? "> 수정할 반대진술 입력 (다시입력 : \\) $ " : "> 수정할 진술 입력 (다시입력 : \\) $"
         io.writeMessage(to: .notice, str)
+        
+        guard let input = _getNotStatement() else {
+            return nil
+        }
         io.writeMessage()
+        
+        
+        var inputModify = input
+        
+        var checkerString : String? = nil
+        while inputModify != checkerString  {
+            checkerString = inputModify
+            inputModify = inputModify.replacingOccurrences(of : "<갑>", with : "甲")
+            inputModify = inputModify.replacingOccurrences(of : "<을>", with : "乙")
+            inputModify = inputModify.replacingOccurrences(of : "<병>", with : "丙")
+            inputModify = inputModify.replacingOccurrences(of : "<정>", with : "丁")
+            inputModify = inputModify.replacingOccurrences(of : "<무>", with : "戊")
+            inputModify = inputModify.replacingOccurrences(of : "<기>", with : "己")
+            inputModify = inputModify.replacingOccurrences(of : "<경>", with : "庚")
+            inputModify = inputModify.replacingOccurrences(of : "<신>", with : "辛")
+            inputModify = inputModify.replacingOccurrences(of : "<임>", with : "壬")
+            inputModify = inputModify.replacingOccurrences(of : "<계>", with : "癸")
+            
+        }
+        
+        
+        io.writeMessage()
+        io.writeMessage(to: .important, "[수정한 진술]")
+        io.writeMessage()
+        io.writeMessage(to: .important, inputModify+"   \(modifyOX)")
+        io.writeMessage()
+        
+        let inp = io.getInput("confirm[], rewrite[~\\], cancle[0] ?")
+        if inp == "\\"  || inp.characters.last == "\\" {
+            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+        }
+        if inp == "0"  {
+            io.writeMessage(to: .notice, "진술수정 취소")
+            return nil
+        }
+        io.writeMessage(to: .notice, "진술수정 완료")
+        return inputModify
+    }
+    
+    func editTags() {
+        io.writeMessage(to: .notice, "수정하거나 삭제할 태그 선택")
+        var tagsArray = [String]()
+        io.writeMessage(to: .notice, "[0] : (신규)")
+        for (index, tag) in question.tags.enumerated() {
+            io.writeMessage(to: .notice, "[\(index+1)] : \(tag)")
+            tagsArray.append(tag)
+        }
+        let jndex = io.checkNumberRange(prefix: "숫자입력", min : 0, max: question.tags.count)
+        var modifiedTag = ""
+        if jndex == 0 {
+            modifiedTag = io.getInput("(신규 태그), rewrite[\\] ", false)
+        } else {
+            modifiedTag = io.getInput("(\(tagsArray[jndex-1])) 태그 수정, 무입력 시 삭제, rewrite[\\] ", false)
+        }
+        if modifiedTag == "\\" {
+        } else if question.tags.contains(modifiedTag) {
+            io.writeMessage(to: .alert, "\(modifiedTag)는 이미 존재함")
+        } else if jndex == 0 {
+            if modifiedTag == "" {
+                io.writeMessage(to: .notice, "아무것도 입력안함")
+            } else {
+                question.tags.insert(modifiedTag)
+                io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
+            }
+        } else {
+            if modifiedTag == "" {
+                question.tags.remove(tagsArray[jndex-1])
+                io.writeMessage(to: .notice, "\(modifiedTag) 삭제완료")
+            } else {
+                question.tags.insert(modifiedTag)
+                question.tags.remove(tagsArray[jndex-1])
+                io.writeMessage(to: .notice, "\(modifiedTag) 태그 입력 완료")
+            }
+        }
+        Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+        _ = io.getInput("확인[]")
+    }
+    
+    // 아무것도 입력안해서 수정할 의사가 없을 때 nil을 반환
+    func _getNotStatement() -> String? {
         let inputUnwrapped : String? = io.getInput("", true)
         
         guard let input = inputUnwrapped else {
             io.writeMessage(to: .error, "올바르지 않은 입력")
-            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            return _getNotStatement()
         }
         
         if input == "" {
@@ -274,33 +325,16 @@ class EditQuestionInstructionManager {
             // http://stackoverflow.com/questions/25113672/how-do-you-get-the-last-character-of-a-string-without-using-array-on-swift
             // How do you get the last character of a string without using array on swift?
             io.writeMessage(to: .notice, "다시입력")
-            io.writeMessage(to: .notice, "")
-            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
+            io.writeMessage()
+            return _getNotStatement()
         }
-        
-        
-        io.writeMessage()
-        io.writeMessage(to: .important, "[수정한 진술]")
-        io.writeMessage()
-        io.writeMessage(to: .important, input+"   \(modifyOX)")
-        io.writeMessage()
-        
-        let inp = io.getInput("confirm[], rewrite[\\], cancle[0] ?")
-        if inp == "\\"  {
-            return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
-        }
-        if inp == "0"  {
-            io.writeMessage(to: .notice, "진술수정 취소")
-            return nil
-        }
-        io.writeMessage(to: .notice, "진술수정 완료")
         return input
     }
 
 }
 
 
-extension EditQuestionInstructionManager {
+extension InstManagerQuestionEdit {
     // 왜 템플렛을 써서 복잡하게 정의 한건가 2017. 5. 23.
     
     

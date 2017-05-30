@@ -1,5 +1,5 @@
 //
-//  GetQuestoinsInstructionManager.swift
+//  InstManagerQuestionsGet.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 5. 23..
@@ -8,66 +8,28 @@
 
 import Foundation
 
-class GetQuestoinsInstructionManager {
+class InstManagerQuestionsGet {
     
     let testDatabase : TestDatabase
     
+    
+    
     let io : ConsoleIO
     
-    init(testDatabase : TestDatabase, io : ConsoleIO) {
+    init(_ testDatabase : TestDatabase, io : ConsoleIO) {
         self.testDatabase = testDatabase
         self.io = io
     }
     
     
-    func getQuestionsInKey(title : String) -> [Question] {
+    func getQuestions(title : String) -> [Question] {
         
         var questions = [Question]()
         
-        let (instruction,value) = io.getPublish(io.getInput(title + io.getHelp(.InstPublish)))
+        let (instruction,value) = io.getQuestionsGet(io.getInput(title + io.getHelp(.InstQuestionsGet)))
         
         
         switch instruction {
-            
-        case .tag:
-            var str = ""
-            for (index, tag) in testDatabase.allTags.enumerated() {
-                if index == 0 {
-                    str = tag
-                } else {
-                    str = str + " : " + tag
-                }
-            }
-            io.writeMessage()
-            io.writeMessage(to: .title, "<태그>")
-            io.writeMessage(to: .publish, "\(str)")
-            
-            let tagsInQuestion = testDatabase.tagAddress.filter{$0.dataType == .Question}
-            let input = io.getInput("찾을 태그 입력")
-            
-            var questionsKey = Set<String>()
-            for (tag, _, key) in tagsInQuestion {
-                if tag == input {
-                   questionsKey.insert(key)
-                }
-            }
-            
-            for testCategory in testDatabase.categories {
-                for testSubject in testCategory.testSubjects {
-                    for test in testSubject.tests {
-                        for que in test.questions {
-                            if questionsKey.contains(que.key) {
-                                questions.append(que)
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if questions.count == 0 {
-                io.writeMessage(to: .error, "\(input)에 맞는 태그를 찾을 수 없음")
-            }
-            
             
         case .all:
             for testCategory in testDatabase.categories {
@@ -79,6 +41,7 @@ class GetQuestoinsInstructionManager {
                     }
                 }
             }
+            
         case .category:
             guard let testCategory = selectTestCategory(testDatabase) else {
                 io.writeMessage(to: .error, "시험명을 찾을 수 없음")
@@ -142,6 +105,88 @@ class GetQuestoinsInstructionManager {
                 return questions
             }
             questions.append(que)
+            
+        case .allwithTag:
+            for testCategory in testDatabase.categories {
+                for testSubject in testCategory.testSubjects {
+                    for test in testSubject.tests {
+                        for que in test.questions {
+                            questions.append(que)
+                        }
+                    }
+                }
+            }
+            questions = selectQuestionsWithTag(questions)
+            
+        case .categorywithTag:
+            guard let testCategory = selectTestCategory(testDatabase) else {
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return questions
+            }
+            for testSubject in testCategory.testSubjects {
+                for test in testSubject.tests {
+                    for que in test.questions {
+                        questions.append(que)
+                    }
+                }
+            }
+            questions = selectQuestionsWithTag(questions)
+            
+        case .subjectwithTag:
+            guard let testCategory = selectTestCategory(testDatabase) else {
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return questions
+            }
+            guard let testSubject = selectTestSubject(testCategory) else {
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return questions
+            }
+            for test in testSubject.tests {
+                for que in test.questions {
+                    questions.append(que)
+                    
+                }
+            }
+            questions = selectQuestionsWithTag(questions)
+            
+        case .testwithTag:
+            guard let testCategory = selectTestCategory(testDatabase) else {
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return questions
+            }
+            guard let testSubject = selectTestSubject(testCategory) else {
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return questions
+            }
+            guard let test = selectTest(testSubject) else {
+                io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
+                return questions
+            }
+            for que in test.questions {
+                questions.append(que)
+                
+            }
+            questions = selectQuestionsWithTag(questions)
+            
+        case .questionwithTag:
+            guard let testCategory = selectTestCategory(testDatabase) else {
+                io.writeMessage(to: .error, "시험명을 찾을 수 없음")
+                return questions
+            }
+            guard let testSubject = selectTestSubject(testCategory) else {
+                io.writeMessage(to: .error, "시험과목을 찾을 수 없음")
+                return questions
+            }
+            guard let test = selectTest(testSubject) else {
+                io.writeMessage(to: .error, "시험회차를 찾을 수 없음")
+                return questions
+            }
+            guard let que = selectQuestion(test) else {
+                io.writeMessage(to: .error, "문제를 찾을 수 없음")
+                return questions
+            }
+            questions.append(que)
+            questions = selectQuestionsWithTag(questions)
             
         case .unknown:
             io.unkown(value)
@@ -377,5 +422,147 @@ class GetQuestoinsInstructionManager {
         }
         
         return number!
+    }
+    
+    
+    
+    
+    
+    func selectQuestionsWithTag(_ questions : [Question]) -> [Question] {
+        var questionsResult = [Question]()
+        
+        var tagsInQuestions = Set<String>()
+        var numberOfTags = [String:Int]()
+        
+        // "선택한 태그 이외에" 다른 태그가 없는 문제에 대한 갯수를 출력해주는 기능 추가하면 좋을 듯? 2017. 5. 28. (+)
+//        let nullTag = "_없음"
+//        tagsInQuestions.insert(nullTag)
+//        numberOfTags[nullTag] = 0
+        
+        for que in questions {
+            for tag in que.tags {
+                
+                tagsInQuestions.insert(tag)
+                
+                if numberOfTags[tag] != nil {
+                    numberOfTags[tag] = numberOfTags[tag]! + 1
+                } else {
+                    numberOfTags[tag] = 1
+                }
+                
+            }
+        }
+        
+        
+        // https://stackoverflow.com/questions/30054854/sort-a-dictionary-in-swift
+        // Sort a Dictionary in Swift
+        // dictionary는 sort하기 매우 불편하네, map 함수는 공부좀 해야될듯 2017. 5. 28.
+        
+        let sortedNumberOfTags = numberOfTags.sorted(by: {$0.value > $1.value})
+        
+        let numberOfTagsKeys = sortedNumberOfTags.map{return $0.key}
+        let numberOfTagsValues = sortedNumberOfTags.map{return $0.value}
+        
+        
+        var str = ""
+        
+        // 여기를 필요한 대로 주어진 범위로 변경
+        for (index, tag) in numberOfTagsKeys.enumerated() {
+            if index == 0 {
+                str = "[전체](\(questions.count)), \(tag)(\(numberOfTagsValues[index]))"
+            } else {
+                str = str + ", " + "\(tag)(\(numberOfTagsValues[index]))"
+            }
+        }
+        
+        
+        io.writeMessage()
+        io.writeMessage(to: .title, "<태그>")
+        io.writeMessage(to: .publish, "\(str)")
+        
+        let input = io.getInput("찾을 태그 입력, 앞에 \"~\" 입력 시 해당 태그 제외함, continue[]")
+        
+        if input == "" {
+            return questions
+        }
+        
+        if input.characters.first == "~" {
+            
+            
+            // 좀더 정치한 논리로 ~ 태그 제외 기능 추가 필요 2017. 5. 28. (+)
+            let notInput = input.substring(with: input.range(of: "~")!.upperBound..<input.endIndex)
+            var questionsRemoved = [Question]()
+            for (_, question) in questions.enumerated() {
+                for tag in question.tags {
+                    if tag == notInput {
+                        questionsRemoved.append(question)
+                    }
+                }
+            }
+            for queResult in questions {
+                var sameQueChecker = false
+                for queRemoved in questionsRemoved {
+                    if queResult === queRemoved {
+                        sameQueChecker = true
+                    }
+                }
+                if !sameQueChecker {
+                    questionsResult.append(queResult)
+                }
+            }
+            
+            io.writeMessage(to: .notice, "\(notInput) 태그 포함하는 \(questions.count - questionsResult.count)개 제외")
+            return selectQuestionsWithTag(questionsResult)
+            
+        } else {
+            
+            for que in questions {
+                for tag in que.tags {
+                    if input == tag {
+                        questionsResult.append(que)
+                    }
+                }
+            }
+            if questionsResult.count == 0 {
+                io.writeMessage(to: .error, "\(input)에 맞는 태그를 찾을 수 없음")
+                return selectQuestionsWithTag(questions)
+            } else {
+                io.writeMessage(to: .notice, "\(input) 태그 포함하는 \(questionsResult.count)개만 선별")
+                return selectQuestionsWithTag(questionsResult)
+            }
+            
+        }
+        
+        
+        
+        
+        
+        
+        
+//        let tagsInQuestion = testDatabase.tagAddress.filter{$0.dataType == .Question}
+//        let input = io.getInput("찾을 태그 입력")
+//        
+//        var questionsKey = Set<String>()
+//        for (tag, _, key) in tagsInQuestion {
+//            if tag == input {
+//                questionsKey.insert(key)
+//            }
+//        }
+//        
+//        
+//        // 여기를 주어진 범위로 변경 (+)
+//        for testCategory in testDatabase.categories {
+//            for testSubject in testCategory.testSubjects {
+//                for test in testSubject.tests {
+//                    for que in test.questions {
+//                        if questionsKey.contains(que.key) {
+//                            questionsResult.append(que)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return questionsResult
+        
     }
 }

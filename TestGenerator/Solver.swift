@@ -609,7 +609,7 @@ class Solver : DataStructure {
         case .solver:
             
             // publish
-            isPublished = true
+            isPublished = false // 바꾼문제니깐
             
             //질문
             let (OX, content) = self.getModifedQuestion()

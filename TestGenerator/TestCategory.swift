@@ -42,7 +42,8 @@ class TestCategory : DataStructure {
         
         for category in self.testDatabase.categories {
             if category.key == key {
-                fatalError("\(key)과 똑같은 시험이 이미 testDB \(testDatabase.key)에 있음")
+                 fatalError("\(key)과 똑같은 시험이 이미 testDB \(testDatabase.key)에 있음")
+                // 똑같은 변호사시험이라는 카테고리가 있어도 추가로 넣어도 상관없음, 7회라든지...
             }
         }
         

@@ -25,7 +25,7 @@ print(g_storageManager.log)
 //let g_new_storageManager = StorageManager(g_testDatabase)
 //print(g_new_storageManager.log)
 let g_outputManager = OutputManager()
-let g_instrcutionManger = MainInstructionManager(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager)
+let g_instrcutionManger = InstManagerMain(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager)
 
 
 
@@ -49,7 +49,8 @@ temp_testSubject.setSampleTest()
 //print(firstBarExam!.log)
 //let HouseExam = DC공인중개사(g_testDatabase)
 //print(HouseExam!.log)
-
+//let barExamCivle6Mod = DC변호사시험_6회_민법정답수정(g_testDatabase)
+//print(barExamCivle6Mod!.log)
 
 
 

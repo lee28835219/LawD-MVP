@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3903139F1EB9BC8B006FE79A /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3903139E1EB9BC8B006FE79A /* Test.swift */; };
+		39071A621EDA4C620038E5CB /* DC변호사시험-6회 민법 수정.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39071A611EDA4C620038E5CB /* DC변호사시험-6회 민법 수정.swift */; };
 		392561BC1EC0BBF500A9E3FF /* DCDD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561BB1EC0BBF500A9E3FF /* DCDD.swift */; };
 		392561C01EC0E79E00A9E3FF /* TestDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561BF1EC0E79E00A9E3FF /* TestDatabase.swift */; };
 		392561C21EC0FCA400A9E3FF /* TestSubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 392561C11EC0FCA400A9E3FF /* TestSubject.swift */; };
@@ -19,21 +20,21 @@
 		396291AE1EBC41CC00FADC4C /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396291AD1EBC41CC00FADC4C /* List.swift */; };
 		396291B31EBC60C300FADC4C /* Selection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396291B21EBC60C300FADC4C /* Selection.swift */; };
 		39633DDF1E9B134B00F9FD4D /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39633DDE1E9B134B00F9FD4D /* Solver.swift */; };
-		3964D7791ED40AE80089E9BB /* QuestionInstructionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964D7781ED40AE80089E9BB /* QuestionInstructionManager.swift */; };
+		3964D7791ED40AE80089E9BB /* InstManagerQuestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3964D7781ED40AE80089E9BB /* InstManagerQuestion.swift */; };
 		397214D51EBD818800FDCD62 /* 4. Book.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397214D41EBD818800FDCD62 /* 4. Book.swift */; };
 		397214D71EBD82E800FDCD62 /* DataStructure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397214D61EBD82E800FDCD62 /* DataStructure.swift */; };
 		397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B21EB6F08D0040CE01 /* DataConverter.swift */; };
 		397631B51EB6F4CE0040CE01 /* DC법조윤리.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397631B41EB6F4CE0040CE01 /* DC법조윤리.swift */; };
 		39CFAE1B1ECDDF00008C775D /* ConsoleIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CFAE1A1ECDDF00008C775D /* ConsoleIO.swift */; };
-		39D7AF1C1ED4502500973EFF /* GetQuestoinsInstructionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D7AF1B1ED4502500973EFF /* GetQuestoinsInstructionManager.swift */; };
-		39D7AF1E1ED453F100973EFF /* EditQuestionInstructionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D7AF1D1ED453F100973EFF /* EditQuestionInstructionManager.swift */; };
+		39D7AF1C1ED4502500973EFF /* InstManagerQuestionsGet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D7AF1B1ED4502500973EFF /* InstManagerQuestionsGet.swift */; };
+		39D7AF1E1ED453F100973EFF /* InstManagerQuestionEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39D7AF1D1ED453F100973EFF /* InstManagerQuestionEdit.swift */; };
 		39DF734B1EAF2EFE005AD7D7 /* 3. Keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734A1EAF2EFE005AD7D7 /* 3. Keyword.swift */; };
 		39DF734D1EAF4036005AD7D7 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39DF734C1EAF4036005AD7D7 /* Note.swift */; };
 		39E1DE131E82BE54006F3DB9 /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE121E82BE54006F3DB9 /* Statement.swift */; };
 		39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE141E82BF31006F3DB9 /* Codes.swift */; };
 		39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE161E82BFEE006F3DB9 /* Cases.swift */; };
 		39E1DE191E82C091006F3DB9 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE181E82C091006F3DB9 /* Question.swift */; };
-		39E1DE1B1E82C250006F3DB9 /* MainInstructionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1A1E82C250006F3DB9 /* MainInstructionManager.swift */; };
+		39E1DE1B1E82C250006F3DB9 /* InstManagerMain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1A1E82C250006F3DB9 /* InstManagerMain.swift */; };
 		39E1DE1D1E82C842006F3DB9 /* TestCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E1DE1C1E82C842006F3DB9 /* TestCategory.swift */; };
 		39E775951ECA221C00F17DA7 /* DataConverterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E775941ECA221C00F17DA7 /* DataConverterData.swift */; };
 		39E775981ECB23AF00F17DA7 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E775971ECB23AF00F17DA7 /* StorageManager.swift */; };
@@ -65,6 +66,8 @@
 /* Begin PBXFileReference section */
 		3903139D1EB98F7F006FE79A /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		3903139E1EB9BC8B006FE79A /* Test.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
+		39071A611EDA4C620038E5CB /* DC변호사시험-6회 민법 수정.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DC변호사시험-6회 민법 수정.swift"; sourceTree = "<group>"; };
+		39071A631EDA4D0B0038E5CB /* 변호사시험=6회=민법-정답.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "변호사시험=6회=민법-정답.json"; sourceTree = "<group>"; };
 		392561BB1EC0BBF500A9E3FF /* DCDD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DCDD.swift; sourceTree = "<group>"; };
 		392561BF1EC0E79E00A9E3FF /* TestDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestDatabase.swift; sourceTree = "<group>"; };
 		392561C11EC0FCA400A9E3FF /* TestSubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestSubject.swift; sourceTree = "<group>"; };
@@ -77,7 +80,7 @@
 		396291AD1EBC41CC00FADC4C /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		396291B21EBC60C300FADC4C /* Selection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Selection.swift; sourceTree = "<group>"; };
 		39633DDE1E9B134B00F9FD4D /* Solver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
-		3964D7781ED40AE80089E9BB /* QuestionInstructionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionInstructionManager.swift; sourceTree = "<group>"; };
+		3964D7781ED40AE80089E9BB /* InstManagerQuestion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstManagerQuestion.swift; sourceTree = "<group>"; };
 		397214D41EBD818800FDCD62 /* 4. Book.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "4. Book.swift"; sourceTree = "<group>"; };
 		397214D61EBD82E800FDCD62 /* DataStructure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataStructure.swift; sourceTree = "<group>"; };
 		397631B21EB6F08D0040CE01 /* DataConverter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverter.swift; sourceTree = "<group>"; };
@@ -106,15 +109,15 @@
 		39CFAE171ECDD95A008C775D /* 법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt"; path = "Data/Resource/0. 법조윤리시험/법조윤리시험=법조윤리=1회~7회-법조윤리-문제.txt"; sourceTree = SOURCE_ROOT; };
 		39CFAE181ECDD95A008C775D /* 법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json"; path = "Data/Resource/0. 법조윤리시험/법조윤리시험=법조윤리=1회~7회-법조윤리-정답.json"; sourceTree = SOURCE_ROOT; };
 		39CFAE1A1ECDDF00008C775D /* ConsoleIO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleIO.swift; sourceTree = "<group>"; };
-		39D7AF1B1ED4502500973EFF /* GetQuestoinsInstructionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetQuestoinsInstructionManager.swift; sourceTree = "<group>"; };
-		39D7AF1D1ED453F100973EFF /* EditQuestionInstructionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditQuestionInstructionManager.swift; sourceTree = "<group>"; };
+		39D7AF1B1ED4502500973EFF /* InstManagerQuestionsGet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstManagerQuestionsGet.swift; sourceTree = "<group>"; };
+		39D7AF1D1ED453F100973EFF /* InstManagerQuestionEdit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstManagerQuestionEdit.swift; sourceTree = "<group>"; };
 		39DF734A1EAF2EFE005AD7D7 /* 3. Keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "3. Keyword.swift"; sourceTree = "<group>"; };
 		39DF734C1EAF4036005AD7D7 /* Note.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		39E1DE121E82BE54006F3DB9 /* Statement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Statement.swift; sourceTree = "<group>"; };
 		39E1DE141E82BF31006F3DB9 /* Codes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Codes.swift; sourceTree = "<group>"; };
 		39E1DE161E82BFEE006F3DB9 /* Cases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cases.swift; sourceTree = "<group>"; };
 		39E1DE181E82C091006F3DB9 /* Question.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
-		39E1DE1A1E82C250006F3DB9 /* MainInstructionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainInstructionManager.swift; sourceTree = "<group>"; };
+		39E1DE1A1E82C250006F3DB9 /* InstManagerMain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstManagerMain.swift; sourceTree = "<group>"; };
 		39E1DE1C1E82C842006F3DB9 /* TestCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCategory.swift; sourceTree = "<group>"; };
 		39E775941ECA221C00F17DA7 /* DataConverterData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataConverterData.swift; sourceTree = "<group>"; };
 		39E775971ECB23AF00F17DA7 /* StorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
@@ -140,6 +143,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		39071A601EDA4C300038E5CB /* 6회차 민법 수정 */ = {
+			isa = PBXGroup;
+			children = (
+				39071A611EDA4C620038E5CB /* DC변호사시험-6회 민법 수정.swift */,
+				39CFAE0E1ECDD897008C775D /* =변호사시험=민사법=6회=선택형=.txt */,
+				39071A631EDA4D0B0038E5CB /* 변호사시험=6회=민법-정답.json */,
+			);
+			name = "6회차 민법 수정";
+			sourceTree = "<group>";
+		};
 		392561BA1EC0BBD700A9E3FF /* DefaultData */ = {
 			isa = PBXGroup;
 			children = (
@@ -159,6 +172,7 @@
 		394E08451EBE70C0005A835D /* 변호사시험 */ = {
 			isa = PBXGroup;
 			children = (
+				39071A601EDA4C300038E5CB /* 6회차 민법 수정 */,
 				394E08461EBE70FB005A835D /* DC변호사시험.swift */,
 				39CFAE031ECDD897008C775D /* =변호사시험=공법=1회=선택형=.txt */,
 				39CFAE041ECDD897008C775D /* =변호사시험=공법=2회=선택형=.txt */,
@@ -171,7 +185,6 @@
 				39CFAE0B1ECDD897008C775D /* =변호사시험=민사법=3회=선택형=.txt */,
 				39CFAE0C1ECDD897008C775D /* =변호사시험=민사법=4회=선택형=.txt */,
 				39CFAE0D1ECDD897008C775D /* =변호사시험=민사법=5회=선택형=.txt */,
-				39CFAE0E1ECDD897008C775D /* =변호사시험=민사법=6회=선택형=.txt */,
 				39CFAE0F1ECDD897008C775D /* =변호사시험=형사법=1회=선택형=.txt */,
 				39CFAE101ECDD897008C775D /* =변호사시험=형사법=2회=선택형=.txt */,
 				39CFAE111ECDD897008C775D /* =변호사시험=형사법=3회=선택형=.txt */,
@@ -315,10 +328,10 @@
 			children = (
 				392561C91EC31CF000A9E3FF /* Instruction.swift */,
 				39CFAE1A1ECDDF00008C775D /* ConsoleIO.swift */,
-				39E1DE1A1E82C250006F3DB9 /* MainInstructionManager.swift */,
-				3964D7781ED40AE80089E9BB /* QuestionInstructionManager.swift */,
-				39D7AF1B1ED4502500973EFF /* GetQuestoinsInstructionManager.swift */,
-				39D7AF1D1ED453F100973EFF /* EditQuestionInstructionManager.swift */,
+				39E1DE1A1E82C250006F3DB9 /* InstManagerMain.swift */,
+				39D7AF1B1ED4502500973EFF /* InstManagerQuestionsGet.swift */,
+				3964D7781ED40AE80089E9BB /* InstManagerQuestion.swift */,
+				39D7AF1D1ED453F100973EFF /* InstManagerQuestionEdit.swift */,
 				39E7E2B11EBB88E800087D73 /* OutputManager.swift */,
 			);
 			name = IO;
@@ -416,17 +429,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				39E1DE1B1E82C250006F3DB9 /* MainInstructionManager.swift in Sources */,
+				39E1DE1B1E82C250006F3DB9 /* InstManagerMain.swift in Sources */,
 				39E1DE131E82BE54006F3DB9 /* Statement.swift in Sources */,
-				3964D7791ED40AE80089E9BB /* QuestionInstructionManager.swift in Sources */,
+				3964D7791ED40AE80089E9BB /* InstManagerQuestion.swift in Sources */,
 				394E08471EBE70FB005A835D /* DC변호사시험.swift in Sources */,
 				39633DDF1E9B134B00F9FD4D /* Solver.swift in Sources */,
 				392561C21EC0FCA400A9E3FF /* TestSubject.swift in Sources */,
+				39071A621EDA4C620038E5CB /* DC변호사시험-6회 민법 수정.swift in Sources */,
 				39E1DE171E82BFEE006F3DB9 /* Cases.swift in Sources */,
 				397631B31EB6F08D0040CE01 /* DataConverter.swift in Sources */,
 				392561C01EC0E79E00A9E3FF /* TestDatabase.swift in Sources */,
 				39E7E2B21EBB88E800087D73 /* OutputManager.swift in Sources */,
-				39D7AF1C1ED4502500973EFF /* GetQuestoinsInstructionManager.swift in Sources */,
+				39D7AF1C1ED4502500973EFF /* InstManagerQuestionsGet.swift in Sources */,
 				39E1DE151E82BF31006F3DB9 /* Codes.swift in Sources */,
 				394E084A1EBEF693005A835D /* Templet.swift in Sources */,
 				392561C61EC2297700A9E3FF /* DC공인중개사.swift in Sources */,
@@ -442,7 +456,7 @@
 				39E775951ECA221C00F17DA7 /* DataConverterData.swift in Sources */,
 				396291B31EBC60C300FADC4C /* Selection.swift in Sources */,
 				395BF6D31E82BA36004BE198 /* main.swift in Sources */,
-				39D7AF1E1ED453F100973EFF /* EditQuestionInstructionManager.swift in Sources */,
+				39D7AF1E1ED453F100973EFF /* InstManagerQuestionEdit.swift in Sources */,
 				392561CA1EC31CF000A9E3FF /* Instruction.swift in Sources */,
 				397214D71EBD82E800FDCD62 /* DataStructure.swift in Sources */,
 				396291AE1EBC41CC00FADC4C /* List.swift in Sources */,

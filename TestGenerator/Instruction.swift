@@ -22,11 +22,12 @@ import Foundation
 
 enum HelpInstruction {
     case InstMain
+    case InstQuestion
+    case InstSolveType
     case InstKey
-    case InstPublish
+    case InstQuestionsGet
     case InstSave
     case InstGoon
-    case InstSolve
     case InstEdit
 }
 
@@ -41,6 +42,7 @@ enum InstMain : String {
     case solve = "sol[v]e"
     case solveShuffled = "sol[v]e [s]huffled"
     case solveControversal = "sol[v]e [c]ontroversl"
+    case solveIntensive = "sol[v]e [i]ntensive"
     case edit = "[e]dit"
     case save = "save"
     case refresh = "refresh"
@@ -50,10 +52,10 @@ enum InstMain : String {
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishOriginal.rawValue ,publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishOriginal.rawValue ,publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, solveIntensive.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
     
     init(_ value : String) {
-        switch value {
+switch value {
             
         case "help":
             self = .help
@@ -102,6 +104,10 @@ enum InstMain : String {
         case "ㅍㅊ":
             self = .solveControversal
             
+        case "vi":
+            self = .solveIntensive
+        case "퍄":
+            self = .solveIntensive
             
         case "e":
             self = .edit
@@ -127,13 +133,14 @@ enum InstMain : String {
     }
 }
 
-enum InstQuestion : String {
+enum _InstMainSub : String {
     case publish = "[p]ublish"
     case publishOriginal = "[p]ublish [o]riginal"
     case publishShuffled = "[p]ublish [s]huffled"
     case solve = "sol[v]e"
     case solveShuffled = "sol[v]e [s]huffled"
     case solveControversal = "sol[v]e [c]ontroversl"
+    case solveIntensive = "sol[v]e [i]ntensive"
 }
 
 
@@ -162,26 +169,28 @@ enum InstKey : String {
     }
 }
 
-enum InstPublish : String {
+enum InstQuestionsGet : String {
     
-    case tag = "tag[']"
     case all = "all[1]"
     case category = "category[2]"
     case subject = "subject[3]"
     case test = "test[4]"
     case question = "question[5]"
+    case allwithTag = "all with tag[']"
+    case categorywithTag = "category with tag['2]"
+    case subjectwithTag = "subject with tag['3]"
+    case testwithTag = "test with tag['4]"
+    case questionwithTag = "question with tag['5]"
     
     case unknown
     
     
-    static let allValues = [tag.rawValue, all.rawValue, category.rawValue, subject.rawValue, test.rawValue, question.rawValue]
+    static let allValues = [all.rawValue, category.rawValue, subject.rawValue, test.rawValue, question.rawValue
+    ,allwithTag.rawValue, categorywithTag.rawValue, subjectwithTag.rawValue, testwithTag.rawValue, questionwithTag.rawValue, ]
     
     init(_ value : String) {
         switch value {
         
-        case "'":
-            self = .tag
-            
         case "1":
             self = .all
         case "a":
@@ -207,6 +216,32 @@ enum InstPublish : String {
             self = .question
         case "5":
             self = .question
+            
+        case "'":
+            self = .allwithTag
+        case "'a":
+            self = .allwithTag
+            
+            
+        case "'c":
+            self = .category
+        case "'2":
+            self = .categorywithTag
+            
+        case "'3":
+            self = .subjectwithTag
+        case "'s":
+            self = .subjectwithTag
+            
+        case "'4":
+            self = .testwithTag
+        case "'t":
+            self = .testwithTag
+            
+        case "'q":
+            self = .questionwithTag
+        case "'5":
+            self = .questionwithTag
             
         default:
             self = .unknown
@@ -279,20 +314,21 @@ enum InstGoon : String {
     }
 }
 
-enum InstSolve : String {
+enum InstQuestion : String {
     
     case show = "show[=]"
     case showContent = "show[-]"
     case solve = "solve[\\]"
     case noteQuestion = "note question[:]"
     case tagQuestion = "tag question[']"
-    case modifyQuestoin = "modify question[/]"
+    case edit = "edit question[/]"
+    case save = "save[+]"
     case next = "next[]"
     case nextWithSave = "next with save[;]"
     case exit = "exit[~]"
     
     
-    static let allValues = [show.rawValue,showContent.rawValue, solve.rawValue, noteQuestion.rawValue, tagQuestion.rawValue, modifyQuestoin.rawValue, next.rawValue,nextWithSave.rawValue, exit.rawValue]
+    static let allValues = [show.rawValue,showContent.rawValue, solve.rawValue, noteQuestion.rawValue, tagQuestion.rawValue, edit.rawValue, save.rawValue, next.rawValue,nextWithSave.rawValue, exit.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -307,6 +343,8 @@ enum InstSolve : String {
         case "-":
             self = .showContent
             
+        case "=":
+            self = .save
             
         case "s":
             self = .solve
@@ -324,9 +362,9 @@ enum InstSolve : String {
             self = .tagQuestion
             
         case "/":
-            self = .modifyQuestoin
+            self = .edit
         case "m":
-            self = .modifyQuestoin
+            self = .edit
             
         case "":
             self = .next
@@ -348,10 +386,40 @@ enum InstSolve : String {
         }
     }
 }
+
+enum InstSolveType : String {
+    case original = "original[1]"
+    case shuffle = "shuffle[2]"
+    case controversal = "controversal[3][]"
+    
+    case unknown
+    
+    static let allValues = [original.rawValue, shuffle.rawValue, controversal.rawValue]
+    
+    init(_ value : String) {
+        
+        switch value {
+            
+        case "1":
+            self = .original
+            
+        case "2":
+            self = .shuffle
+            
+        case "3":
+            self = .controversal
+            
+        default:
+            self = .unknown
+            
+        }
+    }
+}
+
+
 enum InstEdit : String {
     
     case show = "show[=]"
-    case tags = "tags[']"
     case notQuestion = "not question[1]"
     case notLists = "not lists[2]"
     case notSelections = "not selections[3]"
@@ -364,16 +432,13 @@ enum InstEdit : String {
     case unknown
     
     
-    static let allValues = [show.rawValue,tags.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
+    static let allValues = [show.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
     
     init(_ value : String) {
         switch value {
             
         case "=":
             self = .show
-            
-        case "'":
-            self = .tags
             
         case "1":
             self = .notQuestion

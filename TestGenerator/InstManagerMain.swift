@@ -1,5 +1,5 @@
 //
-//  MainInstrctionManager.swift
+//  InstManagerMain.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 3. 22..
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class MainInstructionManager {
+class InstManagerMain {
     
     let io = ConsoleIO()
     
@@ -16,8 +16,7 @@ class MainInstructionManager {
     let outputManager : OutputManager
     let storageManager : StorageManager
     // lazy var로 정의하는 방법은 업나? 현재는 self를 초기화에서 불러줘야 해서 안된다.
-    let questionInstManager : QuestionInstructionManager
-    let getQuesInsManager : GetQuestoinsInstructionManager
+    let instManagerQuestionsGet : InstManagerQuestionsGet
     
     var input = ""
     
@@ -25,8 +24,8 @@ class MainInstructionManager {
         self.testDatabase = testDatabase
         self.outputManager = outputManager
         self.storageManager = storageManager
-        self.questionInstManager = QuestionInstructionManager(self.io)
-        self.getQuesInsManager = GetQuestoinsInstructionManager(testDatabase: testDatabase, io : self.io)
+        
+        self.instManagerQuestionsGet = InstManagerQuestionsGet(testDatabase, io : self.io)
     }
     
     
@@ -36,7 +35,7 @@ class MainInstructionManager {
         
         while !shouldExit {
 
-            let (instruction,value) = io.getIntstruction(io.getInput())
+            let (instruction,value) = io.getInstMain(io.getInput())
             
             
             switch instruction {
@@ -50,7 +49,7 @@ class MainInstructionManager {
                 
                 
             case .keys:
-                let (inst,value) = io.getPublish(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstPublish)))
+                let (inst,value) = io.getQuestionsGet(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstQuestionsGet)))
                 showKeys(inst, value : value)
                 
             case .publish:
@@ -77,6 +76,11 @@ class MainInstructionManager {
                 let generatorUnwrapped = publishAndSolver(.solveControversal)
                 handleSolverGenerator(generatorUnwrapped)
                 
+            case .solveIntensive:
+                let generatorUnwrapped = publishAndSolver(.solveIntensive)
+                handleSolverGenerator(generatorUnwrapped)
+                
+                
             case .save:
                 let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
                 switch inst {
@@ -91,7 +95,7 @@ class MainInstructionManager {
                     }
 
                 case .test:
-                    let selectedTest = getQuesInsManager.selectTest(getQuesInsManager.selectTestSubject(getQuesInsManager.selectTestCategory(testDatabase)))
+                    let selectedTest = instManagerQuestionsGet.selectTest(instManagerQuestionsGet.selectTestSubject(instManagerQuestionsGet.selectTestCategory(testDatabase)))
                     saveTest(selectedTest)
                     
                 case .unknown:
@@ -117,15 +121,11 @@ class MainInstructionManager {
 
 // Main 명령어용 함수들의 모임
 
-extension MainInstructionManager {
+extension InstManagerMain {
     
-    func showKeys(_ instruction : InstPublish, value: String) {
+    func showKeys(_ instruction : InstQuestionsGet, value: String) {
         switch instruction {
-            
-        case .tag:
-            _ = true
-            io.writeMessage(to: .error, "아직 구현 안됨")
-            
+
         case .all:
             for testCategory in testDatabase.categories {
                 io.writeMessage(to: .publish, " | " + testCategory.key)
@@ -179,32 +179,36 @@ extension MainInstructionManager {
                     }
                 }
             }
+        case .allwithTag, .categorywithTag, .questionwithTag, .subjectwithTag, .testwithTag:
+            io.writeMessage(to: .error, "아직 구현되지 않은 기능")
+            
         case .unknown:
             io.unkown(value)
+            
         }
     }
     
     
     // 출력이 nil인 경우는 유저가 문제를 풀다가 e[x]it 커맨드를 해서 강제종료하려고 하는 경우
-    func publishAndSolver(_ instQuestion : InstQuestion) -> Generator? {
+    func publishAndSolver(_ _instMainSub : _InstMainSub) -> Generator? {
         
         //// 1. 명령에 대한 개요를 출력하고 어느 범위의 문제를 처리할지를 결정
         var str = ""
-        var popUpQuestionMenu = false
+//        var popUpQuestionMenu = false
         
         // 1-1. 명령의 제목 결정
-        switch instQuestion {
+        switch _instMainSub {
         case .publish, .publishOriginal, .publishShuffled:
             str = "출력"
-            popUpQuestionMenu = false
-        case .solve, .solveControversal, .solveShuffled:
+//            popUpQuestionMenu = false
+        case .solve, .solveControversal, .solveShuffled, .solveIntensive:
             str = "풀이"
-            popUpQuestionMenu = true
+//            popUpQuestionMenu = true
         }
         
         // 1-2. 범위를 받아내는 구문, questions array가 받아옴
         // 현재는 getQuestionsInKey만 존재하나 필요에 따라서 이부분은 다양하게 변주를 만들어 낼수 있을 것 (+), 추가 필요 2017. 5. 23.
-        var questions = getQuesInsManager.getQuestionsInKey(title : str+"할 문제의 범주를 선택")
+        var questions = instManagerQuestionsGet.getQuestions(title : str+"할 문제의 범주를 선택")
         let counter = questions.count
         
         
@@ -238,31 +242,24 @@ extension MainInstructionManager {
             io.writeMessage()
             io.writeMessage(to: .title, "[[ \(str) : \(index+1) / \(counter)]]")
             
+            
+            
             // processingQusetion
             
             // solver는 문제를 유저가 안풀면 nik gonnaExit는 유저가 루프를 나가고 싶은 것임
-            let (solver, gonnaExit) = questionInstManager.processingQuestion(
-                que, instQuestion: instQuestion)
+            let (solvers, gonnaExit) = InstManagerQuestion(que, io : io).questionMenu(_instMainSub)
+            
             
             if gonnaExit {
                 return nil // 문제를 풀다가 유저가 exit를 입력하면 그 곳에서 중단하고 결과도 저장하지 않도록 하는 매우 편리하고 중요한 구문
             }
             
-            if solver != nil {
-                generator.solvers.append(solver!)
+            if solvers == [] {
+                // dㅣ미 자동으로 processingQuestion에서 자동으로 추가하므로 여기서 다시 넣어두지는 않음? 2017. 5. 25.
+                // generator.solvers.append(solver!)
             } else {
-                // generator에 아무것도 없이 그냥 next
-            }
-            
-            // solve 모드에서만 띄어줌
-            if popUpQuestionMenu {
-                
-                let (solvers, gonnaExitExit) = questionInstManager.questionMenu(que, instQuestion: instQuestion)
                 generator.solvers.append(contentsOf: solvers)
-                
-                if gonnaExitExit {
-                    break // 문제를 풀다가 유저가 exit를 입력하면 그 곳에서 중단하고 결과도 저장하지 않도록 하는 매우 편리하고 중요한 구문
-                }
+                // generator에 아무것도 없이 그냥 next
             }
         }
         
@@ -301,8 +298,8 @@ extension MainInstructionManager {
             io.writeMessage(to: .error, "문제가 없음")
             return
         }
-        let input = io.getInput("exit[], edit[/] ? ")
-        if input == "e" || input == "/" {
+        let input = io.getInput("exit[], edit[/], solve[\\] ? ")
+        if input == "v" || input == "\\" {
             
             let questions = generator.getQustioninSovers()
             let generator = Generator()
@@ -311,19 +308,55 @@ extension MainInstructionManager {
             for (index,question) in questions.enumerated() {
 
                 io.writeMessage()
-                io.writeMessage(to: .title, "[[시험문제 수정 - \(index+1) / \(queCounter)]]")
+                io.writeMessage(to: .title, "[[풀이 - \(index+1) / \(queCounter)]]")
                 
-                questionInstManager.showNotHistory(question)
+                InstManagerQuestion(question, io : io).showNoHistory()
+                InstManagerQuestion(question, io : io).showNotNoHistory()
                 
-                var instQuestion : InstQuestion
+                var _instMainSub : _InstMainSub
                 switch instMain {
                 case .publishShuffled :
-                    instQuestion = .solveShuffled
+                    _instMainSub = .solveShuffled
                 default:
-                    instQuestion = .solve
+                    _instMainSub = .solve
                 }
 
-                let (solvers, gonnaExit) = questionInstManager.questionMenu(question, instQuestion: instQuestion)
+                let (solvers, gonnaExit) = InstManagerQuestion(question, io : io).questionMenu(_instMainSub)
+                
+                if  gonnaExit  {
+                    io.writeMessage(to: .notice, "강제종료")
+                    return
+                }
+                
+                generator.solvers.append(contentsOf: solvers)
+            }
+            
+            handleSolverGenerator(generator)
+            
+        } else if input == "/" || input == "e" {
+            
+            let questions = generator.getQustioninSovers()
+            let generator = Generator()
+            
+            let queCounter = questions.count
+            for (index,question) in questions.enumerated() {
+                
+                io.writeMessage()
+                io.writeMessage(to: .title, "[[수정 - \(index+1) / \(queCounter)]]")
+                
+                // 수정모드에서는 이력은 안보여주는게 편리할 것임
+                Solver(question).publish(om: OutputManager(), type: .original, showTitle: true, showQuestion: true, showAnswer: true, showTags: false, showHistory: false, showAttribute: true, showOrigSel: false)
+                
+                if instMain == .publishOriginal {
+                    Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false, showAttribute: false, showOrigSel: false)
+                } else {
+                    
+                    io.writeMessage(to: .title, "[반전된 문제]")
+                    Solver(question).publish(om: OutputManager(), type: .originalNot, showTitle: false, showQuestion: true, showAnswer: true, showTags: true, showHistory: false, showAttribute: true, showOrigSel: false)
+                }
+                
+                
+                let (solvers, gonnaExit) = InstManagerQuestion(question, io : io).questionMenu()
                 
                 if  gonnaExit  {
                     io.writeMessage(to: .notice, "강제종료")
@@ -334,7 +367,7 @@ extension MainInstructionManager {
             }
             
             for test in generator.getTestinSolvers() {
-                _ = test.save()
+                _ = test.save() // 이 기능이 잘 작동 안하는 것으로 의심되니 나중에 확인해야 한다. (+) 2017. 5. 24.
             }
         }
     }
@@ -352,7 +385,6 @@ extension MainInstructionManager {
             return
         }
     }
-    
     
 }
 
