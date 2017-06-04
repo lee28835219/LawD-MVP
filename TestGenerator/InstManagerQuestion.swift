@@ -59,7 +59,7 @@ class InstManagerQuestion {
                 switch _instMainSub {
                 case .solve, .solveControversal, .solveShuffled:
                     popUpMenu = true
-                case .solveIntensive:
+                case .solveIntensive, .solveOX:
                     popUpMenu = true
                     intensiveMode = true
                 case .publish, .publishOriginal, .publishShuffled:
@@ -116,7 +116,7 @@ class InstManagerQuestion {
             io.writeMessage(to: .error, "아직 구현되지 않은 기능")
             
         case .tagQuestion:
-            writeTag(question)
+            writeTag()
             
         case .edit:
             let result = InstManagerQuestionEdit(question, io : io).editQuestion()
@@ -271,9 +271,22 @@ class InstManagerQuestion {
             gonnaSolve = true
         
             
+        case .solveOX:
+            solver = Solver(question, gonnaShuffle: true)
+            questionPublishType = .solver
+            
+            showTitle = true
+            showQuestion = true
+            showAnswer = false
+            showTags = false
+            showHistory = false
+            showAttribute = false
+            showOrigSel = false
+            
+            gonnaSolve = true
         }
-        
-        
+    
+    
         // 문제가 반전 불가능하고 명령이 반전가능한 문제만 풀겠다고 했을 때
         if !solver.isOXChangable && _instMainSub == .solveControversal {
             //원래의 문제와
@@ -295,7 +308,7 @@ class InstManagerQuestion {
             
             // 함수화 필요? -> 뒤에 필요한 멸영이 아주 특징적인 것이라 함수화 불필요,
             // 이게 왜 함수화?
-            _ = io.getInput("continue[]")
+            // _ = io.getInput("continue[]")
             return (solver, false)
         }
         
@@ -330,6 +343,7 @@ class InstManagerQuestion {
         // gonnaSolve == true, 즉 solve 계열 명령은 여기서 문제풀이 시작
         
         //// 문제를 푸는 매우 중요한 구문 시작
+        let solveStart = Date()
         
         // userAnswer가 nil이면 문제 안풀고 넘긴 것임
         let (userAnswer, isExit) = _getUserAnswer(maxSelectionNumber : solver.selections.count)
@@ -364,7 +378,10 @@ class InstManagerQuestion {
             isRight = false
         }
         solver.date = Date()
+        solver.duration = solver.date?.timeIntervalSince(solveStart)
         solver.isRight = isRight
+        
+        io.writeMessage(to: .notice, "문제 풀이 시간 : \(String(format: "%.1f", solver.duration!))초")
         
         // solver를 던져주면 comment를 알아서 체워옴, 즉 리턴 없음
         _getSolverComment(solver)
@@ -372,6 +389,30 @@ class InstManagerQuestion {
         
         return (solver, false)
     }
+    
+    
+    func tagEditMode() -> Bool {
+        var gonnaExit = false
+        
+        InstManagerQuestion(question, io : io).writeTag()
+        
+        Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+        
+        
+        let inputInTagEdit = io.getInput("show[=], reEdit[/], next[] ,exit[~]")
+        
+        if inputInTagEdit == "~" {
+            gonnaExit = true
+        } else if inputInTagEdit == "=" {
+            Solver(question).publish(om: OutputManager(), type: .original, showTitle: true, showQuestion: true, showAnswer: true, showTags: true, showHistory: false)
+            return tagEditMode()
+        } else if inputInTagEdit == "/" {
+            return tagEditMode()
+        }
+        
+        return gonnaExit
+    }
+
     
     
     func _getSolverComment(_ solver : Solver) {
@@ -385,7 +426,7 @@ class InstManagerQuestion {
                        showAttribute: true, showOrigSel: false)
         let confirm = io.getInput("confirm[], rewrite[\\]")
         
-        if confirm.characters.last == "\\" {
+        if confirm.last == "\\" {
             
             solver.question.solvers.remove(at: solver.question.solvers.count-1)
             return _getSolverComment(solver)
@@ -464,7 +505,7 @@ class InstManagerQuestion {
                                  showAttribute: true, showOrigSel: true)
     }
     
-    func writeTag(_ question : Question) {
+    func writeTag() {
         
         if let newTag = _getTag(title : "\(question.key)") {
             if question.tags.contains(newTag) {
@@ -479,7 +520,7 @@ class InstManagerQuestion {
                 // question.test.testSubject.testCategory.testDatabase.refreshTags()
                 
                 Solver(question, gonnaShuffle: false).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
-                return writeTag(question)
+                return writeTag()
             }
         } else {
             io.writeMessage(to: .notice, "태그 입력되지 않음")
@@ -488,14 +529,14 @@ class InstManagerQuestion {
     
     func _getTag(title : String) -> String? {
         
-        let tag = io.getInput("\(title) 대한 태그, stop[], rewite[\\], edit tag[/])")
+        let tag = io.getInput("새로운 태그, stop[], rewite[\\], edit tag[/])")
         
         if tag == "" {
             io.writeMessage(to: .notice, "입력한 태그없음")
             return nil
-        } else if tag.characters.last == "\\" {
+        } else if tag.last == "\\" {
             return _getTag(title: title)
-        } else if tag.characters.last == "/" {
+        } else if tag.last == "/" {
             InstManagerQuestionEdit(question, io : io).editTags()
             return _getTag(title: title)
         }

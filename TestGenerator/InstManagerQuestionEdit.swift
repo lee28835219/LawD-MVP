@@ -156,7 +156,38 @@ class InstManagerQuestionEdit {
             
             //        case .
             //         solve, publishall 기능 추가 필요
+        
+        case .answer:
+            let selectionNumbers = question.selections.map{$0.number}
+            let selectionNumbersSorted = selectionNumbers.sorted()
             
+            var min = 0
+            if let minWrapped = selectionNumbersSorted.first {
+                min = minWrapped
+            }
+            
+            if let answerNew = io.getValidNumber(prefix: "수정할 정답번호 입력", min: min, max: selectionNumbersSorted.last) {
+                
+                var isAnswerNewFound = false
+                for (index,selNumb) in selectionNumbers.enumerated() {
+                    if answerNew == selNumb {
+                        if io.getInput("\(question.key) 정답을 \(question.answer.roundInt)에서 \(answerNew.roundInt)로 변경 : yes[.], no[]") == "." {
+                            question.answer = answerNew
+                            question.answerSelection = question.selections[index]
+                            _ = question.findAnswer()
+                            isAnswerNewFound = true
+                            io.writeMessage(to: .notice, "정답수정 완료")
+                        }
+                    }
+                }
+                if !isAnswerNewFound {
+                    io.writeMessage(to: .notice, "정답을 찾을 수 없어 정답수정되지 않음")
+                }
+            } else {
+                io.writeMessage(to: .notice, "정답수정되지 않음")
+            }
+            _ = io.getInput("확인[]")
+            return _editQuestion(nextUpadte)
             
         case .next:
             if nextUpadte {
@@ -259,7 +290,7 @@ class InstManagerQuestionEdit {
         io.writeMessage()
         
         let inp = io.getInput("confirm[], rewrite[~\\], cancle[0] ?")
-        if inp == "\\"  || inp.characters.last == "\\" {
+        if inp == "\\"  || inp.last == "\\" {
             return editStatementString(title: title, question: question, oriStr: oriStr, oriIscOrrect: oriIscOrrect, notOriStr: notOriStr, isNotStatementEditMode: isNotStatementEditMode)
         }
         if inp == "0"  {
@@ -270,15 +301,20 @@ class InstManagerQuestionEdit {
         return inputModify
     }
     
+    // gonnaExit 추가
     func editTags() {
         io.writeMessage(to: .notice, "수정하거나 삭제할 태그 선택")
+        
         var tagsArray = [String]()
         io.writeMessage(to: .notice, "[0] : (신규)")
         for (index, tag) in question.tags.enumerated() {
             io.writeMessage(to: .notice, "[\(index+1)] : \(tag)")
             tagsArray.append(tag)
         }
-        let jndex = io.checkNumberRange(prefix: "숫자입력", min : 0, max: question.tags.count)
+        guard let jndex = io.getValidNumber(prefix: "숫자입력", min : 0, max: question.tags.count) else {
+            io.writeMessage(to: .notice, "태그 수정 취소")
+            return
+        }
         var modifiedTag = ""
         if jndex == 0 {
             modifiedTag = io.getInput("(신규 태그), rewrite[\\] ", false)
@@ -306,7 +342,10 @@ class InstManagerQuestionEdit {
             }
         }
         Solver(question).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
-        _ = io.getInput("확인[]")
+        //_ = io.getInput("확인[]")
+        
+        // 태그 편집을 무한히 돌도록 수정
+        editTags()
     }
     
     // 아무것도 입력안해서 수정할 의사가 없을 때 nil을 반환
@@ -321,7 +360,7 @@ class InstManagerQuestionEdit {
         if input == "" {
             io.writeMessage(to: .error, "아무것도 입력되지 않아 진술수정하지 않음")
             return nil
-        } else if input.characters.last == "\\" {
+        } else if input.last == "\\" {
             // http://stackoverflow.com/questions/25113672/how-do-you-get-the-last-character-of-a-string-without-using-array-on-swift
             // How do you get the last character of a string without using array on swift?
             io.writeMessage(to: .notice, "다시입력")

@@ -13,6 +13,7 @@ class InstManagerMain {
     let io = ConsoleIO()
     
     let testDatabase : TestDatabase
+    let books : Books
     let outputManager : OutputManager
     let storageManager : StorageManager
     // lazy var로 정의하는 방법은 업나? 현재는 self를 초기화에서 불러줘야 해서 안된다.
@@ -20,10 +21,12 @@ class InstManagerMain {
     
     var input = ""
     
-    init(testDatabase : TestDatabase, outputManager : OutputManager, storageManager : StorageManager) {
+    init(testDatabase : TestDatabase, outputManager : OutputManager, storageManager : StorageManager, books : Books) {
         self.testDatabase = testDatabase
         self.outputManager = outputManager
         self.storageManager = storageManager
+        self.books = books
+        
         
         self.instManagerQuestionsGet = InstManagerQuestionsGet(testDatabase, io : self.io)
     }
@@ -46,7 +49,9 @@ class InstManagerMain {
                 
             case .help:
                 io.writeMessage(to: .notice, io.getHelp(.InstMain))
-                
+            
+            case .book:
+                editBookStructure(books)
                 
             case .keys:
                 let (inst,value) = io.getQuestionsGet(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstQuestionsGet)))
@@ -78,6 +83,12 @@ class InstManagerMain {
                 
             case .solveIntensive:
                 let generatorUnwrapped = publishAndSolver(.solveIntensive)
+                handleSolverGenerator(generatorUnwrapped)
+                
+                
+            // OX 퀴즈 만들고 있음 2017.12.15.
+            case .solveOX:
+                let generatorUnwrapped = publishAndSolver(.solveOX)
                 handleSolverGenerator(generatorUnwrapped)
                 
                 
@@ -201,7 +212,7 @@ extension InstManagerMain {
         case .publish, .publishOriginal, .publishShuffled:
             str = "출력"
 //            popUpQuestionMenu = false
-        case .solve, .solveControversal, .solveShuffled, .solveIntensive:
+        case .solve, .solveControversal, .solveShuffled, .solveIntensive, .solveOX:
             str = "풀이"
 //            popUpQuestionMenu = true
         }
@@ -272,8 +283,30 @@ extension InstManagerMain {
     
     func handleSolverGenerator(_ generator : Generator?) {
         if let generator = generator {
-            let (r,_) = generator.seperateWorngSolve()
-            io.writeMessage(to: .notice, "총 \(generator.solvers.count) 문제 중 \(r.count) 문제 맞춤")
+            
+            let (c, w) = generator.seperateWorngSolve()
+            
+            io.writeMessage(to: .notice, "[풀이결과]")
+            
+            var answerRate : Float = 0.0
+            var answerCountFor150 : Float = 0.0
+            if c.count + w.count != 0 {
+                answerRate = Float(c.count)/Float(w.count + c.count)*100
+                answerCountFor150 = Float(c.count)/Float(w.count + c.count)*150
+                guard let solvedTimeAverage = generator.getSolveDurationAverage() else {
+                    fatalError("문제풀이 시간이 없는데 푼 문제가 있을 수 없음")
+                }
+                
+                io.writeMessage(to: .notice, "맞은 갯수 :  \(c.count)  / \(w.count + c.count), 정답율 : \(String(format : "%.1f", answerRate))%")
+                io.writeMessage(to: .notice, "150개 풀었다고 가정 시 : \(Int(answerCountFor150))개 맞음")
+                io.writeMessage(to: .notice, "풀이에 평균적으로 걸린 시간 : \(String(format : "%.1f", solvedTimeAverage)) 초")
+                
+            } else {
+                io.writeMessage(to: .notice, "한 문제도 풀지 않음")
+            }
+            
+            io.writeMessage()
+            
             
             let tests = generator.getTestinSolvers()
             
@@ -298,8 +331,8 @@ extension InstManagerMain {
             io.writeMessage(to: .error, "문제가 없음")
             return
         }
-        let input = io.getInput("exit[], edit[/], solve[\\] ? ")
-        if input == "v" || input == "\\" {
+        let input = io.getInput("exit[], edit[/], edit tag['/], solve[\\] ? ")
+        if input == "v" || input == "\\"  {
             
             let questions = generator.getQustioninSovers()
             let generator = Generator()
@@ -333,7 +366,7 @@ extension InstManagerMain {
             
             handleSolverGenerator(generator)
             
-        } else if input == "/" || input == "e" {
+        } else if input == "/" || input == "e" || input == "'/" {
             
             let questions = generator.getQustioninSovers()
             let generator = Generator()
@@ -341,7 +374,8 @@ extension InstManagerMain {
             let queCounter = questions.count
             for (index,question) in questions.enumerated() {
                 
-                io.writeMessage()
+                
+                
                 io.writeMessage(to: .title, "[[수정 - \(index+1) / \(queCounter)]]")
                 
                 // 수정모드에서는 이력은 안보여주는게 편리할 것임
@@ -355,15 +389,29 @@ extension InstManagerMain {
                     Solver(question).publish(om: OutputManager(), type: .originalNot, showTitle: false, showQuestion: true, showAnswer: true, showTags: true, showHistory: false, showAttribute: true, showOrigSel: false)
                 }
                 
+                //태그 수정과 문제 수정을 여기서 분기함
                 
-                let (solvers, gonnaExit) = InstManagerQuestion(question, io : io).questionMenu()
+                var gonnaExit = false
+                
+                if input == "'/" {
+                    
+                    gonnaExit =  InstManagerQuestion(question, io : io).tagEditMode()
+                    generator.solvers.append(Solver(question))
+                    
+                } else {
+                
+                    let (solvers, gonnaExitTemp) = InstManagerQuestion(question, io : io).questionMenu()
+                    
+                    gonnaExit = gonnaExitTemp
+                    
+                    generator.solvers.append(contentsOf: solvers)
+                }
                 
                 if  gonnaExit  {
                     io.writeMessage(to: .notice, "강제종료")
                     return
                 }
                 
-                generator.solvers.append(contentsOf: solvers)
             }
             
             for test in generator.getTestinSolvers() {
@@ -383,6 +431,157 @@ extension InstManagerMain {
             return
         } else {
             return
+        }
+    }
+    
+    func editBookStructure(_ current : BookStructure) {
+        io.writeMessage(to: .title, "\(current.key) 의 내용")
+        
+        if current.downs.count == 0 {
+            io.writeMessage(to: .publish, "없음")
+        } else {
+            for ele in current.downs {
+                io.writeMessage(to: .publish, "\(ele.key) \(ele.name)")
+            }
+        
+        }
+        let instEditBookStructure = io.getInput("up[1], down[2], new[3], editValue[4], editName[5], exit[~]")
+        
+        switch instEditBookStructure {
+        case "~":
+            return
+        case "1":
+            if current.up != nil {
+                editBookStructure(current.up!)
+            } else {
+                io.writeMessage(to: .notice, "최상위루트")
+                editBookStructure(current)
+            }
+        case "2":
+            let down = getBookStructure(current: current)
+            guard let downUnwrapped = down else {
+                return editBookStructure(current)
+            }
+            editBookStructure(downUnwrapped)
+            
+        case "3":
+            newBookStructure(current : current)
+            
+            
+        case "4", "5":
+            io.writeMessage(to: .notice, "\(current.key) ~ \(current.name) 수정 시작")
+            if instEditBookStructure == "4" {
+                io.writeMessage(to: .publish, "기존의 값: \(current.value)")
+            } else {
+                io.writeMessage(to: .publish, "기존의 값: \(current.name)")
+            }
+            let new = io.getInput("새로운 값: ")
+            if new == "" {
+                io.writeMessage(to: .notice, "값입력 안되어 수정안함")
+                editBookStructure(current)
+            }
+            if instEditBookStructure == "4" {
+                current.value = new
+            } else {
+                current.name = new
+            }
+            io.writeMessage(to: .notice, "값 수정완료")
+            io.writeMessage(to: .publish, new)
+            
+        default:
+            editBookStructure(current)
+        }
+        
+        
+    }
+    
+    func getBookStructure(current : BookStructure) -> BookStructure? {
+        for (index, element) in current.downs.enumerated() {
+            io.writeMessage(to: .publish, "\(index+1) : \(element.sequence) - \(element.name)")
+        }
+        
+        let num = io.getValidNumber(prefix: "번호 선택, exit[0]", min: 0, max: current.downs.count)
+        
+        guard let numUnwrapped = num else {
+            return getBookStructure(current: current)
+        }
+        
+        if num == 0 {
+            return nil
+        } else {
+            return current.downs[numUnwrapped-1]
+        }
+    }
+    
+    func newBookStructure(current : BookStructure) {
+        let name = io.getInput("\(current.key)에 추가할 새로운 이름 입력")
+        let value = io.getInput("\(current.key)에 추가할 새로운 값 입력")
+        
+        var currnetSeq = current.downs.map(){$0.sequence}
+        currnetSeq.sort()
+        
+        var seq = 1
+        if currnetSeq.last != nil {
+            seq = currnetSeq.last! + 1
+        }
+        
+        var new : BookStructure = BookStructure(up: nil, sequence: 0, seqString: "", name: "", value: "")
+        var isNewAdded  = false
+        if current is Books {
+            new = Book(up: current, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Book {
+            new = Division(book: current as! Book, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Book {
+            new = Division(book: current as! Book, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Division {
+            new = Chapter(division: current as! Division, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Chapter {
+            new = Title(chapter: current as! Chapter, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Title {
+            new = Roman(title: current as! Title, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is Roman {
+            new = SeqNumber(roman: current as! Roman, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is SeqNumber {
+            new = DoubleBracket(seqNumber: current as! SeqNumber, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is DoubleBracket {
+            new = SingleBracket(doubleBracket: current as! DoubleBracket, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is SingleBracket {
+            new = SeqRoundNumber(singleBracket: current as! SingleBracket, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        } else if current is SeqRoundNumber {
+            new = RoundLetter(seqRoundNumber: current as! SeqRoundNumber, sequence: seq, name: name, value: value)
+            isNewAdded = true
+        }
+        
+        if isNewAdded {
+            io.writeMessage(to: .notice, "\(new.key) \(new.name)")
+            io.writeMessage(to: .notice, "\(new.value)")
+            let down = io.getInput("확인[], 신규항목 수정[2], 재입력[\\]")
+            
+            if down == "\\" {
+                newBookStructure(current: current)
+                return
+            }
+            
+            current.downs.append(new)
+            
+            if down == "2" {
+                editBookStructure(new)
+            } else {
+                editBookStructure(current)
+            }
+            
+        } else {
+            io.writeMessage(to: .notice, "추가하지 못함")
         }
     }
     

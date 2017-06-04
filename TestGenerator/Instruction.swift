@@ -35,6 +35,7 @@ enum InstMain : String {
     
     case help = "help"
     case exit = "exit"
+    case book = "[b]ook"
     case keys = "[k]eys"
     case publish = "[p]ublish"
     case publishOriginal = "[p]ublish [o]riginal"
@@ -43,6 +44,7 @@ enum InstMain : String {
     case solveShuffled = "sol[v]e [s]huffled"
     case solveControversal = "sol[v]e [c]ontroversl"
     case solveIntensive = "sol[v]e [i]ntensive"
+    case solveOX = "sol[v]e [o]X"
     case edit = "[e]dit"
     case save = "save"
     case refresh = "refresh"
@@ -52,83 +54,92 @@ enum InstMain : String {
     // Get all enum values as an array
     // http://stackoverflow.com/questions/32952248/get-all-enum-values-as-an-array
     
-    static let allValues = [help.rawValue, exit.rawValue, keys.rawValue, publish.rawValue, publishOriginal.rawValue ,publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, solveIntensive.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
+    static let allValues = [help.rawValue, exit.rawValue, book.rawValue, keys.rawValue, publish.rawValue, publishOriginal.rawValue ,publishShuffled.rawValue, solve.rawValue, solveShuffled.rawValue, solveControversal.rawValue, solveIntensive.rawValue, solveOX.rawValue, edit.rawValue, save.rawValue, refresh.rawValue]
     
     init(_ value : String) {
-switch value {
-            
-        case "help":
-            self = .help
-        case "ㅗㄷㅣㅔ":
-            self = .help
-            
-            
-        case "exit":
-            self = .exit
-        case "ㄷㅌㅑㅅ":
-            self = .exit
-            
-        case "k":
-            self = .keys
-        case "ㅏ":
-            self = .keys
-            
-        case "p":
-            self = .publish
-        case "ㅔ":
-            self = .publish
+        switch value {
+                
+            case "help":
+                self = .help
+            case "ㅗㄷㅣㅔ":
+                self = .help
+                
+                
+            case "exit":
+                self = .exit
+            case "ㄷㅌㅑㅅ":
+                self = .exit
         
-        case "po":
-            self = .publishOriginal
-        case "ㅔㅐ":
-            self = .publishOriginal
+            case "b":
+                self = .book
         
-        case "ps":
-            self = .publishShuffled
-        case "ㅔㄴ":
-            self = .publishShuffled
+
+            case "k":
+                self = .keys
+            case "ㅏ":
+                self = .keys
+                
+            case "p":
+                self = .publish
+            case "ㅔ":
+                self = .publish
             
+            case "po":
+                self = .publishOriginal
+            case "ㅔㅐ":
+                self = .publishOriginal
             
-        case "v":
-            self = .solve
-        case "ㅍ":
-            self = .solve
+            case "ps":
+                self = .publishShuffled
+            case "ㅔㄴ":
+                self = .publishShuffled
+                
+                
+            case "v":
+                self = .solve
+            case "ㅍ":
+                self = .solve
+            
+            case "vs":
+                self = .solveShuffled
+            case "ㅍㄴ":
+                self = .solveShuffled
+                
+            case "vc":
+                self = .solveControversal
+            case "ㅍㅊ":
+                self = .solveControversal
+                
+            case "vi":
+                self = .solveIntensive
+            case "퍄":
+                self = .solveIntensive
+                
+            case "vo":
+                self = .solveOX
+            case "패":
+                self = .solveOX
         
-        case "vs":
-            self = .solveShuffled
-        case "ㅍㄴ":
-            self = .solveShuffled
-            
-        case "vc":
-            self = .solveControversal
-        case "ㅍㅊ":
-            self = .solveControversal
-            
-        case "vi":
-            self = .solveIntensive
-        case "퍄":
-            self = .solveIntensive
-            
-        case "e":
-            self = .edit
-        case "ㄷ":
-            self = .edit
-            
-            
-        case "ㄴㅁㅍㄷ":
-            self = .save
-        case "save":
-            self = .save
-            
-            
-        case "refresh":
-            self = .refresh
-        case "ㄱㄷㄹㄱㄷㄴㅗ":
-            self = .refresh
-            
-            
-        default:
-            self = .unknown
+            case "e":
+                self = .edit
+            case "ㄷ":
+                self = .edit
+                
+                
+            case "ㄴㅁㅍㄷ":
+                self = .save
+            case "save":
+                self = .save
+                
+                
+            case "refresh":
+                self = .refresh
+            case "ㄱㄷㄹㄱㄷㄴㅗ":
+                self = .refresh
+                
+                
+            default:
+                self = .unknown
         }
     }
 }
@@ -141,8 +152,8 @@ enum _InstMainSub : String {
     case solveShuffled = "sol[v]e [s]huffled"
     case solveControversal = "sol[v]e [c]ontroversl"
     case solveIntensive = "sol[v]e [i]ntensive"
+    case solveOX = "sol[v]e [o]X"
 }
-
 
 enum InstKey : String {
     
@@ -273,9 +284,6 @@ enum InstSave : String {
         }
     }
 }
-
-
-
 
 enum InstGoon : String {
     
@@ -416,7 +424,6 @@ enum InstSolveType : String {
     }
 }
 
-
 enum InstEdit : String {
     
     case show = "show[=]"
@@ -426,13 +433,14 @@ enum InstEdit : String {
     case originalQuestion = "original question[4]"
     case originalLists = "original lists[5]"
     case originalSelection = "original selections[6]"
+    case answer = "answer[00]"
     case next = "next[]"
     case exit = "exit[~]"
     
     case unknown
     
     
-    static let allValues = [show.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, next.rawValue, exit.rawValue]
+    static let allValues = [show.rawValue, notQuestion.rawValue ,notLists.rawValue ,notSelections.rawValue ,originalQuestion.rawValue ,originalLists.rawValue ,originalSelection.rawValue, answer.rawValue, next.rawValue, exit.rawValue]
     
     init(_ value : String) {
         switch value {
@@ -458,6 +466,9 @@ enum InstEdit : String {
         case "6":
             self = .originalSelection
             
+        case "00":
+            self = .answer
+       
         case "":
             self = .next
         

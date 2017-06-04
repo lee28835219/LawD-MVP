@@ -25,7 +25,11 @@ print(g_storageManager.log)
 //let g_new_storageManager = StorageManager(g_testDatabase)
 //print(g_new_storageManager.log)
 let g_outputManager = OutputManager()
-let g_instrcutionManger = InstManagerMain(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager)
+
+
+let books = Books(sequence: 1, name: "basic", value: "ver1")
+
+let g_instrcutionManger = InstManagerMain(testDatabase : g_testDatabase, outputManager : g_outputManager, storageManager : g_storageManager, books : books)
 
 
 
@@ -52,11 +56,29 @@ temp_testSubject.setSampleTest()
 //let barExamCivle6Mod = DC변호사시험_6회_민법정답수정(g_testDatabase)
 //print(barExamCivle6Mod!.log)
 
+//let barExamConstitOX = DC변호사시험헌법OX(g_testDatabase)
+//print(barExamConstitOX!.log)
 
 
-g_testDatabase.refreshTags()
+//let oldBarExam = DC사법시험(g_testDatabase)
+//print(oldBarExam!.log)
+
+
+//g_testDatabase.refreshTags()
+
+//g_testDatabase.modifyAnswer(_변호사민사1회5회정답수정().value)
+
+
+//g_testDatabase.doingSomeStuffRelatedWithQuestion()
+
+//print(g_testDatabase.log)
+
+
+
+
 //// EXEC
 g_instrcutionManger.didInitializationComplete()
+
 
 print("bye!")
 

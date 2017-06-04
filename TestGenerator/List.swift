@@ -25,10 +25,10 @@ class List: Statement {
         
         let stringArray = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ", "ㅅ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
         let stringArrayLetter = ["가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하"]
-        if let index = stringArray.index(of: selectString) {
+        if let index = stringArray.firstIndex(of: selectString) {
             self.number = index + 1
             self.listStringType = SelectStringType.koreanCharcter
-        } else if let index = stringArrayLetter.index(of: selectString) {
+        } else if let index = stringArrayLetter.firstIndex(of: selectString) {
             self.number = index + 1
             self.listStringType = SelectStringType.koreanLetter
         } else {

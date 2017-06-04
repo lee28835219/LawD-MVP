@@ -21,6 +21,7 @@ class DataStructure: NSObject {
     var modifiedDate : Date = Date()
     var tags : Set<String> = []
     
+    
     init(_ key: String) {
         self.key = key
     }

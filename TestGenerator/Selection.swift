@@ -24,6 +24,13 @@ class Selection: Statement {
         
         self.question.selections.append(self)
         
+        findAnswer()
+    }
+    
+    
+    // 문제 정답 업데이트 기능 만들기 위해 2017. 5. 31. 함수화
+    func findAnswer() {
+        
         isAnswer = false
         if self.number == question.answer {
             question.answerSelection = self
@@ -50,8 +57,8 @@ class Selection: Statement {
                 iscOrrect = nil
             }
             
-        // case .Find:
-        // 여기에 두고 싶지만 Find 유형의 경우에는 모든 목록이
+            // case .Find:
+            // 여기에 두고 싶지만 Find 유형의 경우에는 모든 목록이
             
         default:
             iscOrrect = nil

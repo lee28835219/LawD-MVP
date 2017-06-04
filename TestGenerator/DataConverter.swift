@@ -202,7 +202,7 @@ class DataConverter: NSObject {
     // 세번째 : 텍스트 파일에서 문제의 거의 모든 정보를 가져오는 매우 중요한 함수
     // -사용하는 함수 checkPath, getText, matchingStrings, sliceString
     
-    func parseQustionsFromTextFile(testSep: String, queSep: String, selSep: String, numberOfSels: Int?) {
+    func parseQustionsFromTextFile(testSep: String, queSep: String, selSep: String, numberOfSels: Int?, prefixPattern: String? = nil ) {
         
         
         
@@ -216,6 +216,9 @@ class DataConverter: NSObject {
             
             // \r이 들어있는 텍스트는 뒤에서 사용하기 귀찮으므로 이를 의미가 다를바 없는 \n으로 모두 변경할 것이다. 2017. 5. 13.
             wholeTestString = wholeTestString.replacingOccurrences(of: "\r", with: "\n")
+            
+            // " "와 " "은 차이가 난다고 한다 대체 뭐가다른지 모르겠지만.. 그래서 모두 " "로 변경할 것이다. 2017. 6. 2.
+            wholeTestString = wholeTestString.replacingOccurrences(of: " ", with: " ")
             
             // 여기에 추후 <u> </u> 태그 사이의 글을 밑줄로 표시해주는 기능을 추가해야한다.
             
@@ -333,11 +336,28 @@ class DataConverter: NSObject {
                     
                     // 문제의 Passage인 <p> </p>를 처리
                     
+                    
                     if let taggedTest = contentRaw.getTaggedText("p").taggedText {
                         newQuestion.passage = taggedTest
                         contentRaw = contentRaw.getTaggedText("p").modifiedText
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "지문 추가"))
                     }
+                    
+//                    2023. 6. 1. 5.0으로 업그레이
+//                    if let taggedTest = contentRaw.getTaggedText("p").taggedText {
+//                        newQuestion.passage = taggedTest
+//                        contentRaw = contentRaw.getTaggedText("p").modifiedText
+//                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 추가"))
+//                    }
+                    
+                    
+                    
+//                    변경된 사항:
+
+//                    String(newQuestion.number).characters.count를 String(newQuestion.number).count로 수정했습니다. Swift 5.0부터 characters 속성이 제거되었으며, 대신에 count 속성을 사용하여 문자열의 길이를 가져올 수 있습니다.
+//                    getTaggedText("p")를 getTaggedText("p")?로 수정했습니다. Swift 5.0에서 옵셔널 체이닝 문법이 변경되었으며, 메서드 호출 결과가 옵셔널 타입일 때 ?를 사용하여 안전하게 옵셔널 체이닝할 수 있습니다.
+                    
+                    
                     
                 // 1-2. 지문Suffix
                     
@@ -347,7 +367,7 @@ class DataConverter: NSObject {
                         }
                         newQuestion.passageSuffix = taggedTest
                         contentRaw = contentRaw.getTaggedText("d").modifiedText
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "지문 suffix 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "지문 suffix 추가"))
                     }
 
                     
@@ -360,7 +380,7 @@ class DataConverter: NSObject {
                     let contentRawTemp = contentRaw
                     contentRaw = anotherSelectionPaser(contentRaw)
                     if contentRawTemp != contentRaw {
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지에 있는 다른 진술에 관한 정보 태그<anotherStatement>을 반영함"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "선택지에 있는 다른 진술에 관한 정보 태그<anotherStatement>을 반영함"))
                     }
                     
                     
@@ -398,12 +418,12 @@ class DataConverter: NSObject {
                     
                     if let numberOfSelectionsWrapped = numberOfSels {
                         if selectionStringSliced.count != numberOfSelectionsWrapped {
-                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지가 필요한 갯수 \(numberOfSelectionsWrapped)와 다른 \(selectionStringSliced.count)개 확인)"))
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "선택지가 필요한 갯수 \(numberOfSelectionsWrapped)와 다른 \(selectionStringSliced.count)개 확인)"))
                             fatalError("\(testString.key) - \(questionTitle) 에는 선택지가 필요한 갯수인 \(numberOfSelectionsWrapped)개와 다른 \(selectionStringSliced.count)개가 있음")
                         }
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(필요한 개수와 동일)"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(필요한 개수와 동일)"))
                     } else {
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(시험마다 동일한지 체크안함)"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "선택지 \(newQuestion.selections.count)개 확인(시험마다 동일한지 체크안함)"))
                     }
                     
                     // 문제텍스트에서 선택지 텍스트를 제거함, 이게 문제의 content가 될 수 있음
@@ -438,7 +458,7 @@ class DataConverter: NSObject {
                     newQuestion.lists = listParserResult.lists
                     if listsString != nil {
                         newQuestion.questionType = .Find
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "목록 선택지 \(newQuestion.lists.count)개 확인"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "목록 선택지 \(newQuestion.lists.count)개 확인"))
                     }
                     
                     
@@ -457,8 +477,25 @@ class DataConverter: NSObject {
                         newQuestion.questionSuffix = contentSuffix?.trimmingCharacters(in: .whitespacesAndNewlines)
                     }
                     if newQuestion.questionSuffix != nil {
-                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문 suffix 추가"))
+                        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "질문 suffix 추가"))
                     }
+                    
+                    
+                //5-2. 질문 prefix 사항
+                    if let prefixPatternUnwrapped = prefixPattern {
+                        let range = contentRaw.range(of: prefixPatternUnwrapped, options: .regularExpression)
+                        if range != nil {
+                            newQuestion.contentPrefix = contentRaw.substring(with: range!)
+                            contentRaw = contentRaw.substring(with: range!.upperBound..<contentRaw.endIndex)
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "질문 prefix 추가 : \(newQuestion.contentPrefix!)"))
+                        } else {
+                            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "질문 prefix 찾을 수 없음"))
+                        }
+                        
+                    }
+                    
+                    
+                    
                     
                 //6. 질문
                     
@@ -481,7 +518,7 @@ class DataConverter: NSObject {
                             if newQuestion.contentNote == nil {
                                 newQuestion.contentNote = result.textToElimate!
                                 contentRaw = result.elimatedText
-                                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "질문에 Note \"\(newQuestion.contentNote!)\" 추출"))
+                                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "질문에 Note \"\(newQuestion.contentNote!)\" 추출"))
                             } else {
                                 fatalError("\(path.path) 파일 \(testString.key) \(newQuestion.number) 질문에 질문노트가 여러개 발견되었음")
                             }
@@ -554,7 +591,7 @@ class DataConverter: NSObject {
                         }
                     }
                     
-                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).characters.count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: (String(repeating: " ", count: String(newQuestion.number).count) + "  - " + "문제 타입은 \(newQuestion.questionType) \(newQuestion.questionOX)"))
                     
                     
                     
@@ -813,7 +850,7 @@ class DataConverter: NSObject {
         // https://code.tutsplus.com/tutorials/swift-and-regular-expressions-swift--cms-26626
         // Swift and Regular Expressions: Swift
         let regex = try! NSRegularExpression(pattern: regexPattern, options: .anchorsMatchLines) // .anchorsMatchLines 옵션사용
-        let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: string.characters.count))
+        let matches = regex.matches(in: string, options: [], range: NSRange(location: 0, length: string.count))
         
         var previousMatch : NSTextCheckingResult? = nil  // 버퍼
         
@@ -827,7 +864,7 @@ class DataConverter: NSObject {
             }
             
             if index == matches.count - 1 {
-                let range = NSRange(location: match.range.location+match.range.length, length: (string.characters.count - (match.range.location+match.range.length)))
+                let range = NSRange(location: match.range.location+match.range.length, length: (string.count - (match.range.location+match.range.length)))
                 let seperator = (string as NSString).substring(with: match.range)
                 let residual = (string as NSString).substring(with: range)
                 listsDictionary[seperator] = residual
@@ -1070,8 +1107,8 @@ extension String {
         let nsString = self as NSString
         let results  = regex.matches(in: self, options: [], range: NSMakeRange(0, nsString.length))
         return results.map { result in
-            (0..<result.numberOfRanges).map { result.rangeAt($0).location != NSNotFound
-                ? nsString.substring(with: result.rangeAt($0))
+            (0..<result.numberOfRanges).map { result.range(at: $0).location != NSNotFound
+                ? nsString.substring(with: result.range(at: $0))
                 : ""
             }
         }

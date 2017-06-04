@@ -30,6 +30,7 @@ class Solver : DataStructure {
     
     // 문제를 푼 뒤에 입력하는 항목
     var date : Date? = nil
+    var duration : Double? = nil // 문제푼시간
     var isRight : Bool? = nil
     var comment : String = ""
     
@@ -787,7 +788,8 @@ extension MutableCollection where Indices.Iterator.Element == Index {
             let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
             guard d != 0 else { continue }
             let i = index(firstUnshuffled, offsetBy: d)
-            swap(&self[firstUnshuffled], &self[i])
+            self.swapAt(firstUnshuffled, i)
+//            swap(&self[firstUnshuffled], &self[i]) 2023. 6. 1.
         }
     }
 }

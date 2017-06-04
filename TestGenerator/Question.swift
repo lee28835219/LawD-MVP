@@ -90,10 +90,15 @@ class Question : DataStructure {
     //목록에 자동으로 iscOrrect와 isAnswer를 찍어주는 함수
     //정답이 제대로 입력 안되있으면 못찼음
     //현재 FO와 FX만 구현됨, FC는 못찾음
+    // select 형식일 경우에도 selection별로 찍어주도록 추가함 2017. 5. 31.
     public func findAnswer() -> Bool {
         
         guard let ans = self.answerSelection else {
             fatalError("정답 포인터가 없어서 정답을 찾을 수 없음 \(self.key)")
+        }
+        
+        for sel in selections {
+            sel.findAnswer()
         }
         
         switch questionType {
@@ -146,46 +151,6 @@ class Question : DataStructure {
         case .Unknown:
             return false
         }
-        
-//        switch self.questionType {
-//        case .Find:
-//            switch self.questionOX {
-//            // Find O일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = true, isAnswer = true
-//            case .O:
-//                for listSel in lists {
-//                    let listSelString = listSel.getListString()
-//                    if ans.content.range(of: listSelString) != nil {
-//                        listSel.iscOrrect = true
-//                        listSel.isAnswer = true
-//                        self.answerLists.append(listSel)
-//                    } else {
-//                        listSel.iscOrrect = false
-//                        listSel.isAnswer = false
-//                    }
-//                }
-//                return true
-//            // Find X일 경우 정답지 숫자에 있는 문자가 문자선택지를 포함하면 iscOrrect = false, isAnswer = true
-//            case .X:
-//                for listSel in lists {
-//                    let listSelString = listSel.getListString()
-//                    if ans.content.range(of: listSelString) != nil {
-//                        listSel.iscOrrect = false
-//                        listSel.isAnswer = true
-//                        self.answerLists.append(listSel)
-//                    } else {
-//                        listSel.iscOrrect = true
-//                        listSel.isAnswer = false
-//                    }
-//                }
-//                return true
-//            default:
-//                //print("\(questionType)\(questionOX) 유형문제 정답을 찾으려고 했으나 확인할 수 없음 ", self.key)
-//                return false
-//            }
-//        default: // 정답을 찾는 대상이 아님
-//            return false
-//        }
-        
     }
     
     
@@ -201,9 +166,13 @@ class Question : DataStructure {
             // selection.listInContentOfSelection = []
             
             // 초기화보다는 잘못된 함수호출인 셈이니 치명적 에러를 발생시킴이 맞을 듯 2017. 5. 9.
-            if selection.listInContentOfSelection != [] {
-                fatalError("잘못된 함수호출 _setlistInContentOfSelection(), 선택지의 내용안에 있는 목록지가 초기화되지 않은 상태에서 호출됨")
-            }
+            // 문제 정답을 수정하면서 이 함수를 호출할 때는 더이상 listInContentOfSelection이 []이 아닌데 여기서 에러 체크 하면 프로그램 진행이 안됨 그래서 []이 아닐때는 다시 []초기화 시켜주고 프로그램을 진행하도록 수정 2017. 5. 31.
+            // 덮어씌어서 ㄱ,ㄴ,ㄷ이 이중으로 추가되는 문제 방지를 위해서, 아래 조건식은 꼭 필요할 것이며 []이 아니면 []로 다시 초기화 하는 액션 필요함
+            // if selection.listInContentOfSelection != [] {
+                // fatalError("잘못된 함수호출 _setlistInContentOfSelection(), 선택지의 내용안에 있는 목록지가 초기화되지 않은 상태에서 호출됨")
+            //}
+            selection.listInContentOfSelection = []
+        
             for list in lists {
                 // 선택지에 문제의 목록 문자가 존재하는지 확인하는 분기
                 if selection.content.range(of: list.getListString()) != nil {
@@ -230,122 +199,6 @@ extension Question {
         }
         return result
     }
-    
-    
-    
-    
-    //    func modifyQuestion(_ question: Question) {
-    //
-    //        print("수정할 문제의 항목을 선택-반전목록지 수정(2),반전선택지 수정(3),모든 반전내용 자동입력(4),문제보기(show),종료(end) $ ", terminator:"")
-    //        let input = io.getInput()
-    //
-    //        switch input {
-    //        case "end" :
-    //            return
-    //
-    //        case "show" :
-    //
-    //            Solver(question).publish(outputManager: outputManager, showAttribute: true, showAnswer: true, showTitle: true, showOrigSel: false)
-    //
-    //            print()
-    //            print("<반전된 문제>")
-    //            question.controversalPublish()
-    //            modifyQuestion(question)
-    //            return
-    //
-    //        // 문제 수정을 시작
-    //        case "2" :
-    //            guard let list = selectList(question) else {
-    //                modifyQuestion(question)
-    //                return
-    //            }
-    //            list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(), notContent: list.notContent, targetNumber: list.getListString()+".")
-    //
-    //        case "3" :
-    //            if question.questionType == QuestionType.Find {
-    //                print("> 해당 문제 타입은 선택지를 수정할 수 없음-계속()", terminator: "")
-    //                _ = readLine()
-    //                modifyQuestion(question)
-    //                return
-    //            }
-    //
-    //            guard let selection = selectSelection(question) else {
-    //                modifyQuestion(question)
-    //                return
-    //            }
-    //            selection.notContent = modifyControversalContent(name: "선택지", content: selection.content, contentOX: selection.getOX(), notContent: selection.notContent, targetNumber: selection.number.roundInt)
-    //
-    //        case "4" :
-    //            print()
-    //            let listNumber = question.lists.count
-    //            if listNumber != 0 {
-    //
-    //                print("> 목록 \(listNumber)개 수정을 진행")
-    //                for (index,list) in question.lists.enumerated() {
-    //
-    //                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-    //                    print("> 목록지 \(index+1) / \(listNumber) 수정진행..")
-    //                    list.notContent = modifyControversalContent(name: "목록지", content: list.content, contentOX: list.getOX(),notContent: list.notContent, targetNumber: list.getListString()+".")
-    //                }
-    //            }
-    //
-    //            let selNumber = question.selections.count
-    //            print("> 선택지 \(selNumber)개 수정을 진행")
-    //
-    //            if question.questionType != .Find {
-    //                for (index,sel) in question.selections.enumerated() {
-    //
-    //                    print("> 질문 : \(question.content) (\(question.questionType)\(question.questionOX))")
-    //                    print("> 선택지 \(index+1) / \(selNumber) 수정진행..")
-    //                    print("-. 선택지 : \(sel.number.roundInt)")
-    //                    sel.notContent = modifyControversalContent(name: "선택지", content: sel.content, contentOX: sel.getOX(),notContent: sel.notContent, targetNumber: sel.number.roundInt)
-    //                }
-    //            }
-    //
-    //
-    //        default:
-    //            modifyQuestion(question)
-    //            return
-    //        }
-    //
-    //        var goon = true
-    //        while goon {
-    //            print("<반전된 문제> - 변경됨")
-    //            question.controversalPublish()
-    //
-    //            print("변경사항을 저장?()-저장 후 계속문제 수정(m),저장 없이 계속문제 수정(n),종료(e) $ ", terminator: "")
-    //
-    //            guard let input = readLine() else {
-    //                print("유효하지 않은 입력")
-    //                continue
-    //            }
-    //
-    //            if input == "e" || input == "ㄷ" {
-    //
-    //                print(">"+question.key+" 저장하지 않음")
-    //                return
-    //
-    //            } else if input == "m" || input == "ㅡ" {
-    //
-    //                print(">"+question.key+" 저장완료")
-    //                _ = outputManager.saveTest(question.test)
-    //                modifyQuestion(question)
-    //                return
-    //                
-    //            } else if input == "n" || input == "ㅜ" {
-    //                
-    //                modifyQuestion(question)
-    //                return
-    //            }
-    //            
-    //            print(">"+question.key+" 저장완료")
-    //            _ = outputManager.saveTest(question.test)
-    //            
-    //            print("")
-    //            goon = false
-    //        }
-    //    }
-
 }
 
 
@@ -371,7 +224,7 @@ extension String {
         // 공부해야함 (+) 2017. 5. 4.
         
         var str = ""
-        let chars = self.characters
+        let chars = self
         
         var pointer = 0
         for (_,char) in chars.enumerated() {

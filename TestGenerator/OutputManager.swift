@@ -170,7 +170,7 @@ class OutputManager {
         
         //이력
         if showHistory {
-            io.writeMessage(to: .title, "[풀이이력] " + (totalNumber ==  0 ? "없음" : "정답율 \(answerRate.description)%, (\(rightNumber) / \(totalNumber))"))
+            io.writeMessage(to: .title, "[풀이이력] " + (totalNumber ==  0 ? "없음" : "정답율 \(String(format: "%.1f", answerRate))%, (\(rightNumber) / \(totalNumber))"))
             io.writeMessage()
             for (index,date) in solveDate.enumerated() {
                 if date == nil || isRight[index] == nil {

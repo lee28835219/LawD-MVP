@@ -486,7 +486,7 @@ class InstManagerQuestionsGet {
             return questions
         }
         
-        if input.characters.first == "~" {
+        if input.first == "~" {
             
             
             // 좀더 정치한 논리로 ~ 태그 제외 기능 추가 필요 2017. 5. 28. (+)
