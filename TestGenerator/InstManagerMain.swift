@@ -31,7 +31,6 @@ class InstManagerMain {
         self.instManagerQuestionsGet = InstManagerQuestionsGet(testDatabase, io : self.io)
     }
     
-    
     func didInitializationComplete() {
         
         var shouldExit = false
@@ -40,90 +39,91 @@ class InstManagerMain {
 
             let (instruction,value) = io.getInstMain(io.getInput())
             
-            
+            // ★★★★★★★ 콘솔에서 유저의 요청을 "수행"하는 가장 핵심적인 구문
             switch instruction {
                 
-            case .exit:
-                shouldExit = true
-                
-                
-            case .help:
-                io.writeMessage(to: .notice, io.getHelp(.InstMain))
-            
-            case .book:
-                editBookStructure(books)
-                
-            case .keys:
-                let (inst,value) = io.getQuestionsGet(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstQuestionsGet)))
-                showKeys(inst, value : value)
-                
-            case .publish:
-                let generatorUnwrapped = publishAndSolver(.publish)
-                handleQuestionGenerator(generatorUnwrapped, instMain: instruction)  // 원래는 instQuestion이 전달되야 하나 여기서 변환하기 귀찮으므로 함수에서 변환하는 기능 내장
-                
-            case .publishOriginal:
-                let generatorUnwrapped = publishAndSolver(.publishOriginal)
-                handleQuestionGenerator(generatorUnwrapped, instMain: instruction)
-            
-            case .publishShuffled:
-                let generatorUnwrapped = publishAndSolver(.publishShuffled)
-                handleQuestionGenerator(generatorUnwrapped, instMain: instruction)
-            
-            case .solve:
-                let generatorUnwrapped = publishAndSolver(.solve)
-                handleSolverGenerator(generatorUnwrapped)
-                
-            case .solveShuffled:
-                let generatorUnwrapped = publishAndSolver(.solveShuffled)
-                handleSolverGenerator(generatorUnwrapped)
-            
-            case .solveControversal:
-                let generatorUnwrapped = publishAndSolver(.solveControversal)
-                handleSolverGenerator(generatorUnwrapped)
-                
-            case .solveIntensive:
-                let generatorUnwrapped = publishAndSolver(.solveIntensive)
-                handleSolverGenerator(generatorUnwrapped)
-                
-                
-            // OX 퀴즈 만들고 있음 2017.12.15.
-            case .solveOX:
-                let generatorUnwrapped = publishAndSolver(.solveOX)
-                handleSolverGenerator(generatorUnwrapped)
-                
-                
-            case .save:
-                let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
-                switch inst {
+                case .exit:
+                    shouldExit = true
                     
-                case .all:
-                    for testCategory in testDatabase.categories {
-                        for testSubject in testCategory.testSubjects {
-                            for test in testSubject.tests {
-                                saveTest(test)
+                    
+                case .help:
+                    io.writeMessage(to: .notice, io.getHelp(.InstMain))
+                
+                case .book:
+                    editBookStructure(books)
+                    
+                case .keys:
+                    let (inst,value) = io.getQuestionsGet(io.getInput("\(testDatabase.key)의 시험카테고리 모두출력, "+io.getHelp(.InstQuestionsGet)))
+                    showKeys(inst, value : value)
+                    
+                case .publish:
+                    let generatorUnwrapped = publishAndSolver(.publish)
+                    handleQuestionGenerator(generatorUnwrapped, instMain: instruction)  // 원래는 instQuestion이 전달되야 하나 여기서 변환하기 귀찮으므로 함수에서 변환하는 기능 내장
+                    
+                case .publishOriginal:
+                    let generatorUnwrapped = publishAndSolver(.publishOriginal)
+                    handleQuestionGenerator(generatorUnwrapped, instMain: instruction)
+                
+                case .publishShuffled:
+                    let generatorUnwrapped = publishAndSolver(.publishShuffled)
+                    handleQuestionGenerator(generatorUnwrapped, instMain: instruction)
+                
+                case .solve:
+                    let generatorUnwrapped = publishAndSolver(.solve)
+                    handleSolverGenerator(generatorUnwrapped)
+                
+                // ★★★★★★★★★★★★★★★★★★★★★★★★★핵심 구문 중에서도, 이 앱의 존재이유를 콘솔에서 수행하는 가장 중요한 구문
+                case .solveShuffled:
+                    let generatorUnwrapped = publishAndSolver(.solveShuffled)
+                    handleSolverGenerator(generatorUnwrapped)
+                
+                case .solveControversal:
+                    let generatorUnwrapped = publishAndSolver(.solveControversal)
+                    handleSolverGenerator(generatorUnwrapped)
+                    
+                case .solveIntensive:
+                    let generatorUnwrapped = publishAndSolver(.solveIntensive)
+                    handleSolverGenerator(generatorUnwrapped)
+                    
+                    
+                // OX 퀴즈 만들고 있음 2017.12.15.
+                case .solveOX:
+                    let generatorUnwrapped = publishAndSolver(.solveOX)
+                    handleSolverGenerator(generatorUnwrapped)
+                    
+                    
+                case .save:
+                    let (inst,value) = io.getSave(io.getInput("저장할 형식을 선택, "+io.getHelp(.InstSave)))
+                    switch inst {
+                        
+                    case .all:
+                        for testCategory in testDatabase.categories {
+                            for testSubject in testCategory.testSubjects {
+                                for test in testSubject.tests {
+                                    saveTest(test)
+                                }
                             }
                         }
-                    }
 
-                case .test:
-                    let selectedTest = instManagerQuestionsGet.selectTest(instManagerQuestionsGet.selectTestSubject(instManagerQuestionsGet.selectTestCategory(testDatabase)))
-                    saveTest(selectedTest)
+                    case .test:
+                        let selectedTest = instManagerQuestionsGet.selectTest(instManagerQuestionsGet.selectTestSubject(instManagerQuestionsGet.selectTestCategory(testDatabase)))
+                        saveTest(selectedTest)
+                        
+                    case .unknown:
+                        io.unkown(value)
+                        
+                    }
                     
-                case .unknown:
+                    
+                case .edit:
                     io.unkown(value)
                     
-                }
+                case .refresh:
+    //                storageManager.refresh(io: io) // 구현실패 2017. 5. 20.
+                    io.unkown(value)
                 
-                
-            case .edit:
-                io.unkown(value)
-                
-            case .refresh:
-//                storageManager.refresh(io: io) // 구현실패 2017. 5. 20.
-                io.unkown(value)
-            
-            case .unknown:
-                _ = io.unkown(value, true)
+                case .unknown:
+                    _ = io.unkown(value, true)
             }
         }
     }
@@ -199,8 +199,8 @@ extension InstManagerMain {
         }
     }
     
-    
     // 출력이 nil인 경우는 유저가 문제를 풀다가 e[x]it 커맨드를 해서 강제종료하려고 하는 경우
+    
     func publishAndSolver(_ _instMainSub : _InstMainSub) -> Generator? {
         
         //// 1. 명령에 대한 개요를 출력하고 어느 범위의 문제를 처리할지를 결정
@@ -280,7 +280,6 @@ extension InstManagerMain {
         return generator
     }
     
-    
     func handleSolverGenerator(_ generator : Generator?) {
         if let generator = generator {
             
@@ -319,7 +318,6 @@ extension InstManagerMain {
             io.writeMessage(to: .notice, "문제풀이 강제종료함")
         }
     }
-    
     
     func handleQuestionGenerator(_ generatorUnwrapped : Generator?, instMain : InstMain) {
         
@@ -419,7 +417,6 @@ extension InstManagerMain {
             }
         }
     }
-    
     
     func saveTest(_ selectedTest : Test?) {
         guard let selectedTestWrapped = selectedTest else {
@@ -586,25 +583,3 @@ extension InstManagerMain {
     }
     
 }
-
-
-
-
-// Does there exist within Swift's API an easy way to remove duplicate elements from an array?
-// http://stackoverflow.com/questions/25738817/does-there-exist-within-swifts-api-an-easy-way-to-remove-duplicate-elements-fro
-// 담에 공부하자 2017. 5. 21.
-extension Array where Element:Hashable {
-    var unique: [Element] {
-        var set = Set<Element>() //the unique list kept in a Set for fast retrieval
-        var arrayOrdered = [Element]() //keeping the unique list of elements but ordered
-        for value in self {
-            if !set.contains(value) {
-                set.insert(value)
-                arrayOrdered.append(value)
-            }
-        }
-        
-        return arrayOrdered
-    }
-}
-

@@ -19,7 +19,7 @@ if CommandLine.argc > 1 {
 }
 
 
-let g_testDatabase = TestDatabase()
+let g_testDatabase = TestDatabase(UUID())
 let g_storageManager = StorageManager(g_testDatabase)
 print(g_storageManager.log)
 //let g_new_storageManager = StorageManager(g_testDatabase)
@@ -81,6 +81,3 @@ g_instrcutionManger.didInitializationComplete()
 
 
 print("bye!")
-
-
-

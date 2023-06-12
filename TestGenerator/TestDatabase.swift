@@ -6,7 +6,7 @@
 //  Copyright © 2017년 MasterBuilder. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 class TestDatabase: DataStructure {
     
@@ -19,8 +19,8 @@ class TestDatabase: DataStructure {
     var tagAddress : [(tag : String, dataType : DataType, foreignKey : String)] = []
     
     
-    override init(_ key: String = "Default") {
-        super.init(key)
+    override init(_ id: UUID, _ key: String = "Default") {
+        super.init(UUID(), key)
     }
     
     func removeVoidPointer() -> [String] {

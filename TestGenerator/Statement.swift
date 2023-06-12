@@ -42,7 +42,7 @@ class Statement : DataStructure {
         
         // Statement는 오로지 key가 있어야만 존재할 수 있긴한데
         // 이를 OX문제로 향후에 변경하도록 수정할 때를 대비해서 key 관리방안을 고민해야되긴 한다 2017. 5. 6,
-        super.init(key)
+        super.init(UUID(), key)
     }
     
     func getOX() -> String {

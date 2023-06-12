@@ -6,7 +6,7 @@
 //  Copyright © 2017년 MasterBuilder. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 class Selection: Statement {
     // key 부여방식 답선택지이면 SN접두어, ㄱ,ㄴ,ㄷ이면 KC접두어, 가,나,다이면 KL접두어

@@ -124,20 +124,20 @@ class InstManagerQuestion {
                 io.writeMessage(to: .notice, "\(question.key) 문제 수정완료")
                 
                 // 수정 끝날 때마다 저장을 실행합시다.
-                _ = question.test.save()
+                _ = question.test?.save()
 
             } else {
                 io.writeMessage(to: .notice, "\(question.key) 문제 수정하지 않음")
             }
             
         case .save:
-            _ = question.test.save()
+            _ = question.test?.save()
             
         case .next:
             return (solversRetrun, false)
             
         case .nextWithSave:
-            _ = question.test.save()
+            _ = question.test?.save()
             return (solversRetrun, false)
             
         case .exit:

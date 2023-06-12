@@ -10,7 +10,7 @@ import Foundation
 
 class Question : DataStructure {
 ////내가 무엇인지
-    let test : Test
+    let test : Test?
     var cases = [String]()
     var revision : Int
     
@@ -63,7 +63,7 @@ class Question : DataStructure {
     var solvers = [Solver]()
     
     
-    init(revision : Int, test : Test, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
+    init(revision : Int, test : Test?, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
         self.revision = revision
         self.test = test
@@ -74,14 +74,15 @@ class Question : DataStructure {
         self.answer = answer
         self.number = number
         
-        let key = self.test.key + "=" + String(format: "%04d", self.number)
+        let key = (self.test?.key ?? "") + "=" + String(format: "%04d", self.number)
         
-        if !test.questions.filter({$0.key == key}).isEmpty {
+        let ques = test?.questions ?? []
+        if !ques.filter({$0.key == key}).isEmpty {
             fatalError("잘못된 문제key 입력 이미 \(key)이 존재함")
         }
-        super.init(key)
+        super.init(UUID(), key)
         
-        self.test.questions.append(self)
+        self.test?.questions.append(self)
     }
     
     
@@ -266,6 +267,20 @@ extension String {
         }
         return str
     }
+    
+    
+//    2023. 6. 13. 스위프트유아이를 위해 추가
+    func truncateString(_ str: String, maxLength: Int) -> String {
+        var truncatedString = str
+
+        if truncatedString.count > maxLength {
+            let endIndex = truncatedString.index(truncatedString.startIndex, offsetBy: maxLength)
+            truncatedString = truncatedString[..<endIndex] + "..."
+        }
+
+        return truncatedString
+    }
+    
 }
 
 

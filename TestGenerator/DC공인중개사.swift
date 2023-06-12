@@ -6,7 +6,7 @@
 //  Copyright © 2017년 MasterBuilder. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 //class DC공인중개사: DataConverter {
     

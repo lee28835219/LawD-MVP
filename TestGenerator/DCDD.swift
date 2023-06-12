@@ -13,7 +13,7 @@
 //  Copyright © 2017년 MasterBuilder. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 class DCDD : DataConverter {
     

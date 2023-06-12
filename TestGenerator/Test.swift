@@ -54,7 +54,7 @@ class Test : DataStructure {
             }
         }
         
-        super.init(str)
+        super.init(UUID(), str)
         testSubject.tests.append(self)
     }
 }

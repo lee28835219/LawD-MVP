@@ -8,7 +8,6 @@
 
 import Foundation
 class TestCategory : DataStructure {
-    
     let testDatabase : TestDatabase
     
     let category : String //변호사시험
@@ -49,7 +48,7 @@ class TestCategory : DataStructure {
         
         
         
-        super.init(key)
+        super.init(UUID(), key)
         testDatabase.categories.append(self)
     }
 }

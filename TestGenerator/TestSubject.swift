@@ -35,7 +35,7 @@ class TestSubject : DataStructure {
         }
         
         
-        super.init(key)
+        super.init(UUID(), key)
         self.testCategory.testSubjects.append(self)
     }
     

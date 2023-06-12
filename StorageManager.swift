@@ -7,13 +7,14 @@
 //
 
 import Foundation
+import Combine
 
-class StorageManager {
-    
+class StorageManager: ObservableObject {
+
     let testDatabase : TestDatabase
     let rootURL : URL
     
-    var log : String
+    @Published var log : String
     
     
     init(_ testDatabase : TestDatabase) {
@@ -35,6 +36,8 @@ class StorageManager {
         } else {
             fatalError("시스템의 Document 폴더가 존재하지 않음")
         }
+        
+        print("\(self.rootURL)")
         
         
         guard let tempDatabase =  _parseJsons(.getNewer) else {
@@ -149,7 +152,7 @@ class StorageManager {
 
     
     func _parseJsons(_ parseJsonsOption : ParseJsonsOption) -> TestDatabase? {
-        let tempTestDatabase = TestDatabase()
+        let tempTestDatabase = TestDatabase(UUID())
         log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "옵션 \(parseJsonsOption)")
         
         
