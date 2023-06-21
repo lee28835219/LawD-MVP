@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GeneratorView: View {
+struct GeneratorView20230620: View {
     @ObservedObject var generator: Generator // 이게 결국 Test의 래퍼이므로, 기존 TestView 파일을 이 파일로 변경함
     
     @State var title : String? = nil

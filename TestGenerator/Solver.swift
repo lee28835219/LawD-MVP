@@ -12,34 +12,65 @@ class Solver : DataStructure, ObservableObject {
     var log = ""
     var isOXChangable = false
     
-    let question : Question //그 의미의 특성상 변해서는 안되는 속성이어서 var에서 let으로 변경함. 그 영향도 검토 필요. 2023. 6. 20. (-)
+    let question : Question //그 의미의 특성상 변해서는 안되는 속성이어서 var에서 let으로 변경함. 그 영향도를 항상 검토 필요. 2023. 6. 20. (-)
     
-    @Published var selections = [Selection]()
-    @Published var lists = [List]()
-    
+    var selections = [Selection]()
+    var lists = [ListSelection]()
     
     //공통, 초기화 단계에서 꼭 정답의 존재를 확인해야 함
-    @Published var answerSelectionModifed : Selection?
+    var answerSelectionModifed : Selection?
     
-    // 이 앱의 존재이유를 정의하는 파라미터★★★★★
-    @Published var isOXChanged = false
-    @Published var isAnswerChanged = false
+    // 이 앱의 존재이유를 정의하는 파라미터. 문제의 OX가 변경되어, 정답이 변경되었는지 ★★★★★
+    var isOXChanged = false
+    var isAnswerChanged = false
+    // 이에 대해 유저가 푼 문제를 직접 인스턴스에서 래핑하기 위해 변수를 추가 2023. 6. 20.
+    //문제
+    var number : Int = 0
+    var questionOX = QuestionOX.Unknown
+    var questionContent = ""
     
+    //리스트
+    var listsContent : [String] = []
+    var listsIscOrrect : [Bool?] = []
+    var listsIsAnswer : [Bool?] = []
+    var listsNumberString : [String] = []
+    var origialListsNumberString : [String] = []
+    
+    //선택지
+    var selectionsContent : [String] = []
+    var selsIscOrrect : [Bool?] = []
+    var selsIsAnswer : [Bool?] = []
+    var originalSelectionsNumber : [String] = []
+    
+    //정답
+    var ansSelNumber = 0
+    var ansSelContent = ""
+    var ansSelIscOrrect : Bool? = nil
+    var ansSelIsAnswer : Bool? = nil
+    
+    var originalAnsSelectionNumber = ""
+
     //Find유형 문제용
-    @Published var originalShuffleMap = [(original : List, shuffled : List)]()
-    @Published var answerListSelectionModifed = [List]()
+    @Published var originalShuffleMap = [(original : ListSelection, shuffled : ListSelection)]()
+    @Published var answerListSelectionModifed = [ListSelection]()
     
-    // 문제를 푼 뒤에 입력하는 항목
-    @Published var date : Date? = nil
+    // 문제를 풀면 입력하는 항목
+    @Published var chosenSelectionNumber : Int? = nil
+    @Published var chosenSelection : Selection? = nil  // 유저가 푼 선택지
+    @Published var isRight : Bool? = nil // 가장 중요한 결과
+    
+    @Published var date : Date? = nil  // 문제를 풀기 시작한 시간?
     @Published var duration : Double? = nil // 문제푼시간
-    @Published var isRight : Bool? = nil
-    @Published var comment : String = ""
+    
+    // 문제를 풀고 사용자가 입력하는 항목
+    @Published var comment : String = "" // 유저가 직접 입력하는 커멘트
+    @Published var commentDate : Date? = nil
     
     // hirechy 참고용
     let generator : Generator? = nil
     
     // shuffle 및 bypass용 초기화함수
-    init(_ question : Question, gonnaShuffle : Bool = false) {
+    init(_ question : Question, gonnaChange : Bool = false) {
         let key = "key"
         
         // 로그를 시작하는 부분
@@ -80,9 +111,9 @@ class Solver : DataStructure, ObservableObject {
         super.init(UUID(), key)
 //     추후 계속 초기화 단계의 에러체크를 추가합시다. (+) 2017. 5. 4.
         
-//     이제 gonnaShuffle을 중심으로 초기화를 시작함.
+//     이제 gonnaChange을 중심으로 초기화를 시작함.
 //     이 클래스에서 가장 중요한 부분
-        if gonnaShuffle {
+        if gonnaChange {
             // 문제변경
             log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "-\(question.key) 문제 변경을 시작함")
             
@@ -120,7 +151,7 @@ class Solver : DataStructure, ObservableObject {
             // 로그를 끝내는 부분
             log = ConsoleIO.closeLog(log, file: "\(#file)")
             
-            print(log)
+//            print(log)
         } else {
             // 문제 유지
             self.answerListSelectionModifed = question.answerLists
@@ -134,11 +165,66 @@ class Solver : DataStructure, ObservableObject {
             
             // print(log)
         }
+        
+        // 스위프트유아이에서의 출력 편의를 위하여, 유저가 푼 문제를 직접 래핑하기 위한 구문을 추가함. 2023. 6. 20.
+        // 질문
+        (self.questionOX, self.questionContent) = self.getModifedQuestion()
+        
+        // 목록
+        for (index, list) in self.lists.enumerated() {
+            let listResult = self.getModfiedStatementOfCommonStatement(statement: list)
+            // (content: String, iscOrrect: Bool?, isAnswer: Bool?)
+            listsContent.append(listResult.content)
+            listsIscOrrect.append(listResult.iscOrrect)
+            listsIsAnswer.append(listResult.isAnswer)
+            listsNumberString.append(list.getListString(int: index+1))
+            origialListsNumberString.append(list.getListString())
+        }
+        
+        //선택지와 정답
+        for (index,sel) in self.selections.enumerated() {
+            // 컴퓨팅 능력을 낭비하는 것이어서 찝찝 다른 방법으로 할 방법은? 출력이 튜플이라서 lazy var도 안된다. 2017. 5. 6. (-)
+            // var selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+            
+            // let (,,)형식으로 해결 2017. 5. 21.
+            var selResult : (content: String, iscOrrect: Bool?, isAnswer: Bool?) = ("", nil, nil)
+            
+            switch self.question.questionType {
+            case .Find:
+                switch self.question.questionOX {
+                case .O:
+                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .X:
+                    selResult = self.getModifedListContentStatementInSelectionOfFindTypeQuestion(selection: sel)
+                case .Correct:
+                    selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                case .Unknown:
+                    selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+                }
+            case .Select:
+                selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+            case .Unknown:
+                selResult = self.getModfiedStatementOfCommonStatement(statement: sel)
+            }
+            
+            selectionsContent.append(selResult.content)
+            selsIscOrrect.append(selResult.iscOrrect)
+            selsIsAnswer.append(selResult.isAnswer)
+            originalSelectionsNumber.append(sel.number.roundInt)
+            
+            if sel === self.answerSelectionModifed {
+                ansSelNumber = (index + 1)
+                ansSelContent = selResult.content
+                ansSelIscOrrect = selResult.iscOrrect
+                ansSelIsAnswer = selResult.isAnswer
+                originalAnsSelectionNumber = sel.number.roundInt
+            }
+        }
         return
     }
     
     // Restore용 초기화함수
-    init(_ question: Question, selections: [Selection], lists: [List], answerSelectionModifed: Selection?, isOXChanged: Bool, isAnswerChanged: Bool, originalShuffleMap: [(List,List)], answerListSelectionModifed : [List]) {
+    init(_ question: Question, selections: [Selection], lists: [ListSelection], answerSelectionModifed: Selection?, isOXChanged: Bool, isAnswerChanged: Bool, originalShuffleMap: [(ListSelection,ListSelection)], answerListSelectionModifed : [ListSelection]) {
         self.question = question
         self.selections = selections
         self.lists = lists
@@ -159,6 +245,44 @@ class Solver : DataStructure, ObservableObject {
             fatalError("error>>getAnswerNumber 실패함")
         }
         return ansNumber + 1
+    }
+    
+    // 사촌들을 모두 만들어내는 함수
+    func generateRandomSolvers(count: Int) -> [Solver] {
+        var newGen = [Solver]()
+        newGen.append(self)
+        print("호출된 문제 자신을 추가함.")
+        for i in 2...count {
+//            var gonnaAdd = true
+//            let newSol = Solver(self.question, gonnaChange: true)
+//            for sol in newGen {
+//                if sol.questionOX == newSol.questionOX &&
+//                        (sol.selections[0] == newSol.selections[0] &&
+//                         sol.selections[1] == newSol.selections[1] &&
+//                         sol.selections[2] == newSol.selections[2] &&
+//                         sol.selections[3] == newSol.selections[3] &&
+//                         sol.selections[4] == newSol.selections[4])
+//
+//                {
+//                    gonnaAdd = false
+//                }
+//            }
+//            if gonnaAdd {
+                newGen.append(Solver(self.question, gonnaChange: true))
+                print("작업중인 solver는 \(i)이며 문제 추가함.")
+//            } else {
+//                print("작업중인 solver는 \(i)이며 문제 추가안함.")
+//            }
+        }
+        
+//        newGen = newGen.sorted { $0.questionOX.rawValue < $1.questionOX.rawValue }
+        
+        // 솔버의 문제번호를 추가합니다.
+        for (i, sol) in newGen.enumerated() {
+            sol.number = i + 1
+        }
+        print("\(newGen.count) 문제 생성됨.")
+        return newGen
     }
     
     class func getWrappedContent(_ contentUnwrapped : String?) -> String {

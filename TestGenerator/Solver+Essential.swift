@@ -73,12 +73,12 @@ extension Solver {
     }
     
     // 이 앱의 존재이유를 보여주는 함수 열거타입. ★★★★★★★★★★★★★★★★★
-    func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [List], originalShuffleMap : [(List, List)], isAnswerChanged : Bool){
+    func changeFindTypeQuestion() -> (selections : [Selection], isOXChanged : Bool, answerListSelectionModifed : [ListSelection], originalShuffleMap : [(ListSelection, ListSelection)], isAnswerChanged : Bool){
         
         let selections = changeCommonTypeQuestionSelections()
         var isOXChanged = false
-        var answerListSelectionModifed = [List]()
-        var originalShuffleMap = [(List, List)]()
+        var answerListSelectionModifed = [ListSelection]()
+        var originalShuffleMap = [(ListSelection, ListSelection)]()
         var isAnswerChanged = false
         
         // 일단 FindCorrect 타입 질문이면 지문을 섞지 않음 향후 예도 정보를 읽어서 섞도록 하면 좋을 것 2017. 5. 12. (+)
@@ -249,7 +249,7 @@ extension Solver {
         // 1. 기본
         var selectionContentShuffled = ""
         var selectionContentShuffledArray = [String]()
-        var listSelInSelectionContentShuffled = [List]()
+        var listSelInSelectionContentShuffled = [ListSelection]()
         let iscOrrectShuffled : Bool? = nil
         
         // 조금더 정밀하게 고민 필요 2017. 5. 5. 일단 정답에다가 참을 찍어주도록 하였음

@@ -8,20 +8,54 @@
 
 import Foundation
 
-class Generator : ObservableObject {
-
+class Generator : ObservableObject, Identifiable {
+    var id = UUID()
     let key = ""
     
-    @Published var solvers = [Solver]()
-    @Published var solversChanged = [Solver]()
+    @Published var solvers : [Solver] //기존문제
+//    간단히 구현하기 위해 여러가지 어래이 정의를 생각했으나, 여러 컴퓨팅자원낭비인 거 같아서, 파라미터를 이용한 제어를 구현하려 함 (-) 2023. 6. 21.
+//    @Published var solversShuffled : [Solver]() //기존문제 순서 및 선택지 변경
+//    @Published var solversChanged : [Solver] //변경문제
+//    @Published var solversChnagedShffled : [Solver]() //기존문제 순서 및 선택지 변경
 
-    var testDate : Date? = nil
-    var timeConsume : Int? = nil
     
-    // Generator는 단순히 래핑이 목정이다보니, 초기화 함수는 불필요함.
+    @Published var solvedCount = 0
+
+    var date : Date
+    var timeConsume: TimeInterval = 0.0 // 시험 시간을 관리하는 변수 추가 2023. 6. 23.
+    var teimeConsumeString: String = "00:00:00"
     
-//    // 2023. 6. 19. swiftUI에서 코딩실력 미숙(-)으로 필요하다보니 추가로 test를 속성으로 추가함.
-//    let test : Test? = nil
+//    // 2023. 6. 19. swiftUI에서 코딩실력 미숙(-)으로 필요하다보니 추가로 test를 속성으로 추가하였다고 생각했습니다.,
+//    2023. 6. 23. 그러나 스위프트유아이의 정신은,데이터 처리는 모델에서 이루어지는 것이므로, 이 변수를 여기에 정의하는 것은 매우 적절합니다.
+    var test : Test? = nil // Test 클래스의 중요성에도 불구하고, 단순 참고용, 혹은 간단하게 초기화하기 위한 변수에 불과합니다. 왜나면 Generator는 Test의 래핑 클래스로 Question들의 모음 대신 Solver들의 모음을 관리하는 클래스이기 때문입니다.
+    
+    // Generator는 단순히 래핑이 목정이다보니, 초기화 함수는 불필요하나,
+    // 그러나 유연한 제네레이터 생성 편의를 위해 초기화 함수를 만들기 시작하였습니다. 2023. 6. 20.
+    init() {
+        solvers = []
+        date = Date()
+    }
+    
+    // Test를 받을 경우 생성하는 초기화함수로, 기존 시험이력에서 제네레이터를 생성하기에 매우 편리합니다.
+    convenience init(test : Test, gonnaChange: Bool) {
+        self.init()
+        self.test = test
+        
+//        test.questions 배열에서 각 질문(que)에 대해 Solver 인스턴스를 생성하고, solvers와 solversChanged 배열에 추가하는 코드를 간결하게 만들려면 map 함수를 사용할 수 있습니다.
+        solvers = test.questions.map { Solver($0, gonnaChange: gonnaChange) }
+    
+        // 제네레이터의 문제번호와 테스트 문제번호를 일치시켜줍니다.
+        // 만약 테스트의 questions 어레이 순서가 문제순서와 다를 경우 문제될 수 있어 수정 필요할 수 있습니다. 2023. 6. 24. (-)
+        for (i, solver) in solvers.enumerated() {
+            solver.number = i + 1
+        }
+    }
+    
+    // solvrs 중 푼 문제만 찾아주는 함수
+    func getSolved() -> [Solver] {
+        let solved = solvers.filter { $0.isRight != nil }
+        return solved
+    }
     
     func seperateWorngSolve() -> (correct : [Solver], wrong : [Solver]) {
         
@@ -52,7 +86,6 @@ class Generator : ObservableObject {
         
         return sum / Double(solveds.count)
     }
-    
     
     func getTestinSolvers() -> [Test] {
         let question = getQustioninSovers()

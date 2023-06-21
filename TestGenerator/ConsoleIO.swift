@@ -195,8 +195,10 @@ class ConsoleIO {
 //    - 출력은 `print` 함수 또는 `fputs` 함수를 사용하여 터미널에 이루어집니다.
 //
 //    이 함수를 사용하면 다양한 출력 유형에 따라 메시지를 색상으로 강조하여 터미널에 출력할 수 있습니다.
-    func writeMessage(to: OutputType = .standard, _ message: String = "") {
+    func writeMessage(to: OutputType = .plain, _ message: String = "") {
         switch to {
+        case .plain:
+            print(message)
         case .input:
             if ConsoleIO.isDebug {
                 print(message)
@@ -289,6 +291,7 @@ class ConsoleIO {
 }
 
 enum OutputType {
+    case plain
     case input
     case notice
     case alert

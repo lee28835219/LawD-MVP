@@ -1,5 +1,5 @@
 //
-//  List.swift
+//  ListSelection.swift
 //  TestGenerator
 //
 //  Created by Master Builder on 2017. 5. 5..
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class List: Statement {
+class ListSelection: Statement {
     var log = ""
     // key가 선택지이면 S접두어, ㄱ,ㄴ,ㄷ, 가,나,다이면 L접두어
     

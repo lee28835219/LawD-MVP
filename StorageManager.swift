@@ -627,7 +627,7 @@ class StorageManager: ObservableObject {
                     guard let testSubject__test__question__list_attribute_isAnswer = testSubject__test__question__list_attribute["isAnswer"] as? Bool? else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 isAnswer 찾을 수 없음"); return false}
                     guard let testSubject__test__question__list_attribute_selectStirng = testSubject__test__question__list_attribute["selectString"] as? String else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        list의 selectString 찾을 수 없음"); return false}
                     
-                    let new_list = List(revision: testSubject__test__question__list_attribute_revision, question: new_question, content: testSubject__test__question__list_attribute_content, selectString: testSubject__test__question__list_attribute_selectStirng)
+                    let new_list = ListSelection(revision: testSubject__test__question__list_attribute_revision, question: new_question, content: testSubject__test__question__list_attribute_content, selectString: testSubject__test__question__list_attribute_selectStirng)
                     
                     if new_list.key != list_key {
                         log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        유효하지 않은 Selection 키입력")

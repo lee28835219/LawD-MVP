@@ -295,7 +295,7 @@ class InstManagerQuestionsGet {
     
     
     
-    func selectList(_ questionUnwapped : Question?, showNot : Bool = true) -> List? {
+    func selectList(_ questionUnwapped : Question?, showNot : Bool = true) -> ListSelection? {
         guard let question = questionUnwapped else {
             print("> 목록지를 찾을 수 없음")
             return nil

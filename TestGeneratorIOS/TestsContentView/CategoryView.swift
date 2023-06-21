@@ -11,15 +11,14 @@ import SwiftUI
 // 변호사시험
 struct CategoryView: View {
     let selectedCategory: TestCategory
-    
+    @EnvironmentObject var generateHistory : GenerateHistory
+
     var body: some View {
-        SwiftUI.List(selectedCategory.testSubjects, id: \.self) { subject in
-                NavigationLink(destination: SubjectView(selectedSubject: subject)) {
-                Text(subject.subject)
-                        .onTapGesture {
-                            print("\(subject.subject) 선택됨.")
-                        }
-            }
+        List(selectedCategory.testSubjects, id: \.self) { subject in
+                NavigationLink(destination: TestsView(selectedSubject: subject)) {
+                    Text(subject.subject)
+                }
+                .environmentObject(generateHistory)
             .navigationTitle(selectedCategory.category)
         }
     }

@@ -49,12 +49,12 @@ class Question : DataStructure {
     ////식구들이 정해지면 내가 찾아야 하는 존재
     //선택지가 없는 상태에서는 런타임에서도 존재하지 않음, 에러체크 방법 다시 숙고(+) 2017. 4. 26.
     weak var answerSelection: Selection?
-    var answerLists = [List]()
+    var answerLists = [ListSelection]()
     
     
     ////내 식구들은 누구인지
     var selections = [Selection]() //원본
-    var lists = [List]() //원본
+    var lists = [ListSelection]() //원본
     
     
     // 문제풀이 이력 드디어 추가 2017. 5. 20.
