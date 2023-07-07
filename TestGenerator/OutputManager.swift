@@ -346,6 +346,13 @@ extension Date {
         return dateString
     }
     
+    var HHmm2 : String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy. M. d. H:mm"
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        let dateString = dateFormatter.string(from: self)
+        return dateString
+    }
     
     var HHmmss : String {
         let dateFormatter = DateFormatter()

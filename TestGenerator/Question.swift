@@ -62,7 +62,6 @@ class Question : DataStructure {
     // 향후 추가정보를 다룰 수 잇도록 수정 필요 (+)
     var solvers = [Solver]()
     
-    
     init(revision : Int, test : Test?, number : Int, questionType : QuestionType, questionOX : QuestionOX , content : String, answer : Int) {
         
         self.revision = revision

@@ -14,8 +14,8 @@ class StorageManager: ObservableObject {
     let testDatabase : TestDatabase
     let rootURL : URL
     
+    let isLocal : Bool = true // 2023. 7. 8. 추가함. 모든 시뮬레이션에서 동일한 데이터를 이용하기 위한 고육지책으로, 퍼블리 전 꼭 확인해야할 부분입니다. (-)
     @Published var log : String
-    
     
     init(_ testDatabase : TestDatabase) {
         
@@ -23,21 +23,24 @@ class StorageManager: ObservableObject {
         
         log = ConsoleIO.newLog("\(#file)")
         
-        
-        // 작업을 시작할 디렉토리를 설정 Document/Test/Storage/DB의 key
-        if let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            self.rootURL = documentURL.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key)
-            if FileManager.default.fileExists(atPath: rootURL.path, isDirectory: nil) {
-                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)에서 \(testDatabase.key) testDB를 불러오기 시작")
-            } else {
-                log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)가 존재하지 않아 \(testDatabase.key) testDB를 불러오지 않음")
-                return
-            }
+        // 작업을 시작할 디렉토리를 설정 Document/Test/Storage/DB의 key 2017. 5.
+        // 중요!! 만약 isLocal일 경우에는, 현 프로젝트 안에 있는 db가 rootURL이 됩니다. 아닐 경우에는 실제 구동되는 앱이 가진 다큐먼트 안에 있는 db가 rootURL이 됩니다. 2023. 7. 8.
+        if isLocal {
+            self.rootURL = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("Data").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key)
         } else {
-            fatalError("시스템의 Document 폴더가 존재하지 않음")
+            if let documentURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                self.rootURL = documentURL.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage").appendingPathComponent(testDatabase.key) // TestGenerator 폴더가 꼭 필요한지 확인필요합니다. 2023. 7. 8. (-)
+                if FileManager.default.fileExists(atPath: rootURL.path, isDirectory: nil) {
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)에서 \(testDatabase.key) testDB를 불러오기 시작")
+                } else {
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path)가 존재하지 않아 \(testDatabase.key) testDB를 불러오지 않음")
+                    return
+                }
+            } else {
+                fatalError("시스템의 Document 폴더가 존재하지 않음")
+            }
         }
-        
-        print("\(self.rootURL)")
+        print("storageManager.rootURL - \(Date().HHmmSS) : \(self.rootURL)")
         
         
         guard let tempDatabase =  _parseJsons(.getNewer) else {
@@ -88,68 +91,6 @@ class StorageManager: ObservableObject {
         }
         return of
     }
-
-
-
-//    func refresh(io : ConsoleIO) {
-//        guard let tempDatabase = _parseJsons(.getNewer) else {
-//            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json파일에서 초기화 데이터를 추출하려했으나 에러가 발생!!!")
-//            return
-//        }
-//        
-//        
-//        let databaseSameKeyRemoved = _defineRangeOfTestToBeRefresh(of: tempDatabase, ioU: io)
-//        databaseSameKeyRemoved.removeVoidPointer()
-//        
-//        testDatabase.categories.append(contentsOf: databaseSameKeyRemoved.categories)
-//        
-//        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json 파싱 완료")
-//    }
-    
-    
-    
-    
-
-//if let io = ioU {
-//    if originalTest == nil || refreshAll {
-//        io.writeMessage(to: .notice, "\(newTest.jsonFileName!) 신규 추가")
-//    } else {
-//        
-//        var goon = true
-//        while goon {
-//            io.writeMessage(to: .input, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재함")
-//            let (instGoon, value) = io.getInstGoon(io.getInput("refresh 진행함"+io.getHelp(.InstGoon)))
-//            
-//            
-//            switch instGoon {
-//            case .yes:
-//                io.writeMessage(to: .notice, "refresh")
-//                // tempDatabase에 잇는 테스트를 보존해야 한다. 이것이 곧 refresh입장에선 덮어쓰기
-//                continue
-//            case .skip:
-//                io.writeMessage(to: .notice, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재하여 추가하지 않음")
-//                // tempDatabase에 있는 테스트를 삭제해야 한다. 이것이 곧 refresh입장에선 skip
-//                subject.tests.remove(at: subject.tests.index(of: newTest)!)
-//                
-//            case .stop:
-//                io.writeMessage(to: .notice, "refresh를 중단함")
-//                let voidDB = TestDatabase()
-//                return voidDB
-//                
-//            case .all:
-//                io.writeMessage(to: .notice, "모두 refresh 진행")
-//                refreshAll = true
-//                
-//            case .unknown:
-//                io.unkown(value, true)
-//                continue
-//            }
-//            goon = false
-//        }
-//        
-//    }
-//} else {
-
     
     func _parseJsons(_ parseJsonsOption : ParseJsonsOption) -> TestDatabase? {
         let tempTestDatabase = TestDatabase(UUID())
@@ -411,8 +352,7 @@ class StorageManager: ObservableObject {
         return tempTestDatabase
     }
     
-    
-    func _jsonToClass(_ jsonData : Data, _ new_test : Test)  -> Bool{
+    func _jsonToClass(_ jsonData : Data, _ new_test : Test)  -> Bool {
         do {
             
             let json = try JSONSerialization.jsonObject(with: jsonData, options: [])
@@ -463,7 +403,6 @@ class StorageManager: ObservableObject {
             
             
             // 문제를 파싱
-            
             guard let questionArray = testSubject__test["question"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        questions 찾을 수 없음"); return false}
             
             for question in questionArray {
@@ -648,11 +587,12 @@ class StorageManager: ObservableObject {
                     
                 }
                 
-                
-                guard let solverArray = testSubject__test__question["Solves"] as? [Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solves 찾을 수 없음"); return false}
-                
-                
-                
+                // 시험이력을 json에서 불러오는 구문. 문제는 이를 Qustion class에서 분리하는 것이 필요하고, 이를 퍼시스턴스로 저장하는 것도 별도 파일로 해야 하므로, 이는 제거되어야 합니다. 반드시 수정해야합니다. (-) 2023. 7. 8.
+                guard let solverArray = testSubject__test__question["Solves"] as? [Any] else {
+                    log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solves 찾을 수 없음");
+                    print(log)
+                    return false
+                }
                 for solver in solverArray {
                     guard let solverDictionary = solver as? [String:Any] else {log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "        solver 찾을 수 없음"); return false}
                     
@@ -676,21 +616,75 @@ class StorageManager: ObservableObject {
                 // new_test.questions.append(new_question)
             }
             
-            
             log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "     - \(testSubject__test_key) 파싱종료")
-            
-            
-            
         } catch {
-            
             fatalError("josn파싱 중 에러발생")
-            
         }
         
         return true
     }
+
+
+
+
+//    func refresh(io : ConsoleIO) {
+//        guard let tempDatabase = _parseJsons(.getNewer) else {
+//            log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json파일에서 초기화 데이터를 추출하려했으나 에러가 발생!!!")
+//            return
+//        }
+//        
+//        
+//        let databaseSameKeyRemoved = _defineRangeOfTestToBeRefresh(of: tempDatabase, ioU: io)
+//        databaseSameKeyRemoved.removeVoidPointer()
+//        
+//        testDatabase.categories.append(contentsOf: databaseSameKeyRemoved.categories)
+//        
+//        log = ConsoleIO.writeLog(log, funcName: "\(#function)", outPut: "\(rootURL.path.precomposedStringWithCompatibilityMapping)에 있는 json 파싱 완료")
+//    }
     
     
+    
+    
+
+//if let io = ioU {
+//    if originalTest == nil || refreshAll {
+//        io.writeMessage(to: .notice, "\(newTest.jsonFileName!) 신규 추가")
+//    } else {
+//        
+//        var goon = true
+//        while goon {
+//            io.writeMessage(to: .input, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재함")
+//            let (instGoon, value) = io.getInstGoon(io.getInput("refresh 진행함"+io.getHelp(.InstGoon)))
+//            
+//            
+//            switch instGoon {
+//            case .yes:
+//                io.writeMessage(to: .notice, "refresh")
+//                // tempDatabase에 잇는 테스트를 보존해야 한다. 이것이 곧 refresh입장에선 덮어쓰기
+//                continue
+//            case .skip:
+//                io.writeMessage(to: .notice, "이미 \(originalTest!.key)가 \(testDatabase.key) DB에 존재하여 추가하지 않음")
+//                // tempDatabase에 있는 테스트를 삭제해야 한다. 이것이 곧 refresh입장에선 skip
+//                subject.tests.remove(at: subject.tests.index(of: newTest)!)
+//                
+//            case .stop:
+//                io.writeMessage(to: .notice, "refresh를 중단함")
+//                let voidDB = TestDatabase()
+//                return voidDB
+//                
+//            case .all:
+//                io.writeMessage(to: .notice, "모두 refresh 진행")
+//                refreshAll = true
+//                
+//            case .unknown:
+//                io.unkown(value, true)
+//                continue
+//            }
+//            goon = false
+//        }
+//        
+//    }
+//} else {
 }
 
 enum ParseJsonsOption : String {

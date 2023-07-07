@@ -20,8 +20,9 @@ struct SolverView: View {
 //    @Binding var testMode : Bool
     @Binding var generatorViewMode : GeneratorViewMode
     
-    var showAnswer : Bool = false
-    var showResult : Bool = false
+//    let chosenSelectionNumber : Int? // 과거의 사용자 선택을 보여주는, .result일 경우에만 필요한 변수입니다. 반드시 명심할 것. 그러나 이는 이미 generator.chosenSelectionNumber에서 접근 가능하여 추가하지 않습니다. 2023. 6. 25.
+//    var showAnswer : Bool = false
+//    var showResult : Bool = false
     
     @State private var selectedNumber : Int?
     
@@ -30,11 +31,8 @@ struct SolverView: View {
             // 문제의 질문과 선택지를 보여주는 가장 기본적인 뷰입니다.
             VStack(alignment: .leading) {
                 // 질문
-//                let questionNumber = solver.question.number // 제네레이터의 셔플 생성을 대비해 문제 번호를 논리적으로 가져오도록 수정 필요합니다. 2023. 6. 21. (+)
-                let questionNumber = solver.number
-                Text("문. \(questionNumber) \(solver.questionContent)")
+                Text("문 \(solver.number). \(solver.questionContent)\(solver.questionContentNote.map { " \($0)" } ?? "")") // 문 1. 옳은 것은? (판례에 따름)
                     .font(.headline)
-//                    .foregroundColor(getTextColor(selectedNumber: selectedNumber))
                     .onTapGesture { // testMode가 꺼져있을 경우엔 selectedNumber가 nil일 수 밖에 없어 의미없지만, 켜져있다면 이 작업을 통해 사용자가 자신이 선택한 선택지를 취소할 수 있습니다.
                         if solver.chosenSelection != nil {
                             solver.chosenSelection = nil
@@ -52,36 +50,56 @@ struct SolverView: View {
                             }
                         }
                     }
+//                    .foregroundColor(getTextColor(selectedNumber: selectedNumber)) 2023. 6. 24. (-) 구조적으로 각각의 색 지정 검토가 필요합니다. 추후.
                 
+                
+                //목록, 이 부분은 문제에 목록이 없을 경우 표시되지 않습니다.
+                ZStack(alignment: .leading) {
+                    VStack {
+                        ForEach(Array(solver.listsContent.enumerated()), id: \.offset) { (index, listCon) in
+                            ListSelectionView(listsNumberString: solver.listsNumberString[index], listSelectionContent: listCon)
+                        }
+                    }
+                }
+                    .overlay(
+                        Rectangle()
+                            .stroke(style: StrokeStyle(lineWidth: 1))
+                            .foregroundColor(.black)
+                    )
+                
+                Spacer()
+
                 //선택지
                 ForEach(Array(solver.selectionsContent.enumerated()), id: \.offset) { (index, selCon) in
-                    // testMode일 때 선택지를 선택했을 경우 논리적 작업을 수행합니다. 그 내용의 가장 중요한 부분은 기존 nil이던 selectedSNumber를 사용자가 선택한 번호로 변경하는 것이며, 이를 이용해 뒤에서 사용한 구문을 통해 사용자가 선택한 선택지를 화면에 나타내 줄 수 도 있습니다.
                     VStack {
                         SelectionView(selectionContent: selCon, showNumber: index+1)
                         .environmentObject(generator)
-                        .onTapGesture { if case .test = generatorViewMode
-                            {
-                            // 사용자가 선택한 선택지에 관한 정보를 solver로 래핑하여 저장하는 부분입니다.
-                            solver.chosenSelectionNumber = index + 1
-                            solver.chosenSelection = solver.selections[index]
-                            if solver.chosenSelection == solver.answerSelectionModifed {
-                                solver.isRight = true
-                                print("[O] 사용자가 문. \(questionNumber)에서 정답(\((index+1).roundInt))을 선택하여 맞았음.")
-                            } else {
-                                solver.isRight = false
-                                print("[X] 사용자가 문. \(questionNumber)에서 \((index+1).roundInt)를 선택했으나, 정답은 \(solver.ansSelNumber)이므로 틀렸음.")
+                        // testMode일 때에만, 사용자가 선택지를 선택했을 때의 작업을 수행합니다.
+                        // 그 내용의 가장 중요한 부분은 기존 nil이던 selectedSNumber를 사용자가 선택한 번호로 변경하는 것이며, 이를 이용해 뒤에서 사용한 구문을 통해 사용자가 선택한 선택지를 화면에 나타내 줄 수 도 있습니다.
+                        .onTapGesture {
+                            if case .test = generatorViewMode {
+                                // 사용자가 선택한 선택지에 관한 정보를 solver로 래핑하여 저장하는 부분입니다.
+                                solver.chosenSelectionNumber = index + 1
+                                solver.chosenSelection = solver.selections[index]
+                                if solver.chosenSelection == solver.answerSelectionModifed {
+                                    solver.isRight = true
+                                    print("[O] 사용자가 문. \(solver.number)에서 정답(\((index+1).roundInt))을 선택하여 맞았음.")
+                                } else {
+                                    solver.isRight = false
+                                    print("[X] 사용자가 문. \(solver.number)에서 \((index+1).roundInt)를 선택했으나, 정답은 \(solver.ansSelNumber)이므로 틀렸음.")
+                                }
+                                
+                                //                            solver.duration = solver.date - Date()   // 문제를 풀기 시작한 시간이어서 이곳에 넣기는 부적절합니다. 추후 한문제씩 푸는 기능을 추가할 때 이를 dl 곳에 넣어야 할 필요가 있습니다. (-) 2023. 6. 22.
+                                
+                                // 이 부분은 코딩 능력 부족으로 단순하게 푼 문제수를 관리하는 것으로, 좀더 구조적이고 분석가능한 방식으로 수정할 필요가 매우 큽니다. (-) 2023. 6. 22.
+                                if selectedNumber == nil {
+                                    generator.solvedCount = generator.solvedCount + 1 // 푼 문제수를 관리하기 위해 제네레이터에서 래핑하는 푼 문제수 변수를 업데이트 합니다. 다만, 선택지를 변경해가며 여러번 누루는 경우를 방지하기 위해 selectedNumber가 nil이 아닐 경우에만 카운터를 올리고, 그 후 뒤에서 selectedNumber를 숫자로 업데이트 합니다.
+                                }
+                                selectedNumber = solver.chosenSelectionNumber
                             }
-                            
-//                            solver.duration = solver.date - Date()   // 문제를 풀기 시작한 시간이어서 이곳에 넣기는 부적절합니다. 추후 한문제씩 푸는 기능을 추가할 때 이를 dl 곳에 넣어야 할 필요가 있습니다. (-) 2023. 6. 22.
-                            
-                            // 이 부분은 코딩 능력 부족으로 단순하게 푼 문제수를 관리하는 것으로, 좀더 구조적이고 분석가능한 방식으로 수정할 필요가 매우 큽니다. (-) 2023. 6. 22.
-                            if selectedNumber == nil {
-                                generator.solvedCount = generator.solvedCount + 1 // 푼 문제수를 관리하기 위해 제네레이터에서 래핑하는 푼 문제수 변수를 업데이트 합니다. 다만, 선택지를 변경해가며 여러번 누루는 경우를 방지하기 위해 selectedNumber가 nil이 아닐 경우에만 카운터를 올리고, 그 후 뒤에서 selectedNumber를 숫자로 업데이트 합니다.
-                            }
-                            selectedNumber = solver.chosenSelectionNumber
-                        }
                         }
                         .foregroundColor(selectedNumber == index + 1 ? .blue : .primary) // 숫자가 입력된 selectedNumber를 이용해 사용자가 선택한 선택지를 화면에 나타내 주는 부분입니다.
+//                        .foregroundColor(generator.chosenSelectionNumber == index + 1 ? .blue : .primary) // 2023. 6. 25. selectedNumber뿐 아니라, generator.chosenSelectionNumber가 존재(이는 .test의 경우 같을 것이나, 만약 .result일 경우에는 selectedNuber가 nil이어도 generator.chosenSelectionNumber은 존재할 수 있습니다!!!그러나)할 경우에도 작동하도록 수정했습니다. 이렇게 하지 않을 경우 .result를 불러올 때 초기 시험 상태랑 동일해져 버립니다. // 다만, 매우 이상하게도 이 구문을 컴파일 할경우,/Users/lee/Documents/TestGenerator1.0/TestGeneratorIOS/TestsContentView/SolverView.swift:29:25 The compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions 에러가 납니다. 그 원인을 알 수 없어 찾아야 합니다. (-) 2023. 6. 25.
                         // 숫자가 입력된 selectedNumber를 이용해 사용자가 선택한 선택지를 화면에 나타내 주는 기능에 추가하여 퍼블리쉬 모드 중 showAnswer가 참이면 선택지를 정오에 맞춰 변경해주는 기능을 추가해야 합니다. 2023. 6. 22. (-)
                     }
                 }
@@ -91,39 +109,45 @@ struct SolverView: View {
                 if case .result = generatorViewMode {
                     Spacer()
                     // selectedNumber가 있으면 사용자가 선택한 결과를 보여줍니다.
-                    if let selectedNumber = selectedNumber {
+                    if let chosenSelectionNumber = solver.chosenSelectionNumber {
                         VStack {
                             HStack {
                                 Text("[선택한 답안지]")
                                     .font(.headline)
                                 Spacer()
                             }
-                            SelectionView(selectionContent: solver.selectionsContent[selectedNumber-1], showNumber: selectedNumber)
-                                .foregroundColor(getTextColor(selectedNumber: selectedNumber))
+                            SelectionView(selectionContent: solver.selectionsContent[chosenSelectionNumber-1], showNumber: chosenSelectionNumber)
+                                .foregroundColor(getTextColor(selectedNumber: chosenSelectionNumber))
                                        
                             HStack {
                                 if let isRight = solver.isRight {
                                     if isRight {
                                         HStack {
                                             VStack {
-                                                Image(systemName: "checkmark")
+                                                Image(systemName: "checkmark.circle.fill")
                                                 Spacer()
                                             }
-                                            Text("정답입니다!!!!")
+                                            VStack {
+                                                Text("정답입니다!!!!")
+                                                Spacer()
+                                            }
                                             Spacer()
                                         }
-                                        .foregroundColor(getTextColor(selectedNumber: selectedNumber))
+                                        .foregroundColor(getTextColor(selectedNumber: chosenSelectionNumber))
                                     } else {
                                         VStack {
                                             HStack {
                                                 VStack {
-                                                    Image(systemName: "xmark")
+                                                    Image(systemName: "xmark.circle.fill")
                                                     Spacer()
                                                 }
-                                                Text("틀렸습니다.")
+                                                VStack {
+                                                    Text("틀렸습니다.")
+                                                    Spacer()
+                                                }
                                                 Spacer()
                                             }
-                                            .foregroundColor(getTextColor(selectedNumber: selectedNumber))
+                                            .foregroundColor(getTextColor(selectedNumber: chosenSelectionNumber))
                                             Spacer()
                                             HStack {
                                                 Text("[정답]")
@@ -155,6 +179,26 @@ struct SolverView: View {
                         }
                         SelectionView(selectionContent: solver.ansSelContent, showNumber: solver.ansSelNumber)
                             .foregroundColor(getTextColor(selectedNumber: selectedNumber))
+                        Spacer()
+                        // 2023. 7. 8. 풀이이력 보는 기능을 추가했습니다. 적당한 보여주는 위치를 포함한 레이아웃을 추후 보완 필요합니다. (-)
+                        HStack {
+                            Text("[풀이이력]")
+                                .font(.headline)
+                            Text("  \(solver.question.solvers.filter{$0.isRight == true}.count) / \(solver.question.solvers.count)")
+                            Spacer()
+                        }
+                        ForEach(solver.question.solvers) { solver in
+                            HStack {
+                                Text(solver.date?.HHmm ?? "푼 날짜 없음.")
+                                Text("\(solver.isRight == true ? "O" : solver.isRight == false ? "X" : "알 수 없음")")
+                                Spacer()
+                            }
+                            HStack {
+                                Text("  \(solver.comment)")
+                                Spacer()
+                            }
+                            Spacer()
+                        }
                     }
                 }
                 
@@ -177,12 +221,20 @@ struct SolverView: View {
                 
             }
         }
+        // .foregroundColor(generator.chosenSelectionNumber == index + 1 ? .blue : .primary) 구문이 안 먹혀 고육지책으로 추가합니다. 추후 수정 필요합니다. 2023. 6. 25. (-)
+        .onAppear() {
+            if case .result = generatorViewMode {
+                selectedNumber = generator.solvedCount
+            }
+        }
     }
     
 //    선택한 선택지의 정답여부를 시각적으로 보여주기 위해 작성했습니다.
-//    아래 코드는 selectedNumber가 nil인 경우 기본 폰트 색상인 .primary를 반환하고, selectedNumber가 1인 경우 녹색인 .green을 반환하며, 그 외의 숫자일 경우 빨간색인 .red를 반환합니다.
+//    아래 코드는 selectedNumber가 nil인 경우 기본 폰트 색상인 .primary를 반환하고, selectedNumber가 정답인 경우 녹색인 .green을 반환하며, 그 외의 숫자일 경우 빨간색인 .red를 반환합니다.
     private func getTextColor(selectedNumber: Int?) -> Color {
-        if (generatorViewMode != GeneratorViewMode.publish(showAnswer: true) && generatorViewMode != GeneratorViewMode.publish(showAnswer: false)) {
+        if case .publish = generatorViewMode {
+            return .primary
+        } else {
             if let selectedNumber = selectedNumber {
                 if selectedNumber == solver.ansSelNumber {
                     return .green
@@ -192,8 +244,6 @@ struct SolverView: View {
             } else {
                 return .primary
             }
-        } else {
-            return .primary
         }
     }
     

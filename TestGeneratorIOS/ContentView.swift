@@ -21,13 +21,19 @@ struct ContentView : View {
         
     var body: some View {
         TabView(selection: $selectedTab) {
-            // 시험 탭
+            
+            // 변호사시험, 공인중개사시험, ... 탭
             NavigationView {
                 List(storageManager.testDatabase.categories, id: \.self) { category in
                     NavigationLink(destination: CategoryView(selectedCategory: category)) {
                         HStack{
                             Image(systemName: "cabinet.fill")
                             Text(" [\(category.category)]")
+                                .bold()
+                            if category.category == "변호사시험" {
+                                Image(systemName: "plus.message.fill")
+                                    .foregroundColor(.red)
+                            }
                         }
                     }
                         .environmentObject(storageManager)
@@ -96,6 +102,8 @@ struct ContentView : View {
                 HStack {
                     Spacer()
                     Text("생성할 문제 수")
+                        .font(.title2)
+                        .bold()
                     TextField("숫자", text: $problemCount)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.numberPad)
@@ -109,6 +117,7 @@ struct ContentView : View {
                         }
                     }) {
                         Text("확인")
+                            .bold()
                     }
                         .padding()
                         .background(Color.blue)

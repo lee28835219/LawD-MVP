@@ -12,9 +12,8 @@ struct DataConverterData {
     
     var questionContentPair : [(content : String, notContent : String?, type : QuestionType, OX : QuestionOX)] = [
         
-        
-
-        
+        // QuestionType.Find
+        // QuestionOX.O
         ("옳은 것을 모두 고른 것은?", "옳지 않은 것을 모두 고른 것은?", .Find, .O),
         ("판례의 입장과 부합하는 것을 모두 고른 것은?", "판례의 입장과 부합하지 않는 것을 모두 고른 것은?", .Find, .O),
         ("판례의 입장에 부합하는 것을 모두 고른 것은?", "판례의 입장에 부합하지 않는 것을 모두 고른 것은?", .Find, .O),
@@ -33,10 +32,9 @@ struct DataConverterData {
         ("해당하는 자를 모두 고른 것은?", "해당하지 않는 자를 모두 고른 것은?", .Find, .O),
         ("허용되는 행위를 모두 고른 것은?", "허용되지 않는 행위를 모두 고른 것은?", .Find, .O),
         ("가능하지 않는 경우를 모두 고른 것은?", "가능한 경우를 모두 고른 것은?", .Find, .O),
-               
         
-        
-        
+        // QuestionType.Find
+        // QuestionOX.Correct
         ("옳은 것(○)과 옳지 않은 것(×)을 올바르게 조합한 것은?", nil, .Find, .Correct),
         ("옳은 것(o)과 옳지 않은 것(x)을 올바르게 조합한 것은?", nil, .Find, .Correct),
         ("옳은 것(○)과 옳지 않은 것(× )을 올바르게 조합한 것은?", nil, .Find, .Correct),
@@ -45,10 +43,8 @@ struct DataConverterData {
         ("괄호 안에 들어갈 금액이 모두 옳게 조합된 것은?", nil, .Find, .Correct),
         ("옳고 그름의 표시(○,× )가 옳게 조합된 것은?", nil, .Find, .Correct),
         
-        
-        
-        
-        
+        // QuestionType.Select
+        // QuestionOX.O
         ("옳은 것은?", "옳지 않은 것은?", .Select, .O),
         ("판례의 입장과 부합하는 것은?", "판례의 입장과 부합하지 않는 것은?", .Select, .O),
         ("헌법재판소 또는 대법원의 판례와 합치되는 것은?", "헌법재판소 또는 대법원의 판례와 합치되지 않는 것은?", .Select, .O),
@@ -77,9 +73,8 @@ struct DataConverterData {
         ("위반되는 것은?", "위반되지 않는 것은?", .Select, .O),
         ("받는 경우인 것은?", "받는 경우가 아닌 것은?", .Select, .O),
         
-        
-        
-        
+        // QuestionType.Select
+        // QuestionOX.Correct
         ("용어를 올바르게 나열한 것은?", nil, .Select, .Correct),
         ("바르게 연결된 것은?", nil, .Select, .Correct),
         ("각 얼마를 지급하여야 하는가?", nil, .Select, .Correct),
@@ -87,9 +82,6 @@ struct DataConverterData {
         ("생략할 수 있는 절차는?", nil, .Select, .Correct),
         ("우선적으로 배당받을 금액은?", nil, .Select, .Correct),
         ("될 수 있는 것은?", nil, .Select, .Correct),
-        
-        
-        
     ]
     
 }

@@ -21,7 +21,7 @@ class Test : DataStructure {
     var date : Date? //1701, 원본
     
     var raw : String = ""
-    
+        
     //내 식구들은 누구인지
     var questions = [Question]()
     
@@ -56,6 +56,21 @@ class Test : DataStructure {
         
         super.init(UUID(), str)
         testSubject.tests.append(self)
+    }
+    
+    // key를 대체하기 위해 각기 시험에 따라 이에 걸맞게 직관적인 시험의 이름을 생성 2023. 6. 25.
+    func getKeySting() -> String {
+        var str = ""
+        switch testSubject.testCategory.category {
+        case "변호사시험":
+            str += "[변시] \(testSubject.subject) 제\(self.number)회"
+        case "★MVP 시연용★":
+            str += "★MVP 시연용★"
+        default:
+            str += key
+        }
+        
+        return str
     }
 }
 

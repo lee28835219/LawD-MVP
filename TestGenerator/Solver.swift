@@ -28,6 +28,8 @@ class Solver : DataStructure, ObservableObject {
     var number : Int = 0
     var questionOX = QuestionOX.Unknown
     var questionContent = ""
+    var questionContentNote : String?
+    
     
     //리스트
     var listsContent : [String] = []
@@ -169,6 +171,9 @@ class Solver : DataStructure, ObservableObject {
         // 스위프트유아이에서의 출력 편의를 위하여, 유저가 푼 문제를 직접 래핑하기 위한 구문을 추가함. 2023. 6. 20.
         // 질문
         (self.questionOX, self.questionContent) = self.getModifedQuestion()
+        if let contNote = self.question.contentNote {
+            self.questionContentNote = contNote
+        }
         
         // 목록
         for (index, list) in self.lists.enumerated() {

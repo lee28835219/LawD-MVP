@@ -18,15 +18,13 @@ struct TestGeneratorIOSApp: App {
     init() {
         print("Hello! TestGenerator Starts!")
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss"
-        print("\(#file) 시작 -", dateFormatter.string(from: Date()))
+        print("\(#file) 시작 -", Date().HHmmSS)
         
         let testDatabase = TestDatabase(UUID())
         let storageManager = StorageManager(testDatabase)
         
-        let constTestCat00 = TestCategory(testDatabase: testDatabase, category: "공인중개사시험")
-        let constTestCat01 = TestCategory(testDatabase: testDatabase, category: "경찰공무원 채용시험")
+        _ = TestCategory(testDatabase: testDatabase, category: "공인중개사시험")
+        _ = TestCategory(testDatabase: testDatabase, category: "경찰공무원 채용시험")
         
         // 시연용으로 메모리에 직접 단순한 문제 5개를 추가함. 2023. 6. 22.
         let constTestCat = TestCategory(testDatabase: testDatabase, category: "★MVP 시연용★")
@@ -46,7 +44,7 @@ struct TestGeneratorIOSApp: App {
         let sel15 = Selection(revision: 0, question: que1, number: 5, content: "국가의 법으로만 보장할 수 있는 권리이다.")
         sel15.notContent = "국가의 법으로만 보장할 수 있는 권리는 아니다."
         
-        let que2 = Question(revision: 0, test: constTest, number: 2, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권 침해에 관한 설명으로 옳지 않은 것은?", answer: 1)
+        let que2 = Question(revision: 0, test: constTest, number: 3, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권 침해에 관한 설명으로 옳지 않은 것은?", answer: 1)
         que2.notContent = "인권 침해에 관한 설명으로 옳은?"
         let sel21 = Selection(revision: 0, question: que2, number: 1, content: "개인이나 단체에 의해서만 발생한다.")
         sel21.notContent = "개인이나 단체에 의해서만 발생하는 것은 아니다."
@@ -59,7 +57,38 @@ struct TestGeneratorIOSApp: App {
         let sel25 = Selection(revision: 0, question: que2, number: 5, content: "사회 구성원들의 잘못된 고정 관념이나 편견에 영향을 받아 발생한다.")
         sel25.notContent = "사회 구성원들의 잘못된 고정 관념이나 편견에 영향을 받아 발생하는 것은 아니다."
         
-        let que3 = Question(revision: 0, test: constTest, number: 3, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "근로자에 관한 설명으로 옳지 않은 것은?", answer: 4)
+        let que4 = Question(revision: 0, test: constTest, number: 2, questionType: QuestionType.Find, questionOX: QuestionOX.O, content: "헌법에 관한 옳은 설명을 <보기>에서 고르면?", answer: 5)
+//        que4.notContent = "헌법에 관한 틀린 설명을 <보기>에서 고르면?"
+        let lis21 = ListSelection(revision: 0, question: que4, content: "법률이 정한 바에 따라 제정된다.", selectString: "ㄱ")
+//        lis21.notContent = "헌법이 정한 바에 따라 제정된다."
+        let lis22 = ListSelection(revision: 0, question: que4, content: "국가 기관의 조직과 그 권한을 명시한다.", selectString: "ㄴ")
+//        lis21.notContent = "국가 기관의 조직과 그 권한을 법률에 모두 위임한다."
+        let lis23 = ListSelection(revision: 0, question: que4, content: "기본권 보장을 위한 원칙과 제도를 규정한다.", selectString: "ㄷ")
+//        lis21.notContent = "기본권 보장을 위한 세세한 제도를 최대한 자세히 규정한다."
+        let lis24 = ListSelection(revision: 0, question: que4, content: "국가의 기본 질서와 국민의 기본권을 보장한다.", selectString: "ㄹ")
+//        lis21.notContent = "국가의 기본 질서와 국민의 기본권 보장과는 관계없다."
+        let sel41 = Selection(revision: 0, question: que4, number: 1, content: "ㄱ, ㄴ")
+        sel41.notContent = "ㄱ, ㄴ"
+        sel41.listInContentOfSelection = [lis21, lis22] // 2023. 6. 26. 매우중요★★★★★★ 이 구문이 어떤 의미인지 공부하는 것이, .find 문제 파싱에 대한 가장큰 해답을 줄수 있음. 반드시 살펴보아야 합니다.
+        
+        let sel42 = Selection(revision: 0, question: que4, number: 2, content: "ㄴ, ㄷ")
+        sel42.notContent = "ㄴ, ㄷ"
+        sel42.listInContentOfSelection = [lis22, lis23]
+        
+        let sel43 = Selection(revision: 0, question: que4, number: 3, content: "ㄷ, ㄹ")
+        sel43.notContent = "ㄷ, ㄹ"
+        sel43.listInContentOfSelection = [lis23, lis24]
+        
+        let sel44 = Selection(revision: 0, question: que4, number: 4, content: "ㄱ, ㄴ, ㄹ")
+        sel44.notContent = "ㄱ, ㄴ, ㄹ"
+        sel44.listInContentOfSelection = [lis21, lis22, lis24]
+        
+        let sel45 = Selection(revision: 0, question: que4, number: 5, content: "ㄴ, ㄷ, ㄹ")
+        sel45.notContent = "ㄴ, ㄷ, ㄹ"
+        sel45.listInContentOfSelection = [lis22, lis23, lis24]
+        
+        
+        let que3 = Question(revision: 0, test: constTest, number: 4, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "근로자에 관한 설명으로 옳지 않은 것은?", answer: 4)
         que3.notContent = "근로자에 관한 설명으로 옳은?"
         let sel31 = Selection(revision: 0, question: que3, number: 1, content: "근로 시간이 짧은 아르바이트 학생도 근로자에 포함된다.")
         sel31.notContent = "근로 시간이 짧은 아르바이트 학생은 근로자에 포함되지 않는다."
@@ -72,18 +101,6 @@ struct TestGeneratorIOSApp: App {
         let sel35 = Selection(revision: 0, question: que3, number: 5, content: "스스로 자신의 사업을 하는 자영업자는 근로자에 포함되지 않는다.")
         sel35.notContent = "스스로 자신의 사업을 하는 자영업자도 근로자에 포함된다."
         
-        //        let que4 = Question(revision: 0, test: constTest, number: 1, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권에 관한 설명으로 옳지 않은 것은?", answer: 5)
-        //        que4.notContent = "인권에 관한 설명으로 옳은 것은?"
-        //        let sel41 = Selection(revision: 0, question: que4, number: 1, content: "타인에게 양도할 수 없다.")
-        //        sel41.notContent = "타인에게 양도할 수 있다."
-        //        let sel42 = Selection(revision: 0, question: que4, number: 2, content: "국가 권력이 함부로 침해할 수 없다.")
-        //        sel42.notContent = "국가 권력에 의해 항상 제한할 수 있다."
-        //        let sel43 = Selection(revision: 0, question: que4, number: 3, content: "사회 구성원 모두에게 부여된 권리이다.")
-        //        sel43.notContent = "사회 구성원 모두에게 부여된 권리는 아니다."
-        //        let sel44 = Selection(revision: 0, question: que4, number: 4, content: "태어날 때부터 인간에게 주어진 권리이다.")
-        //        sel44.notContent = "태어날 때부터 인간에게 주어진 권리는 아니다."
-        //        let sel45 = Selection(revision: 0, question: que4, number: 5, content: "국가의 법으로만 보장할 수 있는 권리이다.")
-        //        sel45.notContent = "국가의 법으로만 보장할 수 있는 권리는 아니다."
         //
         //        let que5 = Question(revision: 0, test: constTest, number: 1, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권에 관한 설명으로 옳지 않은 것은?", answer: 5)
         //        que5.notContent = "인권에 관한 설명으로 옳은 것은?"

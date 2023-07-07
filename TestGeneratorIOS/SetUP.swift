@@ -9,5 +9,5 @@
 import Foundation
 
 class SetUP : ObservableObject {
-    @Published var numberOfGenerateSolvers = 5
+    @Published var numberOfGenerateSolvers = 30
 }

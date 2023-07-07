@@ -8,6 +8,7 @@
 
 import Foundation
 
+// 이건 뭐하는 구조체인가? 2023. 7. 7. (-)
 struct Templet {
     struct TestCategory {
         var specification : String = ""
@@ -74,7 +75,7 @@ struct Templet {
         var rawSelections : String = ""
         var rawLists : String = ""
         
-        var selections : [Templet.Selection] = []
+        var selections : [Templet.Selection] = [Templet.Selection(), Templet.Selection(), Templet.Selection(), Templet.Selection(), Templet.Selection()] // 이런식으로 초기화 가능할까???, 추가로 좀더 다양한 선택지 추가는 불가능할지? 2023. 7. 7. (-)
         var lists : [Templet.List] = []
     }
     
