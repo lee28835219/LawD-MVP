@@ -220,6 +220,8 @@ class OutputManager {
     // How to save an array as a json file in Swift?
     // http://stackoverflow.com/questions/28768015/how-to-save-an-array-as-a-json-file-in-swift
     
+    
+    // 아주 중요한 json 파일을 "콘솔"에서 저장하는 함수, 벡엔드 구축 관련하여 반드시 소화해서 개선해 내야 합니다. 2023. 9. 12. (-)
     func saveFile(fileDirectories: [String], fileName: String, data: Data) -> Bool {
         
         guard let doucmentPathWrapped = url else {

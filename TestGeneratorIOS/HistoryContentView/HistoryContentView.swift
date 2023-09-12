@@ -14,45 +14,50 @@ struct HistoryContentView: View {
     
     var body: some View {
         NavigationView {
-            HStack {
-                Image(systemName: "hammer.fill")
-                Text("기능 추가 예정")
-            }
-            List(generateHistory.generators) { generator in
-                let title: String = {
-                        var updatedTitle = generator.date.HHmm2
-                        updatedTitle += " " + (generator.key.isEmpty ? "사용자정의 시험" : generator.key)
-                        if generator.changed {
-                            updatedTitle += " 🔄"
-                        }
-                        if generator.shuffled {
-                            updatedTitle += " 🔀"
-                        }
-                        return updatedTitle
-                    }()
-                
-                NavigationLink(destination: GeneratorView(generator: generator, generatorViewMode: $generatorViewMode)) {
+//            HStack {
+//                Image(systemName: "hammer.fill")
+//                Text("기능 추가 예정")
+//            }
+        List(generateHistory.generators) { generator in
+            let title: String = {
+                    var updatedTitle = " " + (generator.key.isEmpty ? "사용자정의 시험" : generator.key)
+                    if generator.changed {
+                        updatedTitle += " 🔄"
+                    }
+                    if generator.shuffled {
+                        updatedTitle += " 🔀"
+                    }
+                    return updatedTitle
+                }()
+            
+            NavigationLink(destination: GeneratorView(generator: generator, generatorViewMode: $generatorViewMode)) {
+                VStack(alignment: .leading) {
+                    Text(title)
+                        .font(.headline)
+                    Spacer()
                     HStack {
-                        Text(title)
-                        Spacer()
                         Image(systemName: "checkmark.circle")
                             .foregroundColor(.green)
                         Text("\(generator.seperateWorngSolve().correct.count)")
                         Text("/")
                         Image(systemName: "chart.bar.fill")
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.indigo)
                         Text("\(generator.solvedCount)")
                         Text("  ")
                         Image(systemName: "clock.fill")
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.cyan)
                         Text(generator.teimeConsumeString)
                     }
+                    Spacer()
+                    Text(generator.date.HHmm2 + "에 풀었음")
+                        .frame(maxWidth: .infinity, alignment: .trailing) // 푼 일시를 오른쪽으로 정렬
                 }
-                .listStyle(PlainListStyle())
-                .navigationTitle("나의 시험이력")
             }
+            .listStyle(PlainListStyle())
+            .navigationTitle("시험이력")
+        }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("나의 이력")
+            .navigationTitle("시험이력")
         }
     }
 }

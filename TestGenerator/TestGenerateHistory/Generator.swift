@@ -8,7 +8,9 @@
 
 import Foundation
 
-class Generator : ObservableObject, Identifiable {
+class Generator : ObservableObject, Identifiable
+//    , Codable
+    {
     var id = UUID()
     @Published var key : String
     
@@ -31,6 +33,7 @@ class Generator : ObservableObject, Identifiable {
     var test : Test? = nil // Test 클래스의 중요성에도 불구하고, 단순 참고용, 혹은 간단하게 초기화하기 위한 변수에 불과합니다. 왜나면 Generator는 Test의 래핑 클래스로 Question들의 모음 대신 Solver들의 모음을 관리하는 클래스이기 때문입니다.
     var changed : Bool = false
     var shuffled : Bool = false
+    
     
     // Generator는 단순히 래핑이 목정이다보니, 초기화 함수는 불필요하나,
     // 그러나 유연한 제네레이터 생성 편의를 위해 초기화 함수를 만들기 시작하였습니다. 2023. 6. 20.
@@ -68,9 +71,25 @@ class Generator : ObservableObject, Identifiable {
         }
         
         self.key = test.getKeySting()
-}
+    }
     
-    // solvrs 중 푼 문제만 찾아주는 함수
+//    // decoderable을 위해 이니셜라이저 추가 2023. 9. 12.
+//    required init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//
+//        // key 프로퍼티 디코딩
+//        key = try container.decode(String.self, forKey: .key)
+//
+//        // solvers 프로퍼티 디코딩
+//        solvers = try container.decode([Solver].self, forKey: .solvers)
+//
+//        // solversOriginal 프로퍼티 디코딩
+//        solversOriginal = try container.decode([Solver].self, forKey: .solversOriginal)
+//
+//        // 나머지 프로퍼티들도 같은 방식으로 디코딩합니다.
+//    }
+    
+    // solvers 중 푼 문제만 찾아주는 함수
     func getSolved() -> [Solver] {
         let solved = solvers.filter { $0.isRight != nil }
         return solved

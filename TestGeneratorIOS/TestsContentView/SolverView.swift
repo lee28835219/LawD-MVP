@@ -106,19 +106,23 @@ struct SolverView: View {
                 
                 //            문제를 보여줄 떄 정답과 사용자가 선택한 선택지를 같이 보여줄 수 있는 기능입니다.
                 //            보여줄 때 레이아웃이 가운데로 몰리는 버그있어 수정 필요 2023. 6. 16. (+)
+                // comment를 보여주는 기능 추가 중입니다. 2023. 9. 12. (-)
                 if case .result = generatorViewMode {
                     Spacer()
                     // selectedNumber가 있으면 사용자가 선택한 결과를 보여줍니다.
                     if let chosenSelectionNumber = solver.chosenSelectionNumber {
                         VStack {
+                            // 선택한 답안 보여주는 부분
                             HStack {
-                                Text("[선택한 답안지]")
+                                Text("[선택한 보기]")
                                     .font(.headline)
                                 Spacer()
                             }
                             SelectionView(selectionContent: solver.selectionsContent[chosenSelectionNumber-1], showNumber: chosenSelectionNumber)
                                 .foregroundColor(getTextColor(selectedNumber: chosenSelectionNumber))
-                                       
+                            
+                            Spacer()
+                            // 정답 여부 및 오답 시 정답을 보여주는 부분
                             HStack {
                                 if let isRight = solver.isRight {
                                     if isRight {
@@ -161,6 +165,23 @@ struct SolverView: View {
                                     }
                                 } else {
                                     fatalError("selectedNumber가 없는데 isRight가 논리적으로 존재할 수 없음.")
+                                }
+                            }
+                            
+                            Spacer()
+                            // 커멘트를 보여주는 부분 2023. 9. 12. (-)
+//                            print("\(solver.question.solvers)개의 풀이이력이 있음.")
+                            HStack {
+                                List {
+                                    ForEach(solver.question.solvers) { solver in
+                                        VStack {
+                                            Text(">>>>")
+                                            if let date = solver.date {
+                                                Text(date.HHmmSS)
+                                            }
+                                            
+                                        }
+                                    }
                                 }
                             }
                         }
