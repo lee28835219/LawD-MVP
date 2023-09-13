@@ -257,6 +257,8 @@
 		39E775971ECB23AF00F17DA7 /* StorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		39E7E2AD1EBB263700087D73 /* Generator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
 		39E7E2B11EBB88E800087D73 /* OutputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutputManager.swift; sourceTree = "<group>"; };
+		9B11C0192AB333E3001A0C37 /* =변호사시험=민사법=6회=선택형=.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "=변호사시험=민사법=6회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=민사법=6회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
+		9B11C01A2AB33B85001A0C37 /* =변호사시험=민사법=7회=선택형=.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "=변호사시험=민사법=7회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=민사법=7회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
 		9B19B0E12A40DC2F00766453 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
 		9B35A04A2A58705300C5A838 /* Question+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Question+Essential.swift"; sourceTree = "<group>"; };
 		9B35A04D2A58731100C5A838 /* DataConverter+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataConverter+Essential.swift"; sourceTree = "<group>"; };
@@ -381,6 +383,8 @@
 				39CFAE0B1ECDD897008C775D /* =변호사시험=민사법=3회=선택형=.txt */,
 				39CFAE0C1ECDD897008C775D /* =변호사시험=민사법=4회=선택형=.txt */,
 				39CFAE0D1ECDD897008C775D /* =변호사시험=민사법=5회=선택형=.txt */,
+				9B11C0192AB333E3001A0C37 /* =변호사시험=민사법=6회=선택형=.txt */,
+				9B11C01A2AB33B85001A0C37 /* =변호사시험=민사법=7회=선택형=.txt */,
 				39CFAE0F1ECDD897008C775D /* =변호사시험=형사법=1회=선택형=.txt */,
 				39CFAE101ECDD897008C775D /* =변호사시험=형사법=2회=선택형=.txt */,
 				39CFAE111ECDD897008C775D /* =변호사시험=형사법=3회=선택형=.txt */,
@@ -407,6 +411,7 @@
 				395BF6D01E82BA36004BE198 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		395BF6D01E82BA36004BE198 /* Products */ = {
 			isa = PBXGroup;
@@ -856,7 +861,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "TestGenerator" */;
+			buildConfigurationList = 395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1465,7 +1470,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "TestGenerator" */ = {
+		395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				395BF6D41E82BA36004BE198 /* Debug */,

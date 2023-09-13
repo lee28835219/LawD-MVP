@@ -47,7 +47,7 @@ class TestSubject : DataStructure {
         let test변호사시험민사법샘플 = Test(createDate: Date(), testSubject: self, revision: 0, isPublished: true, number: 1, numHelper: 2017)
         test변호사시험민사법샘플.specification = "데이터 검사목적으로 Database 객체에서 생성한 변호사시험 민사법 시험문제들의 집합"
         
-        let question0 = Question(revision: 0, test : test변호사시험민사법샘플, number : 1, questionType: QuestionType.Select, questionOX : QuestionOX.X , content : "법인 아닌 사단에 관한 설명 중 옳지 않은 것은?", answer : 5)
+        let question0 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 1, questionType: QuestionType.Select, questionOX : QuestionOX.X , content : "법인 아닌 사단에 관한 설명 중 옳지 않은 것은?", answer : 5)
         question0.notContent = "법인 아닌 사단에 관한 설명 중 옳은 것은?"
         question0.contentNote = "(다툼이 있는 경우 판례에 의함)"
         question0.specification = "변시 민사법 32번 문제 SX, 샘플1"
@@ -75,7 +75,7 @@ class TestSubject : DataStructure {
         selectionVeryFirst5.notContent = "법인 아닌 사단의 채권자가 채권자대위권에 기하여 법인 아닌 사단의 총유재산에 대한 권리를 대위행사하는 경우, 사원총회의 결의 등 법인 아닌 사단의 내부적 의사결정 절차를 거칠 필요가 없다."
         
         //기본 문제생성, 매도인의 담보책임 SX
-        let question1 = Question(revision: 0, test : test변호사시험민사법샘플, number : 2, questionType: QuestionType.Select, questionOX : QuestionOX.O , content : "매도인의 담보책임에 관한 설명 중 옳은 것은?", answer : 5)
+        let question1 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 2, questionType: QuestionType.Select, questionOX : QuestionOX.O , content : "매도인의 담보책임에 관한 설명 중 옳은 것은?", answer : 5)
         question1.notContent = "매도인의 담보책임에 관한 설명 중 옳지 않은 것은?"
         question1.contentNote = "(다툼이 있는 경우 판례에 의함)"
         question1.specification = "변시 민사법 32번 문제 SX, 샘플1"
@@ -104,7 +104,7 @@ class TestSubject : DataStructure {
         
         
         //기본 문제생성, 계약 SD
-        let question2 = Question(revision: 0, test : test변호사시험민사법샘플, number : 3, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "다음 설명들에 대하여 옳은 것과 옳지 않은 것을 표시할 경우, 다른 설명과 그 결과가 다른 하나는?", answer : 3)
+        let question2 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 3, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "다음 설명들에 대하여 옳은 것과 옳지 않은 것을 표시할 경우, 다른 설명과 그 결과가 다른 하나는?", answer : 3)
         
         // 1번, 옳은 지문
         let selectionVeryFirst21 = Selection(revision: 0, question: question2, number: 1, content: "채권자가 자신을 위하여 저당권이 설정된 물상보증인 소유의 토지에 대하여 채무자의 채무불이행을 이유로 임의경매를 신청한 경우에는 법원의 경매개시결정이 난 때에 소멸시효의 진행이 중단된다.")
@@ -129,7 +129,7 @@ class TestSubject : DataStructure {
         selectionVeryFirst25.notContent = "부(父) 사망 후 미성년인 甲 소유의 상속부동산을 관리, 처분하던 그 모(母)가 甲의 학비를 조달하기 위하여 甲 소유 부동산을 甲 명의로 처분한 경우, 그 토지를 매수한 乙이 악의이거나 과실 여부와 관계없이 乙은 토지의 소유권을 취득한다."
         
         //기본 문제생성, 동시이행의 항변 FO
-        let question3 = Question(revision: 0, test : test변호사시험민사법샘플, number : 4, questionType: QuestionType.Find, questionOX : QuestionOX.O , content : "동시이행의 항변권에 관한 설명 중 옳은 것을 모두 고른 것은?", answer : 1)
+        let question3 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 4, questionType: QuestionType.Find, questionOX : QuestionOX.O , content : "동시이행의 항변권에 관한 설명 중 옳은 것을 모두 고른 것은?", answer : 1)
         question3.notContent = "동시이행의 항변권에 관한 설명 중 옳지 않은 것을 모두 고른 것은?"
         question3.contentNote = "(다툼이 있는 경우 판례에 의함)"
         
@@ -164,7 +164,7 @@ class TestSubject : DataStructure {
         selectionVeryFirst34.notContent = "\"피고는 원고로부터 5,000만 원을 지급받음과 동시에 A토지를 인도하라.\"라는 판결을 받은 원고는 집행을 개시할 때 반대의무 이행 또는 이행의 제공을 하였다는 것의 증명은 필요하지 않다."
         
         //기본 문제생성, 동시이행의 항변 FC
-        let question4 = Question(revision: 0, test : test변호사시험민사법샘플, number : 5, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "태아에 관한 다음 설명 중 옳은 것(O)과 옳지 않은 것(X)을 올바르게 조합한 것은?", answer : 1)
+        let question4 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 5, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "태아에 관한 다음 설명 중 옳은 것(O)과 옳지 않은 것(X)을 올바르게 조합한 것은?", answer : 1)
         question4.contentNote = "(다툼이 있는 경우 판례에 의함)"
         
         // 1번
@@ -179,7 +179,7 @@ class TestSubject : DataStructure {
         _ = Selection(revision: 0, question: question4, number: 5, content: "ㄱ(X), ㄴ(X), ㄷ(O), ㄹ(X), ㅁ(X)")
         
         //기본 문제생성, 매도인의 담보책임 SX
-        let question5 = Question(revision: 0, test : test변호사시험민사법샘플, number : 6, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "甲은 어느 날 乙로부터 책 한 권과 함께 \"이 책이 마음에 드시면 아래 계좌에 대금을 납부해주십시오\"라는 서면을 받았다. 甲은 그 책을 읽다가 흥미를 느껴서 밑줄까지 그어가며 읽었고, 다 읽은 후에는 丙에게 \"참 좋은 책이니 너도 한 번 읽어봐라\"라는 편지와 함께 그 책을 보내주었다. 이 경우 甲과 乙 사이의 법률관계를 설명하는 방법으로 가장 적당한 것은?", answer : 4)
+        let question5 = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 6, questionType: QuestionType.Select, questionOX : QuestionOX.Unknown , content : "甲은 어느 날 乙로부터 책 한 권과 함께 \"이 책이 마음에 드시면 아래 계좌에 대금을 납부해주십시오\"라는 서면을 받았다. 甲은 그 책을 읽다가 흥미를 느껴서 밑줄까지 그어가며 읽었고, 다 읽은 후에는 丙에게 \"참 좋은 책이니 너도 한 번 읽어봐라\"라는 편지와 함께 그 책을 보내주었다. 이 경우 甲과 乙 사이의 법률관계를 설명하는 방법으로 가장 적당한 것은?", answer : 4)
         
         // 1번, 옳은 지문
         _ = Selection(revision: 0, question: question5, number: 1, content: "청약의 유인(책의 송부)을 통한 청약(甲)과 승낙(乙)")
@@ -189,7 +189,7 @@ class TestSubject : DataStructure {
         _ = Selection(revision: 0, question: question5, number: 5, content: "교차청약")
         
         //기본 문제생성, 동시이행의 항변 FO
-        let questionFX = Question(revision: 0, test : test변호사시험민사법샘플, number : 7, questionType: QuestionType.Find, questionOX : QuestionOX.X , content : "동시이행의 항변권에 대한 판례의 태도에 부합하지 않는 설명을 모두 고른 것은?", answer : 2)
+        let questionFX = Question(id: UUID(), revision: 0, test : test변호사시험민사법샘플, number : 7, questionType: QuestionType.Find, questionOX : QuestionOX.X , content : "동시이행의 항변권에 대한 판례의 태도에 부합하지 않는 설명을 모두 고른 것은?", answer : 2)
         questionFX.notContent = "동시이행의 항변권에 대한 판례의 태도에 부합하는 설명을 모두 고른 것은?"
         
         _ = Selection(revision: 0, question: questionFX, number: 1, content: "ㄱ, ㄴ, ㄷ")

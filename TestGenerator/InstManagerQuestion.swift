@@ -175,7 +175,9 @@ class InstManagerQuestion {
         case .publish:
             
             // 어떤 문제를 선택할지
-            solver = Solver(question, gonnaShuffle: false)
+            // 2023. 9. 13. 알 수 없는 이유로 에러가 나서 아래와 같이 커멘트 아웃하고 새로 작성
+            // solver = Solver(question, gonnaShuffle: false)
+            solver = Solver(question, gonnaChange: false)
             questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
             
             // 문제를 최초에 어떻게 출력할지
@@ -194,7 +196,8 @@ class InstManagerQuestion {
             
         // 수정안한 원래문제만 다 출력, 여기도 오리지날 번호 필요없음
         case .publishOriginal:
-            solver = Solver(question, gonnaShuffle: false)
+            // solver = Solver(question, gonnaShuffle: false)
+            solver = Solver(question, gonnaChange: false)
             questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
             
             showTitle = true
@@ -209,7 +212,8 @@ class InstManagerQuestion {
             
         // 수정한 문제를 출력, 오리지날 번호 필요함
         case .publishShuffled:
-            solver = Solver(question, gonnaShuffle: true)
+            // solver = Solver(question, gonnaShuffle: true)
+            solver = Solver(question, gonnaChange: true)
             questionPublishType = .solver
             
             showTitle = true
@@ -225,7 +229,7 @@ class InstManagerQuestion {
             
         // 원래 문제를 품
         case .solve:
-            solver = Solver(question, gonnaShuffle: false)
+            solver = Solver(question, gonnaChange: false)
             questionPublishType = .solver // solver의 문제와 원래문제가 동일해야 할것임
             
             showTitle = true
@@ -242,7 +246,7 @@ class InstManagerQuestion {
         // 수정한 문제를 품, 반전문제가 없으면 원래 문제를 품
         // 인텐시브 모드도 동일
         case .solveShuffled, .solveIntensive:
-            solver = Solver(question, gonnaShuffle: true)
+            solver = Solver(question, gonnaChange: true)
             questionPublishType = .solver
             
             showTitle = true
@@ -257,7 +261,7 @@ class InstManagerQuestion {
             
         // 수정한 문제를 푸는데 반전문제가 없으면 문제를 출력하지 않음
         case .solveControversal:
-            solver = Solver(question, gonnaShuffle: true)
+            solver = Solver(question, gonnaChange: true)
             questionPublishType = .solver
             
             showTitle = true
@@ -272,7 +276,7 @@ class InstManagerQuestion {
         
             
         case .solveOX:
-            solver = Solver(question, gonnaShuffle: true)
+            solver = Solver(question, gonnaChange: true)
             questionPublishType = .solver
             
             showTitle = true
@@ -519,7 +523,7 @@ class InstManagerQuestion {
                 // 2017. 5. 28. (+)
                 // question.test.testSubject.testCategory.testDatabase.refreshTags()
                 
-                Solver(question, gonnaShuffle: false).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
+                Solver(question, gonnaChange: false).publish(om: OutputManager(), type: .original, showTitle: false, showQuestion: false, showAnswer: false, showTags: true, showHistory: false)
                 return writeTag()
             }
         } else {

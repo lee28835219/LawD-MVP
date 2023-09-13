@@ -45,7 +45,7 @@ temp_testSubject.setSampleTest()
 
 
 //
-//let dddd = DCDD(g_testDatabase)
+let dddd = DCDD(g_testDatabase)
 //
 //let barExam = DC변호사시험(g_testDatabase)
 //print(barExam!.log)
@@ -75,7 +75,7 @@ temp_testSubject.setSampleTest()
 
 
 let findedQuestionInstance = Question.findInstance(testDatabase: g_testDatabase, id: UUID(uuidString: "9A8B8074-9A6D-415A-A1F1-F54EF01844B8"))
-print(findedQuestionInstance?.key)
+print("UUID 찾기가 잘되는지: ", findedQuestionInstance?.key)
 
 //// EXEC
 g_instrcutionManger.didInitializationComplete()
