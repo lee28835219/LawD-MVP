@@ -164,6 +164,9 @@ extension Test {
             
             var newQuestion = [String : Any]()
             newQuestion[key] = question.key
+            // 2023. 9. 13. UUID로 문제를 식별하는 기술을 도입하기 시작했습니다. 혁명적 변화로 그 영향도를 계속 검토해야 합니다. (-)
+            newQuestion["UUID"] = question.id.uuidString
+            
             newQuestion[attribute] = question_attribute
             newQuestion["selection"] = selectionArray
             newQuestion["list"] = listArray

@@ -22,15 +22,31 @@ class OutputManager {
     var showAttribute : Bool = false
     var showOrigSel : Bool = false
     
+    // 2023. 9. 13. 저장위치 변경합니다. 영향도 검토요합니다 (-)
+//    var url : URL? {
+//        let path : URL?
+//        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//            path = dir.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage")
+//        } else {
+//            path = nil
+//        }
+//        return path
+//    }
     var url : URL? {
-        let path : URL?
-        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-            path = dir.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage")
-        } else {
-            path = nil
-        }
-        return path
+        // 작업환경이 드롭박스로 바뀌어서 수정함. 이는 개발환경에서만 작동가능하므로, 이를 앱에서 실행할 때 수정해야 함 (-) ★★★
+        let pathString = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/2023. 9. TestGenerator1.1 MVP/Data/Storage"
+        return URL(fileURLWithPath: pathString)
+            
+//
+//        let path : URL?
+//        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+//            path = dir.appendingPathComponent("TestGenerator").appendingPathComponent("Data").appendingPathComponent("Storage")
+//        } else {
+//            path = nil
+//        }
+//        return path
     }
+
     
     init() {
         log = ConsoleIO.newLog("\(#file)")
@@ -270,7 +286,7 @@ class OutputManager {
         
         do {
             try data.write(to: savePath)
-            io.writeMessage(to: .notice, "\(fileName) 저장 성공")
+            io.writeMessage(to: .notice, "\(fileName)을 \(savePath.deletingLastPathComponent())에 저장 성공")
             return true
         } catch {
             io.writeMessage(to: .error, "\(fileName)을 저장하는데 실패하였음 - \(error)")

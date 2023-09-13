@@ -74,7 +74,8 @@ temp_testSubject.setSampleTest()
 //print(g_testDatabase.log)
 
 
-
+let findedQuestionInstance = Question.findInstance(testDatabase: g_testDatabase, id: UUID(uuidString: "9A8B8074-9A6D-415A-A1F1-F54EF01844B8"))
+print(findedQuestionInstance?.key)
 
 //// EXEC
 g_instrcutionManger.didInitializationComplete()

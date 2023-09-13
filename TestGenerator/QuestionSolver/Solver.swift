@@ -12,7 +12,8 @@ class Solver : DataStructure, ObservableObject {
     var log = ""
     var isOXChangable = false
     
-    let question : Question //그 의미의 특성상 변해서는 안되는 속성이어서 var에서 let으로 변경함. 그 영향도를 항상 검토 필요. 2023. 6. 20. (-)
+    //그 의미의 특성상 변해서는 안되는 속성이어서 var에서 let으로 변경함. 그 영향도를 항상 검토 필요. 2023. 6. 20. (-)
+    let question : Question
     
     var selections = [Selection]()
     var lists = [ListSelection]()
