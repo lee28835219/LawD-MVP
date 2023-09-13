@@ -49,6 +49,7 @@ struct ContentView : View {
                     NavigationLink(destination: CategoryView(selectedCategory: category)) {
                         HStack{
                             Image(systemName: "cabinet.fill")
+//                                .foregroundColor(.purple)
                             Text(" [\(category.category)]")
                                 .bold()
                             if category.category == "변호사시험" {
