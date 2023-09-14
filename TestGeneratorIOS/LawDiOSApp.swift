@@ -11,7 +11,7 @@ import SwiftUI
 
 
 @main
-struct TestGeneratorIOSApp: App {
+struct LawDiOSApp: App {
     @StateObject private var setUp: SetUP = SetUP()
     @StateObject private var storageManager: StorageManager
     
@@ -31,7 +31,7 @@ struct TestGeneratorIOSApp: App {
         let constTestSub = TestSubject(testCategory: constTestCat, subject: "헌법")
         let constTest = Test(createDate: Date(), testSubject: constTestSub, revision: 0, isPublished: true, number: 1)
         
-        let que1 = Question(revision: 0, test: constTest, number: 1, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권에 관한 설명으로 옳지 않은 것은?", answer: 5)
+        let que1 = Question(id: UUID(), revision: 0, test: constTest, number: 1, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권에 관한 설명으로 옳지 않은 것은?", answer: 5)
         que1.notContent = "인권에 관한 설명으로 옳은 것은?"
         let sel11 = Selection(revision: 0, question: que1, number: 1, content: "타인에게 양도할 수 없다.")
         sel11.notContent = "타인에게 양도할 수 있다."
@@ -44,7 +44,7 @@ struct TestGeneratorIOSApp: App {
         let sel15 = Selection(revision: 0, question: que1, number: 5, content: "국가의 법으로만 보장할 수 있는 권리이다.")
         sel15.notContent = "국가의 법으로만 보장할 수 있는 권리는 아니다."
         
-        let que2 = Question(revision: 0, test: constTest, number: 3, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권 침해에 관한 설명으로 옳지 않은 것은?", answer: 1)
+        let que2 = Question(id: UUID(), revision: 0, test: constTest, number: 3, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "인권 침해에 관한 설명으로 옳지 않은 것은?", answer: 1)
         que2.notContent = "인권 침해에 관한 설명으로 옳은?"
         let sel21 = Selection(revision: 0, question: que2, number: 1, content: "개인이나 단체에 의해서만 발생한다.")
         sel21.notContent = "개인이나 단체에 의해서만 발생하는 것은 아니다."
@@ -57,7 +57,7 @@ struct TestGeneratorIOSApp: App {
         let sel25 = Selection(revision: 0, question: que2, number: 5, content: "사회 구성원들의 잘못된 고정 관념이나 편견에 영향을 받아 발생한다.")
         sel25.notContent = "사회 구성원들의 잘못된 고정 관념이나 편견에 영향을 받아 발생하는 것은 아니다."
         
-        let que4 = Question(revision: 0, test: constTest, number: 2, questionType: QuestionType.Find, questionOX: QuestionOX.O, content: "헌법에 관한 옳은 설명을 <보기>에서 고르면?", answer: 5)
+        let que4 = Question(id: UUID(), revision: 0, test: constTest, number: 2, questionType: QuestionType.Find, questionOX: QuestionOX.O, content: "헌법에 관한 옳은 설명을 <보기>에서 고르면?", answer: 5)
 //        que4.notContent = "헌법에 관한 틀린 설명을 <보기>에서 고르면?"
         let lis21 = ListSelection(revision: 0, question: que4, content: "법률이 정한 바에 따라 제정된다.", selectString: "ㄱ")
 //        lis21.notContent = "헌법이 정한 바에 따라 제정된다."
@@ -88,7 +88,7 @@ struct TestGeneratorIOSApp: App {
         sel45.listInContentOfSelection = [lis22, lis23, lis24]
         
         
-        let que3 = Question(revision: 0, test: constTest, number: 4, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "근로자에 관한 설명으로 옳지 않은 것은?", answer: 4)
+        let que3 = Question(id: UUID(), revision: 0, test: constTest, number: 4, questionType: QuestionType.Select, questionOX: QuestionOX.X, content: "근로자에 관한 설명으로 옳지 않은 것은?", answer: 4)
         que3.notContent = "근로자에 관한 설명으로 옳은?"
         let sel31 = Selection(revision: 0, question: que3, number: 1, content: "근로 시간이 짧은 아르바이트 학생도 근로자에 포함된다.")
         sel31.notContent = "근로 시간이 짧은 아르바이트 학생은 근로자에 포함되지 않는다."

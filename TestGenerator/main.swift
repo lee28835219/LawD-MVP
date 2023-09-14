@@ -8,7 +8,7 @@
 
 import Foundation
 
-print("Hello!TestGenerator Starts!")
+print("Hello! LawD Console System Starts!")
 print("\(#file) 시작 -", Date().HHmmSS)
 
 
