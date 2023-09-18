@@ -827,7 +827,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD" */;
+			buildConfigurationList = 395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD MVP" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -1205,7 +1205,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Masterbuilder.TestGeneratorIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = Masterbuilder.LawD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -1244,7 +1244,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = Masterbuilder.TestGeneratorIOS;
+				PRODUCT_BUNDLE_IDENTIFIER = Masterbuilder.LawD;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1368,7 +1368,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD" */ = {
+		395BF6CA1E82BA36004BE198 /* Build configuration list for PBXProject "LawD MVP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				395BF6D41E82BA36004BE198 /* Debug */,

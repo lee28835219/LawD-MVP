@@ -17,7 +17,7 @@
                BlueprintIdentifier = "395BF6CE1E82BA36004BE198"
                BuildableName = "LawD Console System"
                BlueprintName = "LawD Console System"
-               ReferencedContainer = "container:LawD.xcodeproj">
+               ReferencedContainer = "container:LawD MVP.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,7 +47,7 @@
             BlueprintIdentifier = "395BF6CE1E82BA36004BE198"
             BuildableName = "LawD Console System"
             BlueprintName = "LawD Console System"
-            ReferencedContainer = "container:LawD.xcodeproj">
+            ReferencedContainer = "container:LawD MVP.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -70,7 +70,7 @@
             BlueprintIdentifier = "395BF6CE1E82BA36004BE198"
             BuildableName = "LawD Console System"
             BlueprintName = "LawD Console System"
-            ReferencedContainer = "container:LawD.xcodeproj">
+            ReferencedContainer = "container:LawD MVP.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

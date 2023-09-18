@@ -17,7 +17,7 @@
                BlueprintIdentifier = "9B41E9E02A377B4300DE389F"
                BuildableName = "LawD iOS.app"
                BlueprintName = "LawD iOS"
-               ReferencedContainer = "container:LawD.xcodeproj">
+               ReferencedContainer = "container:LawD MVP.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -37,7 +37,7 @@
                BlueprintIdentifier = "9B41E9EF2A377B4400DE389F"
                BuildableName = "TestGeneratorIOSTests.xctest"
                BlueprintName = "TestGeneratorIOSTests"
-               ReferencedContainer = "container:LawD.xcodeproj">
+               ReferencedContainer = "container:LawD MVP.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -48,7 +48,7 @@
                BlueprintIdentifier = "9B41E9F92A377B4400DE389F"
                BuildableName = "TestGeneratorIOSUITests.xctest"
                BlueprintName = "TestGeneratorIOSUITests"
-               ReferencedContainer = "container:LawD.xcodeproj">
+               ReferencedContainer = "container:LawD MVP.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -70,7 +70,7 @@
             BlueprintIdentifier = "9B41E9E02A377B4300DE389F"
             BuildableName = "LawD iOS.app"
             BlueprintName = "LawD iOS"
-            ReferencedContainer = "container:LawD.xcodeproj">
+            ReferencedContainer = "container:LawD MVP.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -87,7 +87,7 @@
             BlueprintIdentifier = "9B41E9E02A377B4300DE389F"
             BuildableName = "LawD iOS.app"
             BlueprintName = "LawD iOS"
-            ReferencedContainer = "container:LawD.xcodeproj">
+            ReferencedContainer = "container:LawD MVP.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
