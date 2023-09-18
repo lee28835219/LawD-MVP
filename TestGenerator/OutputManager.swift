@@ -34,7 +34,7 @@ class OutputManager {
 //    }
     var url : URL? {
         // 작업환경이 드롭박스로 바뀌어서 수정함. 이는 개발환경에서만 작동가능하므로, 이를 앱에서 실행할 때 수정해야 함 (-) ★★★
-        let pathString = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/2023. 9. LawD MVP/Data/Storage"
+        let pathString = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawD MVP/Data/Storage"
         return URL(fileURLWithPath: pathString)
             
 //
