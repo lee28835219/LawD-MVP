@@ -11,11 +11,29 @@ import Foundation
 /// 개발용으로 사용하는 함수 모음입니다.
 extension QuestionData {
     
-    class func loadLatestQueD1() -> QuestionData {
-        let jsonFiles = QuestionData.fetchJSONFiles(directoryPath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp", prefixString: "문_9A8B807")
-        jsonFiles.first
+    class func loadLatestQueD1() -> QuestionData? {
+        let directoryPath = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp"
+        let prefixString = "문_9A8B807"
+        let jsonFiles = QuestionData.fetchJSONFiles(directoryPath: directoryPath, prefixString: prefixString)
         
-        return QuestionData(id: UUID(uuidString: "9A8B8074-9A6D-415A-A1F1-F54EF01844B8")!, content: "상계에 관한 설명 중 옳은 것은?", questionType: .Select, questionOX: .O)
+        print("\(directoryPath) 안의 \(prefixString)으로 시작하는 json 파일")
+        for jsonPath in jsonFiles.map({ $0.lastPathComponent }) {
+            print("json Path: \(jsonPath)")
+        }
+        
+        if let latestJSONFileURL = jsonFiles.first {
+              do {
+                  // JSON 파일을 Data로 읽어오기
+                  let jsonData = try Data(contentsOf: latestJSONFileURL)
+
+                  return QuestionData.decode(fromData: jsonData)
+              } catch {
+                  print("Error reading JSON file: \(error)")
+              }
+          }
+        
+        
+        return nil
     }
     
     /// 개발용 함수로써, 개발용 문제 인스턴스 queD1을 생성, 저장한 뒤 이를 반환까지 합니다.

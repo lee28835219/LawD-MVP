@@ -13,14 +13,12 @@ class MainDevEXE {
         if toExecute {
             /// 아래에서 콘솔에서 실행할 액션를 정의함.
             ///
-
+            
             //            print(QuestionData.saveQueD1().creationDate.myDateStirng)
             let queD1 = QuestionData.loadLatestQueD1()
-            print(queD1.id)
+            print(queD1?.id)
+            queD1?.saveJson(url: URL(filePath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp"))
+//            print(QuestionData.saveQueD1().creationDate.myDateStirng)
         }
-    }
-    
-    func saveQueD1() {
-        
     }
 }
