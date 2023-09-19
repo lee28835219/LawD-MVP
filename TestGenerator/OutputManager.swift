@@ -392,8 +392,8 @@ extension Date {
     /// 이 포맷으로"만" 날짜를 표현하려 합니다.
     var myDateStirng : String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd._HH시mm분ss.SS초"
-        dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
+        // setMyDateStiring 함수를 이용하는 것으로 구조화함.
+        dateFormatter.setMyDateString()
         let dateString = dateFormatter.string(from: self)
         return dateString
     }
@@ -408,3 +408,11 @@ extension Date {
     
 }
 
+/// 2023.09.19. 추가한 날짜 포맷으로
+/// 앞으로 이 포맷"만"으로 날짜를 표현하려 합니다.
+extension DateFormatter {
+    func setMyDateString() {
+        self.dateFormat = "yyyy.MM.dd._HH시mm분ss.SS초"
+        self.timeZone = TimeZone(abbreviation: "KST")!
+    }
+}
