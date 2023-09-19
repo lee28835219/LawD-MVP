@@ -12,7 +12,7 @@ class mainEXE {
     init(toExecute: Bool) {
         if toExecute {
             // 아래에서 콘솔에서 실행할 액션를 정의함.
-            print(QuestionData.saveQueD1().creationDate.myDateStirng)
+//            print(QuestionData.saveQueD1().creationDate.myDateStirng)
         }
     }
     
