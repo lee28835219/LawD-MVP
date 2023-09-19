@@ -8,7 +8,7 @@
 
 import Foundation
 
-class QuestionData : Encodable {
+class QuestionData : Encodable, Decodable {
     // 메타적 속성
     private(set) var id : UUID // 이렇게 하면 클래스 내부에서는 id를 읽기/쓰기할 수 있지만 클래스 외부에서는 읽기만 가능하며 수정할 수 없습니다.
     let testID :UUID? = nil // 이 부분은 반드시 있어야 하나, 없을 수도 있습니다. 이를 언래퍼로 정의하는 것이 더 안전해 보이므로, 추후 이를 검토하여야 합니다. 2023.09.19. (-)

@@ -9,6 +9,9 @@
 import Foundation
 
 extension QuestionData {
+    // 2023.09.19. 이제 문_FB4CFC8~.json을 불러와서, 이를 인스턴스로 만드는 디코딩 작업을 시작해야 합니다.
+    
+    
     /// 개발용 함수로써, queD1을 생성, 저장한 뒤 이를 반환까지 합니다.
     class func saveQueD1() -> QuestionData {
         let queD1 = QuestionData(id: UUID(uuidString: "FB4CFC83-69AC-4892-8EBB-03789DCDDC1C")!, content: "인권에 관한 설명으로 옳지 않은 것은?", questionType: .Select, questionOX: .X)
