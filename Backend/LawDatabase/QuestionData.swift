@@ -63,6 +63,13 @@ class QuestionData : Encodable, Decodable {
     }
 }
 
+/// 향후 QuestionOX와 합쳐 하나의 enum으로 표현하도록 바꾸는게 필요할 수도 있겠네요.
+/// 이 경우가 아마도 마지막 수준의 고난의도 작업이 될 듯 합니다. 2023.09.19. (-)
+enum QuestionType : String, Codable {
+    case Select // 고르시오
+    case Find // 모두 고르시오
+    case Unknown
+}
 enum QuestionOX : String, Codable {
     case O //옳은 것
     case X //옳지 않은 것
@@ -70,8 +77,3 @@ enum QuestionOX : String, Codable {
     case Unknown
 }
 
-enum QuestionType : String, Codable {
-    case Select // 고르시오
-    case Find // 모두 고르시오
-    case Unknown
-}
