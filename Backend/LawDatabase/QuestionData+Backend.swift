@@ -23,9 +23,11 @@ extension QuestionData {
     }
     
     /// ★★★★★★ json파일명을 결정하는 함수입니다.
-    /// 2023.09.19.기준으론, 네이밍룰이 id/creationDate입니다.
+    /// 2023.09.19.기준으론, 네이밍룰이 id(앞 7자리)-creationDate입니다.
     func jsonName() -> String {
-        return "\((self.id.uuidString))-\(self.creationDate.myDateStirng).json"
+        let uuidString7 = self.id.uuidString.prefix(7)
+        let dateFormatted = self.creationDate.myDateStirng
+        return uuidString7 + "-" + dateFormatted + ".json"
     }
     
     /// josn으로 아카이브 하는 함수로써, 저장에 성공할 경우 true를 반환합니다.

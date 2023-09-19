@@ -392,7 +392,7 @@ extension Date {
     /// 이 포맷으로"만" 날짜를 표현하려 합니다.
     var myDateStirng : String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy.MM.dd. HH:mm:ss.SS"
+        dateFormatter.dateFormat = "yyyy.MM.dd. HH시mm분ss.SS초"
         dateFormatter.timeZone = TimeZone(abbreviation: "KST")!
         let dateString = dateFormatter.string(from: self)
         return dateString
