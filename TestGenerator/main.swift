@@ -75,7 +75,7 @@ let dddd = DCDD(g_testDatabase)
 
 
 let findedQuestionInstance = Question.findInstance(testDatabase: g_testDatabase, id: UUID(uuidString: "9A8B8074-9A6D-415A-A1F1-F54EF01844B8"))
-print("UUID 찾기가 잘되는지: ", findedQuestionInstance?.key)
+mainEXE(toExecute: true)
 
 //// EXEC
 g_instrcutionManger.didInitializationComplete()
