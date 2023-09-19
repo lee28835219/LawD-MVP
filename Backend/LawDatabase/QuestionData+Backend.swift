@@ -41,19 +41,29 @@ extension QuestionData {
     
     /// josn으로 아카이브 하는 함수로써, 저장에 성공할 경우 true를 반환합니다.
     func saveJson(url: URL) -> Bool{
+        /// 앞으로 아래 인코더 형식을을 구조화하여 모듈화 함으로써
+        /// 코드의 경제성 및 안정성을 꽤해야 합니다. ★★★ 2023.09.19. (-)
         let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted // 읽기 쉬운 형식으로 출력
+        encoder.outputFormatting = .prettyPrinted // 읽기 쉬운 형식으로 Data를 저장합니다.
+        let dateFormater = DateFormatter()
+        dateFormater.setMyDateString() // json에 저장되는 일시는 모두 myDateSting 형식으로 저장합니다.
+        encoder.dateEncodingStrategy = .formatted(dateFormater)
 
         do {
             // json파일명 등을 정의하는 부분입니다.
             let (jsonName, saveDate) = self.jsonName()
             
-            // reviion 및 수정일시 변경 부분입니다.
-            // revion 관리 내용을 json에 저장하기 위해 다소 앞에 위치하고 있는데,
-            // 만약 인스턴스 정보를 여기서 수정했음에도 불구하고,
-            // 파일 저장이 실패할 경우 내용이 꼬일 우려가 있어 그 영향도 검토 필요해 보입니다. 2023.09.19. (-)
-            self.revision = self.revision + 1
-            self.modifiedDate = saveDate
+            /// reviion 및 수정일시 변경 부분입니다.
+            /// revion 관리 내용을 json에 저장하기 위해 다소 앞에 위치하고 있는데,
+            /// 만약 인스턴스 정보를 여기서 수정했음에도 불구하고,
+            /// 파일 저장이 실패할 경우 내용이 꼬일 우려가 있어 그 영향도 검토 필요해 보입니다. 2023.09.19. (-)
+            ///
+            /// 그리고, 첫 인스턴스 생성 후 저장 시에도 revition이 올라가는 문제가 있어,
+            /// 일단은, modifiedDate가 nil이 아닐 경우(= revion이 0)에만 이를 업데이트하도록 짜보았습니다.
+            if modifiedDate != nil {
+                self.revision = self.revision + 1
+                self.modifiedDate = saveDate
+            }
             
             // json 데이터로 인코딩
             let jsonData = try encoder.encode(self)
