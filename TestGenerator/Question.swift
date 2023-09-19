@@ -102,7 +102,8 @@ extension Question {
 }
 
 
-
+// 2023.09.19. QuestionData로의 이주를 위해 아래 아주 중요한 이넘을 QuestionData.swift로 옮겼습니다.
+/*
 enum QuestionOX : String {
     case O //옳은 것
     case X //옳지 않은 것
@@ -115,6 +116,7 @@ enum QuestionType : String {
     case Find // 모두 고르시오
     case Unknown
 }
+*/
 
 
 extension String {
