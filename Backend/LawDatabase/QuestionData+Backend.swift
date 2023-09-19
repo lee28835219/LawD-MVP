@@ -23,11 +23,12 @@ extension QuestionData {
     }
     
     /// ★★★★★★ json파일명을 결정하는 함수입니다.
-    /// 2023.09.19.기준으론, 네이밍룰이 id(앞 7자리)-creationDate입니다.
+    /// 2023.09.19.기준으로 네이밍룰은,
+    /// Q-id(앞 7자리)-creationDate.json입니다.
     func jsonName() -> String {
-        let uuidString7 = self.id.uuidString.prefix(7)
+        let uuidString7 = self.id.uuidString.prefix(7) // 7자리 UUID가 중복될 확률은 매우 낮아서 0.000000000909% 정도입니다. 이는 매우 낮은 확률을 나타내며, 현실적으로는 중복될 가능성을 걱정할 필요가 없습니다. 7자리 UUID는 충분히 고유합니다.
         let dateFormatted = self.creationDate.myDateStirng
-        return uuidString7 + "-" + dateFormatted + ".json"
+        return "Q-" + uuidString7 + "-" + dateFormatted + ".json"
     }
     
     /// josn으로 아카이브 하는 함수로써, 저장에 성공할 경우 true를 반환합니다.
