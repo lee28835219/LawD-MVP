@@ -78,4 +78,55 @@ extension QuestionData {
         }
         return false
     }
+    
+    /// json에서 인스턴스를 불러오는 QuestionData의 클래스 함수입니다.
+    class func decode(fromData data: Data) -> QuestionData? {
+        do {
+            // JSONDecoder를 생성합니다.
+            let decoder = JSONDecoder()
+            
+            let dateFormater = DateFormatter()
+            dateFormater.setMyDateString() // json에 저장되는 일시는 모두 myDateSting 형식으로 저장되었으므로, 디코딩도 이에 맞춰야"만" 합니다.
+            decoder.dateDecodingStrategy = .formatted(dateFormater)
+            
+            // JSON 데이터를 디코딩하여 원하는 데이터 모델로 변환합니다.
+            let questionData = try decoder.decode(QuestionData.self, from: data)
+            
+            return questionData
+        } catch {
+            print("JSON 디코딩 오류: \(error)")
+            return nil
+        }
+    }
+    
+    /// 1. 특정 경로 폴더에 있는 json파일 중
+    /// 2. 입력받은 prefix에 맞는 파일들의 URL을 찾고
+    /// 3. 이를 내림차순으로 정렬하여 어레이로 반환합니다.
+    /// 2023.09.19. 챗지피티가 작성하였습니다.
+    class func fetchJSONFiles(directoryPath : String, prefixString : String) -> [URL] {
+        let fileManager = FileManager.default
+        var jsonFiles: [URL] = []
+
+        do {
+            let fileURLs = try fileManager.contentsOfDirectory(at: URL(fileURLWithPath: directoryPath), includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+            
+            for fileURL in fileURLs {
+                if fileURL.pathExtension == "json" {
+                    let fileName = fileURL.deletingPathExtension().lastPathComponent
+                    if fileName.hasPrefix(prefixString) {
+                        jsonFiles.append(fileURL)
+                    }
+                }
+            }
+            
+            // 내림차순으로 파일 목록 정렬
+            jsonFiles.sort { (url1, url2) -> Bool in
+                return url1.lastPathComponent > url2.lastPathComponent
+            }
+        } catch {
+            print("Error: \(error)")
+        }
+        
+        return jsonFiles
+    }
 }

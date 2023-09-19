@@ -75,7 +75,7 @@ let dddd = DCDD(g_testDatabase)
 
 
 let findedQuestionInstance = Question.findInstance(testDatabase: g_testDatabase, id: UUID(uuidString: "9A8B8074-9A6D-415A-A1F1-F54EF01844B8"))
-mainEXE(toExecute: true)
+MainDevEXE(toExecute: true)
 
 //// EXEC
 g_instrcutionManger.didInitializationComplete()
