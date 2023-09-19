@@ -15,9 +15,11 @@ class MainDevEXE {
             ///
             
             //            print(QuestionData.saveQueD1().creationDate.myDateStirng)
+            let tempDataFilePath = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp"
+            
             let queD1 = QuestionData.loadLatestQueD1()
             print(queD1?.id)
-            queD1?.saveJson(url: URL(filePath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp"))
+            queD1?.saveJson(url: URL(filePath: tempDataFilePath))
 //            print(QuestionData.saveQueD1().creationDate.myDateStirng)
         }
     }
