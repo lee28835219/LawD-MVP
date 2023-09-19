@@ -289,6 +289,7 @@
 		9B9352502A44AF4200EF2EFB /* SolversListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolversListView.swift; sourceTree = "<group>"; };
 		9BA0EA1B2A40B538004C5BBB /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		9BA6AD942AB9253A00B06D36 /* QuestionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionData.swift; sourceTree = "<group>"; };
+		9BA6AD992AB93E2400B06D36 /* pathSnippet.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = pathSnippet.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		9BB1A79A2AAAB4F600AA5539 /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		9BB1A79C2AAABCA200AA5539 /* MemoInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoInputView.swift; sourceTree = "<group>"; };
 		9BC35E3B2AAFF26600D69ED6 /* StorageManager+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageManager+Essential.swift"; sourceTree = "<group>"; };
@@ -701,6 +702,7 @@
 			isa = PBXGroup;
 			children = (
 				9BA6AD932AB9246600B06D36 /* LawDatabase */,
+				9BA6AD992AB93E2400B06D36 /* pathSnippet.playground */,
 			);
 			path = Backend;
 			sourceTree = SOURCE_ROOT;

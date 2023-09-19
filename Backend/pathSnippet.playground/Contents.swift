@@ -1,17 +1,9 @@
-//
-//  QuestionData.swift
-//  LawD MVP
-//
-//  Created by Masterbuilder on 2023/09/19.
-//  Copyright © 2023 MasterBuilder. All rights reserved.
-//
-
 import Foundation
 
 class QuestionData : Encodable {
     // 메타적 속성
-    private(set) var id : UUID // 이렇게 하면 클래스 내부에서는 id를 읽기/쓰기할 수 있지만 클래스 외부에서는 읽기만 가능하며 수정할 수 없습니다.
-    let testID :UUID? = nil // 이 부분은 반드시 있어야 하나, 없을 수도 있습니다. 이를 언래퍼로 정의하는 것이 더 안전해 보이므로, 추후 이를 검토하여야 합니다. 2023.09.19. (-)
+    private(set) var id : UUID
+    let testID :UUID? = nil
     
     var revision : Int = 0
     let creationDate : Date
@@ -63,4 +55,33 @@ enum QuestionType : String, Codable {
     case Select // 고르시오
     case Find // 모두 고르시오
     case Unknown
+}
+
+
+var queD1 = QuestionData(id: UUID(), content: "인권에 관한 설명으로 옳지 않은 것은?", questionType: .Select, questionOX: .X)
+
+print(queD1.id)
+
+let lawDatabaseURL = URL(filePath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase")
+
+let encoder = JSONEncoder()
+encoder.outputFormatting = .prettyPrinted // 읽기 쉬운 형식으로 출력
+
+do {
+    // json 데이터로 인코딩
+    let jsonData = try encoder.encode(queD1)
+    
+    // json 데이터를 문자열로 변환
+    if let jsonString = String(data: jsonData, encoding: .utf8) {
+        let fileURL = lawDatabaseURL.appending(path: "queD1.json")
+
+        do {
+            try jsonString.write(to: fileURL, atomically: true, encoding: .utf8)
+            print("파일 저장 성공: \(fileURL.path)")
+        } catch {
+            print("파일 저장 실패: \(error.localizedDescription)")
+        }
+    }
+} catch {
+    print("json 인코딩 에러: \(error.localizedDescription)")
 }
