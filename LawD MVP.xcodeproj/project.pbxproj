@@ -260,6 +260,7 @@
 		9B11C0192AB333E3001A0C37 /* =변호사시험=민사법=6회=선택형=.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "=변호사시험=민사법=6회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=민사법=6회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
 		9B11C01A2AB33B85001A0C37 /* =변호사시험=민사법=7회=선택형=.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "=변호사시험=민사법=7회=선택형=.txt"; path = "Data/Resource/1. 변호사시험/=변호사시험=민사법=7회=선택형=.txt"; sourceTree = SOURCE_ROOT; };
 		9B19B0E12A40DC2F00766453 /* GeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorView.swift; sourceTree = "<group>"; };
+		9B315E8D2AB9D5C70078A0D3 /* decoderSnippet.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = decoderSnippet.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		9B35A04A2A58705300C5A838 /* Question+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Question+Essential.swift"; sourceTree = "<group>"; };
 		9B35A04D2A58731100C5A838 /* DataConverter+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataConverter+Essential.swift"; sourceTree = "<group>"; };
 		9B35A04F2A58733600C5A838 /* DataConverter+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataConverter+Extension.swift"; sourceTree = "<group>"; };
@@ -709,6 +710,7 @@
 			children = (
 				9BA6AD932AB9246600B06D36 /* LawDatabase */,
 				9BA6AD992AB93E2400B06D36 /* pathSnippet.playground */,
+				9B315E8D2AB9D5C70078A0D3 /* decoderSnippet.playground */,
 			);
 			path = Backend;
 			sourceTree = SOURCE_ROOT;
