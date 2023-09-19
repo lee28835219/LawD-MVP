@@ -35,7 +35,6 @@ class QuestionData : Encodable, Decodable {
     /// [반전된 질문]★★★★, 없으면 안됩니다. 그러나 없을 수도 있다는 점이 가장 어려운 점입니다.
     /// 따라서 향후 생성형 프레임워크로 content를 기반으로 자동으로 만들어주도록 하면 어떨까요? 2023.09.19. (-)
     var notContent : String?
-    
     /// 없어도 됩니다.
     var contentNote : String?
     
@@ -51,6 +50,9 @@ class QuestionData : Encodable, Decodable {
     /* 혹시나 존재할 수 있는 부분으로 일단 커멘트아웃합니다.
      var passageSuffix : String?
      var questionSuffix : String? */
+    
+    // 앞으로 number, answer 및
+    // [selection], [list] 확인이 꼭 필요하겠네요. 2023.09.19. (-)
     
     
     init(id: UUID, content: String, questionType : QuestionType, questionOX : QuestionOX) {

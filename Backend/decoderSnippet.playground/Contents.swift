@@ -95,12 +95,14 @@ func decode(fromData data: Data) -> QuestionData? {
 // JSON 문자열 데이터
 let jsonString = """
 {
-  "revision" : 0,
-  "id" : "FB4CFC83-69AC-4892-8EBB-03789DCDDC1C",
-  "creationDate" : "2023.09.19._21시59분07.76초",
-  "content" : "인권에 관한 설명으로 옳지 않은 것은?",
-  "questionType" : "Select",
-  "questionOX" : "X"
+  "id": "9A8B8074-9A6D-415A-A1F1-F54EF01844B8",
+  "revision": 0,
+  "creationDate": "2023.09.19._23시00분35.11초",
+  "content": "상계에 관한 설명 중 옳은 것은?",
+  "notContent": "상계에 관한 설명 중 옳지 않은 것은?",
+  "contentNote": "(다툼이 있는 경우에는 판례에 의함)",
+  "questionOX": "O",
+  "questionType": "Select"
 }
 """
 
