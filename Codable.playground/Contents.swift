@@ -1,5 +1,5 @@
 import Foundation
-import Question.swift
+//import Question.swift
 
 class Person: Encodable, ObservableObject {
     var name: String
@@ -30,8 +30,6 @@ if let encodedData = try? encoder.encode([person]) {
         print("인코딩된 JSON 문자열: \(jsonString)")
     }
 }
-
-let question = Ques
 
 //// 디코딩 (역직렬화)
 //let jsonString = "[{\"name\":\"Bob\",\"age\":25}, {\"name\":\"Alice\",\"age\":30}]"
