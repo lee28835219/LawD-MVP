@@ -2,7 +2,9 @@ import Foundation
 
 class QuestionData : Encodable {
     // 메타적 속성
-    private(set) var id : UUID
+//    private(set) var id : UUID
+    let id : UUID
+    
     let testID :UUID? = nil
     
     var revision : Int = 0
@@ -60,9 +62,13 @@ enum QuestionType : String, Codable {
 
 var queD1 = QuestionData(id: UUID(), content: "인권에 관한 설명으로 옳지 않은 것은?", questionType: .Select, questionOX: .X)
 
-print(queD1.id)
+print("id: \(queD1.id)")
 
-let lawDatabaseURL = URL(filePath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase")
+
+
+let lawDatabaseURL
+    // = URL(filePath: "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase")
+    = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
 
 let encoder = JSONEncoder()
 encoder.outputFormatting = .prettyPrinted // 읽기 쉬운 형식으로 출력
@@ -73,8 +79,10 @@ do {
     
     // json 데이터를 문자열로 변환
     if let jsonString = String(data: jsonData, encoding: .utf8) {
+        
+        print("json: \n\(jsonString)")
+        
         let fileURL = lawDatabaseURL.appending(path: "queD1.json")
-
         do {
             try jsonString.write(to: fileURL, atomically: true, encoding: .utf8)
             print("파일 저장 성공: \(fileURL.path)")
