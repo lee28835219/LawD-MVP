@@ -23,12 +23,17 @@ extension QuestionData {
     }
     
     /// ★★★★★★ json파일명을 결정하는 함수입니다.
+    ///
     /// 2023.09.19.기준으로 네이밍룰은,
-    /// Q-id(앞 7자리)-creationDate.json입니다.
-    func jsonName() -> String {
+    /// 문_id(앞 7자리)_saveDate.json이며,
+    /// self.modifiedDate 관리를 위해 저장당시의 Date를 같이 반환합니다.
+    ///
+    /// 즉, (json파일명, 저장일시)를 반환합니다.
+    func jsonName() -> (String, Date) {
         let uuidString7 = self.id.uuidString.prefix(7) // 7자리 UUID가 중복될 확률은 매우 낮아서 0.000000000909% 정도입니다. 이는 매우 낮은 확률을 나타내며, 현실적으로는 중복될 가능성을 걱정할 필요가 없습니다. 7자리 UUID는 충분히 고유합니다.
-        let dateFormatted = self.creationDate.myDateStirng
-        return "Q-" + uuidString7 + "-" + dateFormatted + ".json"
+        let saveDate = Date()
+        let dateFormatted = saveDate.myDateStirng
+        return ("문_" + uuidString7 + "_" + dateFormatted + ".json",saveDate)
     }
     
     /// josn으로 아카이브 하는 함수로써, 저장에 성공할 경우 true를 반환합니다.
@@ -37,6 +42,16 @@ extension QuestionData {
         encoder.outputFormatting = .prettyPrinted // 읽기 쉬운 형식으로 출력
 
         do {
+            // json파일명 등을 정의하는 부분입니다.
+            let (jsonName, saveDate) = self.jsonName()
+            
+            // reviion 및 수정일시 변경 부분입니다.
+            // revion 관리 내용을 json에 저장하기 위해 다소 앞에 위치하고 있는데,
+            // 만약 인스턴스 정보를 여기서 수정했음에도 불구하고,
+            // 파일 저장이 실패할 경우 내용이 꼬일 우려가 있어 그 영향도 검토 필요해 보입니다. 2023.09.19. (-)
+            self.revision = self.revision + 1
+            self.modifiedDate = saveDate
+            
             // json 데이터로 인코딩
             let jsonData = try encoder.encode(self)
             
@@ -45,9 +60,11 @@ extension QuestionData {
                 
                 print("json: \n\(jsonString)")
                 
-                let fileURL = url.appending(path: "\(self.jsonName())")
+                
                 do {
+                    let fileURL = url.appending(path: "\(jsonName)")
                     try jsonString.write(to: fileURL, atomically: true, encoding: .utf8)
+                    
                     print("파일 저장 성공: \(fileURL.path)")
                     return true
                 } catch {

@@ -15,7 +15,7 @@ class QuestionData : Encodable {
     
     var revision : Int = 0
     let creationDate : Date
-    let modifiedDate : Date? = nil
+    var modifiedDate : Date? = nil
     
     //// 시험속성
     
