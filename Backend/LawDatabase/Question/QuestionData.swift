@@ -9,11 +9,12 @@
 import Foundation
 
 class QuestionData : Encodable, Decodable {
-    // 메타적 속성들
-    private(set) var id : UUID // 이렇게 하면 클래스 내부에서는 id를 읽기/쓰기할 수 있지만 클래스 외부에서는 읽기만 가능하며 수정할 수 없습니다.
-    /// 이 부분은 반드시 있어야 하나, 없을 수도 있습니다. 이를 언래퍼로 정의하는 것이 더 안전해 보이므로, 추후 이를 검토하여야 합니다. 2023.09.19. (-)
+    // [0] 메타적 속성들
+    /// 이렇게 하면 클래스 내부에서는 id를 읽기/쓰기할 수 있지만 클래스 외부에서는 읽기만 가능하며 수정할 수 없습니다.
+    private(set) var id : UUID
+    /// 소속 시험지로, 이 부분은 반드시 있어야 하나, 없을 수도 있습니다.
+    /// 이를 언래퍼로 정의하는 것이 더 안전해 보이므로, 추후 이를 검토하여야 합니다. 2023.09.19. (-)
     var testID :UUID? = nil
-    
     
     let creationDate : Date
     
@@ -21,13 +22,13 @@ class QuestionData : Encodable, Decodable {
     /// 초기화 시는 당연히 nil이고, json에서 읽어올 때는 nil일 수도 있고, 값이 있을 수도 있겠습니다.
     var modifiedDate : Date? = nil
     
-    // 시험속성
+    // [1] 시험속성
     /// 문제번호의 원본인데, 이는 testID로 찾아갈 수 있는 데이터로 보여 만들지 않아보께요. 2023.09.19.
     // var number : Int
     /// "민법"같은 원본인데, 일단 만들지 말아보고 어떻게 문제들을 범주화할지 고민 필요합니다. 2023.09.19. (-)
     // var subjectDetails
     
-    // 질문 원본 및 그 논리적 데이터
+    // [2] 질문 원본 및 그 논리적 데이터
     /// 없어도 됩니다.
     var contentPrefix : String?
     /// [질문]★★★
@@ -38,8 +39,8 @@ class QuestionData : Encodable, Decodable {
     /// 없어도 됩니다.
     var contentNote : String?
     
-    // 논리적으로 중요한 구문입니다.
-    // 인코더블하게 이를 구현함이 이번 클래스 작성의 핵심입니다. 2023.09.19. (+)
+    /// 논리적으로 중요한 구문입니다.
+    /// 인코더블하게 이를 구현함이 이번 클래스 작성의 핵심입니다. 2023.09.19. (+)
     var questionType : QuestionType
     var questionOX : QuestionOX
     
@@ -47,7 +48,7 @@ class QuestionData : Encodable, Decodable {
     /// 원본데이터에서는 <p></p> 태그로 관리되는 매우 중요한 부분입니다.
     var passage : String?
     
-    /* 혹시나 존재할 수 있는 부분으로 일단 커멘트아웃합니다.
+    /* [3] 혹시나 존재할 수 있는 부분으로 일단 커멘트아웃합니다.
      var passageSuffix : String?
      var questionSuffix : String? */
     
