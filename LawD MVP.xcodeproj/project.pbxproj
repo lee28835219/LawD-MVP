@@ -108,6 +108,7 @@
 		9B4FA2D72A435AD60006F173 /* HistoryContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4FA2D62A435AD60006F173 /* HistoryContentView.swift */; };
 		9B4FA2DA2A435C6E0006F173 /* GenerateHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4FA2D92A435C6E0006F173 /* GenerateHistory.swift */; };
 		9B4FA2DB2A435C6E0006F173 /* GenerateHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4FA2D92A435C6E0006F173 /* GenerateHistory.swift */; };
+		9B5748F42ABA77250097859C /* SelectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5748F32ABA77250097859C /* SelectionData.swift */; };
 		9B5F98CB2A3CC03900CE08DC /* Solver+Publish.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5F98CA2A3CC03900CE08DC /* Solver+Publish.swift */; };
 		9B5F98CE2A3CC56700CE08DC /* Solver+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5F98CD2A3CC56700CE08DC /* Solver+Extension.swift */; };
 		9B5F98CF2A3CC56700CE08DC /* Solver+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5F98CD2A3CC56700CE08DC /* Solver+Extension.swift */; };
@@ -279,6 +280,7 @@
 		9B41EA002A377B4400DE389F /* TestGeneratorIOSUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestGeneratorIOSUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9B4FA2D62A435AD60006F173 /* HistoryContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryContentView.swift; sourceTree = "<group>"; };
 		9B4FA2D92A435C6E0006F173 /* GenerateHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateHistory.swift; sourceTree = "<group>"; };
+		9B5748F32ABA77250097859C /* SelectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionData.swift; sourceTree = "<group>"; };
 		9B5F98CA2A3CC03900CE08DC /* Solver+Publish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+Publish.swift"; sourceTree = "<group>"; };
 		9B5F98CD2A3CC56700CE08DC /* Solver+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+Extension.swift"; sourceTree = "<group>"; };
 		9B5F98D02A3CC7CA00CE08DC /* Solver+Essential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+Essential.swift"; sourceTree = "<group>"; };
@@ -676,6 +678,25 @@
 			path = TestsContentView;
 			sourceTree = "<group>";
 		};
+		9B5748F22ABA76E20097859C /* Question */ = {
+			isa = PBXGroup;
+			children = (
+				9BA6AD942AB9253A00B06D36 /* QuestionData.swift */,
+				9BA6AD9A2AB9520700B06D36 /* QuestionData+Backend.swift */,
+				9BDBCB032AB9E54C00FC19B7 /* QuestionData+Dev.swift */,
+			);
+			path = Question;
+			sourceTree = "<group>";
+		};
+		9B5748F52ABA772F0097859C /* Selection */ = {
+			isa = PBXGroup;
+			children = (
+				9B5748F32ABA77250097859C /* SelectionData.swift */,
+			);
+			name = Selection;
+			path = Backend/LawDatabase/Selection;
+			sourceTree = SOURCE_ROOT;
+		};
 		9B6C0E4C2A45F3E4003EC10B /* GeneratorView 관련 */ = {
 			isa = PBXGroup;
 			children = (
@@ -721,9 +742,8 @@
 		9BA6AD932AB9246600B06D36 /* LawDatabase */ = {
 			isa = PBXGroup;
 			children = (
-				9BA6AD942AB9253A00B06D36 /* QuestionData.swift */,
-				9BA6AD9A2AB9520700B06D36 /* QuestionData+Backend.swift */,
-				9BDBCB032AB9E54C00FC19B7 /* QuestionData+Dev.swift */,
+				9B5748F22ABA76E20097859C /* Question */,
+				9B5748F52ABA772F0097859C /* Selection */,
 			);
 			name = LawDatabase;
 			path = Backend/LawDatabase;
@@ -964,6 +984,7 @@
 				39DF734B1EAF2EFE005AD7D7 /* 3. Keyword.swift in Sources */,
 				9B35A04B2A58705300C5A838 /* Question+Essential.swift in Sources */,
 				39E775951ECA221C00F17DA7 /* DataConverterData.swift in Sources */,
+				9B5748F42ABA77250097859C /* SelectionData.swift in Sources */,
 				396291B31EBC60C300FADC4C /* Selection.swift in Sources */,
 				395BF6D31E82BA36004BE198 /* main.swift in Sources */,
 				39D7AF1E1ED453F100973EFF /* InstManagerQuestionEdit.swift in Sources */,

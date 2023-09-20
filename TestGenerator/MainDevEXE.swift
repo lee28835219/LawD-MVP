@@ -18,9 +18,12 @@ class MainDevEXE {
             let tempDataFilePath = "/Users/lee/Library/CloudStorage/Dropbox/DropDocument/ LawDatabase/ Temp"
             
             let queD1 = QuestionData.loadLatestQueD1()
-            print(queD1?.id)
-            queD1?.saveJson(url: URL(filePath: tempDataFilePath))
-//            print(QuestionData.saveQueD1().creationDate.myDateStirng)
+            print(queD1?.id ?? "nil")
+            
+            /// (=) 선택지에 대한 작업을 시작합니다.
+            
+            
+            // queD1?.saveJson(url: URL(filePath: tempDataFilePath))
         }
     }
 }
